@@ -2,10 +2,14 @@
 
 namespace MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware;
 
+use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Http\Request;
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Request\AuthenticationRequest;
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Response\AuthenticationResponse;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Authenticatable;
+use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenable;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TokenStorage;
+use MerchantOfComplexity\Authters\Support\Exception\AuthenticationException;
 
 interface AuthenticationMiddleware
 {
