@@ -2,6 +2,7 @@
 
 namespace MerchantOfComplexity\Authters\Support\Exception;
 
+use MerchantOfComplexity\Authters\Support\Contract\Domain\Identity;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenable;
 
 class AuthenticationServiceFailure extends AuthenticationException
@@ -13,9 +14,21 @@ class AuthenticationServiceFailure extends AuthenticationException
         return new self("No authentication provider support token {$tokenClass}");
     }
 
+    public static function unsupportedIdentityProvider(Identity $identity): self
+    {
+        $identityClass = get_class($identity);
+
+        return new self("No identity provider support identity class {$identityClass}");
+    }
+
     public static function noAuthenticationProvider(): self
     {
         return new self("No authentication provider has been provided to Authentication manager");
+    }
+
+    public static function noIdentityProvider(): self
+    {
+        return new self("No identity provider has been provided to context middleware");
     }
 
     public static function credentialsNotFound(): self

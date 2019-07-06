@@ -2,12 +2,14 @@
 
 namespace MerchantOfComplexity\Authters\Domain\User;
 
+use MerchantOfComplexity\Authters\Domain\Role\RoleValue;
 use MerchantOfComplexity\Authters\Support\Contract\Domain\LocalIdentity;
 use MerchantOfComplexity\Authters\Support\Contract\Value\EncodedCredentials;
 use MerchantOfComplexity\Authters\Support\Contract\Value\IdentifierValue;
 use MerchantOfComplexity\Authters\Support\Value\Credentials\BcryptEncodedPassword;
+use MerchantOfComplexity\Authters\Support\Value\Identifier\EmailIdentity;
 
-class GenericIdentity implements LocalIdentity
+final class InMemoryIdentity implements LocalIdentity
 {
     /**
      * @var array
@@ -26,7 +28,7 @@ class GenericIdentity implements LocalIdentity
 
     public function getIdentifier(): IdentifierValue
     {
-        return $this->getId();
+        return EmailIdentity::fromString($this->identity['email']);
     }
 
     public function getPassword(): EncodedCredentials
@@ -36,6 +38,9 @@ class GenericIdentity implements LocalIdentity
 
     public function getRoles(): array
     {
-        return $this->identity['roles'];
+        return $this->identity['roles'] ?? [
+                RoleValue::fromString('ROLE_USER'),
+                RoleValue::fromString('ROLE_ADMIN'),
+            ];
     }
 }

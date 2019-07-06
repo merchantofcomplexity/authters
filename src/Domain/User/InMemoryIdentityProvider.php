@@ -33,6 +33,6 @@ final class InMemoryIdentityProvider implements IdentityProvider
 
     public function supportsIdentity(Identity $identity): bool
     {
-        return get_class($identity) === GenericIdentity::class;
+        return get_class($identity) === InMemoryIdentity::class;
     }
 }

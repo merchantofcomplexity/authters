@@ -6,7 +6,7 @@ use MerchantOfComplexity\Authters\Support\Contract\Value\EmailAddress;
 use MerchantOfComplexity\Authters\Support\Contract\Value\IdentityEmail;
 use MerchantOfComplexity\Authters\Support\Contract\Value\Value;
 
-final class BasicEmailIdentity implements IdentityEmail, EmailAddress
+final class EmailIdentity implements IdentityEmail, EmailAddress
 {
     /**
      * @var EmailAddress

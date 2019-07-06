@@ -26,7 +26,7 @@ abstract class ProvideLocalAuthentication implements AuthenticationProvider
     /**
      * @var IdentityChecker
      */
-    private $userChecker;
+    private $identityChecker;
 
     /**
      * @var CredentialsValidator
@@ -34,11 +34,11 @@ abstract class ProvideLocalAuthentication implements AuthenticationProvider
     private $credentialsValidator;
 
     public function __construct(IdentityProvider $userProvider,
-                                IdentityChecker $userChecker,
+                                IdentityChecker $identityChecker,
                                 CredentialsValidator $credentialsValidator)
     {
         $this->userProvider = $userProvider;
-        $this->userChecker = $userChecker;
+        $this->identityChecker = $identityChecker;
         $this->credentialsValidator = $credentialsValidator;
     }
 
@@ -82,11 +82,11 @@ abstract class ProvideLocalAuthentication implements AuthenticationProvider
 
     protected function checkIdentity(LocalIdentity $identity, LocalToken $token): void
     {
-        $this->userChecker->onPreAuthentication($identity);
+        $this->identityChecker->onPreAuthentication($identity);
 
         $this->checkCredentials($identity, $token);
 
-        $this->userChecker->onPostAuthentication($identity);
+        $this->identityChecker->onPostAuthentication($identity);
     }
 
     // checkMe abstract this bloc
