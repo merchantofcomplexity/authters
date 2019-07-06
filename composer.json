@@ -1,0 +1,68 @@
+{
+  "name": "merchantofcomplexity/authters",
+  "description": "",
+  "type": "project",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "merchantofcomplexity",
+      "email": "merchantofcomplexity@gmail.com"
+    }
+  ],
+  "require": {
+    "php": "^7.3",
+    "ext-json": "*"
+  },
+  "require-dev": {
+    "merchantofcomplexity/chronicle": "dev-master",
+    "merchantofcomplexity/service-bus": "dev-master",
+    "merchantofcomplexity/tracker": "dev-master",
+    "merchantofcomplexity/dev-shared": "dev-master",
+    "laravel/framework": "5.8.*",
+    "symfony/expression-language": "^4.1",
+    "lcobucci/jwt": "4.0.0-alpha3",
+    "prooph/common": "^4.3",
+    "react/promise": "^2.7",
+    "beberlei/assert": "^3.0.0",
+    "ramsey/uuid": "^3.8",
+    "marc-mabe/php-enum": "^3.1",
+    "fzaninotto/faker": "^1.4",
+    "mockery/mockery": "^1.0",
+    "nunomaduro/collision": "^3.0",
+    "phpunit/phpunit": "^7.5",
+    "ext-pcntl": "*"
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/merchantofcomplexity/tracker"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/merchantofcomplexity/service-bus"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/merchantofcomplexity/chronicle"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/merchantofcomplexity/dev-shared"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "MerchantOfComplexity\\Authters\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "MerchantOfComplexityTest\\Authters\\": "tests/"
+    }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0-dev"
+    }
+  }
+}
