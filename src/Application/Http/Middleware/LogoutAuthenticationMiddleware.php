@@ -45,7 +45,7 @@ abstract class LogoutAuthenticationMiddleware
         $this->dispatcher = $dispatcher;
     }
 
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request)
     {
         $token = $this->tokenStorage->getToken();
 
@@ -62,7 +62,7 @@ abstract class LogoutAuthenticationMiddleware
             $this->dispatcher->dispatch(new IdentityLogout($token, $request));
         }
 
-        return $next($request);
+        return null;
     }
 
     abstract protected function matchRequest(Request $request, Tokenable $token): bool;

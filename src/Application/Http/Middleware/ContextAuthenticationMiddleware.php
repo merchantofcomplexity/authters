@@ -45,7 +45,7 @@ final class ContextAuthenticationMiddleware
         $this->refreshIdentityStrategy = $refreshIdentityStrategy;
     }
 
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request)
     {
         $this->dispatcher->dispatch($this->contextEvent);
 
@@ -53,7 +53,7 @@ final class ContextAuthenticationMiddleware
             $this->handleSerializedToken($tokenString);
         }
 
-        return $next($request);
+        return null;
     }
 
     protected function handleSerializedToken(string $tokenString): void

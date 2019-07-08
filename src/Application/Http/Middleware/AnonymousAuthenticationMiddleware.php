@@ -26,7 +26,7 @@ final class AnonymousAuthenticationMiddleware
         $this->tokenStorage = $tokenStorage;
     }
 
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request)
     {
         if (!$this->tokenStorage->hasToken()) {
             $this->tokenStorage->setToken(
@@ -34,6 +34,6 @@ final class AnonymousAuthenticationMiddleware
             );
         }
 
-        return $next($request);
+        return null;
     }
 }

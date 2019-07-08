@@ -2,7 +2,6 @@
 
 namespace MerchantOfComplexity\Authters\Application\Http\Middleware;
 
-use Closure;
 use Illuminate\Http\Request;
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\EventAuthenticationMiddelware;
 use MerchantOfComplexity\Authters\Support\Exception\AuthenticationException;
@@ -14,10 +13,10 @@ abstract class AuthenticationMiddleware implements EventAuthenticationMiddelware
 {
     use HasAuthenticationMiddleware, HasAuthenticationEvent;
 
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request)
     {
         if (!$this->requireAuthentication($request)) {
-            return $next($request);
+            return null;
         }
 
         try {
@@ -30,7 +29,7 @@ abstract class AuthenticationMiddleware implements EventAuthenticationMiddelware
             return $this->respond->entrypoint($request, $exception);
         }
 
-        return $response ?? $next($request);
+        return $response;
     }
 
     abstract protected function requireAuthentication(Request $request): bool;
