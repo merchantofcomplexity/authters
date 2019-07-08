@@ -6,7 +6,20 @@ return [
 
         'identity_providers' => [
 
-        ]
+        ],
+
+        'firewall' => [
+            'front' => [
+                'middleware' => [
+                    \MerchantOfComplexity\Authters\Application\Http\Middleware\ContextAuthenticationMiddleware::class,
+                    'local-login'
+                ]
+            ],
+
+            'api' => [
+
+            ]
+        ],
 
     ],
 

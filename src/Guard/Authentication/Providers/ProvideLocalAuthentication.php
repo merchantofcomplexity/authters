@@ -45,7 +45,7 @@ abstract class ProvideLocalAuthentication implements AuthenticationProvider
     public function authenticate(Tokenable $token): Tokenable
     {
         if (!$token instanceof LocalToken) {
-            throw new RuntimeException("Stateful authentication provider supports local token only");
+            throw new RuntimeException("Local authentication provider supports local token only");
         }
 
         $user = $this->retrieveUser($token);
