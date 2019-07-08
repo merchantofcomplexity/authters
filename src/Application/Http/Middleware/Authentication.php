@@ -3,17 +3,17 @@
 namespace MerchantOfComplexity\Authters\Application\Http\Middleware;
 
 use Illuminate\Http\Request;
-use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\EventAuthenticationMiddelware;
+use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\EventAuthenticationAware;
 use MerchantOfComplexity\Authters\Support\Exception\AuthenticationException;
 use MerchantOfComplexity\Authters\Support\Middleware\HasAuthenticationEvent;
-use MerchantOfComplexity\Authters\Support\Middleware\HasAuthenticationMiddleware;
+use MerchantOfComplexity\Authters\Support\Middleware\HasAuthentication;
 use Symfony\Component\HttpFoundation\Response;
 
-abstract class AuthenticationMiddleware implements EventAuthenticationMiddelware
+abstract class Authentication implements EventAuthenticationAware
 {
-    use HasAuthenticationMiddleware, HasAuthenticationEvent;
+    use HasAuthentication, HasAuthenticationEvent;
 
-    public function handle(Request $request)
+    public function handle(Request $request): ?Response
     {
         if (!$this->requireAuthentication($request)) {
             return null;

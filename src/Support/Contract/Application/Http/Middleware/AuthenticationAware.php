@@ -11,7 +11,7 @@ use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenabl
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TokenStorage;
 use MerchantOfComplexity\Authters\Support\Exception\AuthenticationException;
 
-interface AuthenticationMiddleware
+interface AuthenticationAware extends Authentication
 {
     public function setAuthenticationManager(Authenticatable $manager): void;
 
@@ -20,5 +20,4 @@ interface AuthenticationMiddleware
     public function setResponder(AuthenticationResponse $responder): void;
 
     public function setRequestMatcher(AuthenticationRequest $requestMatcher): void;
-
 }

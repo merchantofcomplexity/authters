@@ -4,8 +4,8 @@ namespace MerchantOfComplexity\Authters\Firewall\Provision\Local;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
-use MerchantOfComplexity\Authters\Application\Http\Middleware\LocalAuthenticationMiddleware;
-use MerchantOfComplexity\Authters\Application\Http\Middleware\LogoutAuthenticationMiddleware;
+use MerchantOfComplexity\Authters\Application\Http\Middleware\LocalAuthentication;
+use MerchantOfComplexity\Authters\Application\Http\Middleware\LogoutAuthentication;
 use MerchantOfComplexity\Authters\Firewall\FirewallManager;
 use MerchantOfComplexity\Authters\Firewall\Provision\Service\DefaultIdentityChecker;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\FirewallContext;
@@ -18,7 +18,7 @@ class LocalServiceProvider extends ServiceProvider
         $manager = new FirewallManager($this->app);
 
         $manager->addMiddleware('front', 'local-login', function (Application $app) {
-            return $app->make(LocalAuthenticationMiddleware::class);
+            return $app->make(LocalAuthentication::class);
         });
 
         $manager->registerAuthenticationProvider('front', 'local-login', function (Application $app, FirewallContext $context) {

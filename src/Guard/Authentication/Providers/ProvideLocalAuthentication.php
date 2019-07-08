@@ -110,7 +110,7 @@ abstract class ProvideLocalAuthentication implements AuthenticationProvider
                 throw new RuntimeException("Credentials Validator must be a callable");
             }
 
-            if ($this->credentialsValidator->supportsCredentials($identity->getPassword(), $presentedPassword)) {
+            if (!$this->credentialsValidator->supportsCredentials($identity->getPassword(), $presentedPassword)) {
                 throw new RuntimeException("Credentials Validator does not support credentials");
             }
 

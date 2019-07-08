@@ -2,7 +2,7 @@
 
 namespace MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware;
 
-interface StatefulAuthenticationMiddleware extends AuthenticationMiddleware
+interface StatefulAuthenticationAware extends AuthenticationAware
 {
     public function setRecaller($recaller): void;
 }

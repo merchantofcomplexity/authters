@@ -4,39 +4,39 @@ namespace MerchantOfComplexity\Authters\Domain\User;
 
 use MerchantOfComplexity\Authters\Support\Contract\Value\IdentifierValue;
 use MerchantOfComplexity\Authters\Support\Contract\Value\Value;
-use MerchantOfComplexity\DevShared\Values\Identity\IdentityFactory;
+use MerchantOfComplexity\Authters\Support\Value\Identifier\IdentifierFactory;
 use Ramsey\Uuid\UuidInterface;
 
 final class IdentityId implements IdentifierValue
 {
     /**
-     * @var IdentityFactory
+     * @var IdentifierFactory
      */
     private $factory;
 
-    private function __construct(IdentityFactory $factory)
+    private function __construct(IdentifierFactory $factory)
     {
         $this->factory = $factory;
     }
 
     public static function nextIdentity(): self
     {
-        return new self(IdentityFactory::nextIdentity());
+        return new self(IdentifierFactory::nextIdentity());
     }
 
     public static function fromString($uid): self
     {
-        return new self(IdentityFactory::fromString($uid));
+        return new self(IdentifierFactory::fromString($uid));
     }
 
     public function sameValueAs(Value $aValue): bool
     {
-        return $aValue instanceof $this && $this->getUid()->equals($aValue->getUid());
+        return $aValue instanceof $this && $this->getUniqueId()->equals($aValue->getUniqueId());
     }
 
-    public function getUid(): UuidInterface
+    public function getUniqueId(): UuidInterface
     {
-        return $this->factory->getUid();
+        return $this->factory->getUniqueId();
     }
 
     public function identify(): string

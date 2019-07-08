@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\TerminableInterface;
 
-final class ContextEventMiddleware implements TerminableInterface
+final class ContextEventAware implements TerminableInterface
 {
     /**
      * @var TokenStorage
@@ -49,15 +49,6 @@ final class ContextEventMiddleware implements TerminableInterface
         return $next($request);
     }
 
-    public function onContextEvent(ContextEvent $contextEvent): void
-    {
-        if ($this->contextEvent) {
-            throw new AuthenticationServiceFailure("Context event can run only once per request");
-        }
-
-        $this->contextEvent = $contextEvent;
-    }
-
     public function terminate(SymfonyRequest $request, Response $response)
     {
         if ($this->contextEvent && $request instanceof Request) {
@@ -72,5 +63,14 @@ final class ContextEventMiddleware implements TerminableInterface
             // fixMe only way to keep session on terminable middleware
             $request->session()->save();
         }
+    }
+
+    public function onContextEvent(ContextEvent $contextEvent): void
+    {
+        if ($this->contextEvent) {
+            throw new AuthenticationServiceFailure("Context event can run only once per request");
+        }
+
+        $this->contextEvent = $contextEvent;
     }
 }

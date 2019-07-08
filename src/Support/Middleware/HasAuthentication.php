@@ -8,7 +8,7 @@ use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Authenti
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenable;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TokenStorage;
 
-trait HasAuthenticationMiddleware
+trait HasAuthentication
 {
     /**
      * @var Authenticatable
@@ -54,7 +54,7 @@ trait HasAuthenticationMiddleware
     {
         $authenticatedToken = $this->authenticationManager->authenticate($token);
 
-        $this->tokenStorage->setToken($token);
+        $this->tokenStorage->setToken($authenticatedToken);
 
         return $authenticatedToken;
     }

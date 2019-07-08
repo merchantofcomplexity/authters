@@ -2,16 +2,16 @@
 
 namespace MerchantOfComplexity\Authters\Application\Http\Middleware;
 
-use Closure;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Http\Request;
+use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\Authentication as BaseAuthentication;
 use MerchantOfComplexity\Authters\Support\Contract\Domain\RefreshTokenIdentityStrategy;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenable;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TokenStorage;
 use MerchantOfComplexity\Authters\Support\Events\ContextEvent;
 use function unserialize;
 
-final class ContextAuthenticationMiddleware
+final class ContextAuthentication implements BaseAuthentication
 {
     /**
      * @var ContextEvent
@@ -33,8 +33,7 @@ final class ContextAuthenticationMiddleware
      */
     private $refreshIdentityStrategy;
 
-    public function __construct(
-                                ContextEvent $contextEvent,
+    public function __construct(ContextEvent $contextEvent,
                                 Dispatcher $dispatcher,
                                 TokenStorage $tokenStorage,
                                 RefreshTokenIdentityStrategy $refreshIdentityStrategy)

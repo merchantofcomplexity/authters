@@ -4,11 +4,11 @@ namespace MerchantOfComplexity\Authters\Application\Http\Middleware;
 
 use Illuminate\Http\Request;
 use MerchantOfComplexity\Authters\Guard\Authentication\Token\GenericLocalToken;
-use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\StatefulAuthenticationMiddleware as BaseStatefulMiddleware;
+use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\StatefulAuthenticationAware as BaseStatefulMiddleware;
 use MerchantOfComplexity\Authters\Support\Exception\BadCredentials;
 use Symfony\Component\HttpFoundation\Response;
 
-final class LocalAuthenticationMiddleware extends AuthenticationMiddleware implements BaseStatefulMiddleware
+final class LocalAuthentication extends Authentication implements BaseStatefulMiddleware
 {
     /**
      * @var $recaller

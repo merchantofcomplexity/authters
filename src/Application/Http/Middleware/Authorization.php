@@ -4,29 +4,32 @@ namespace MerchantOfComplexity\Authters\Application\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\AuthenticationMiddleware as BaseMiddleware;
+use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TokenStorage;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authorization\AuthorizationChecker;
 use MerchantOfComplexity\Authters\Support\Exception\AuthenticationServiceFailure;
 use MerchantOfComplexity\Authters\Support\Exception\AuthorizationDenied;
-use MerchantOfComplexity\Authters\Support\Middleware\HasAuthenticationMiddleware;
 
-final class AuthorizationMiddleware implements BaseMiddleware
+final class Authorization
 {
-    use HasAuthenticationMiddleware;
-
     /**
      * @var AuthorizationChecker
      */
     private $authorizationChecker;
 
     /**
+     * @var TokenStorage
+     */
+    private $tokenStorage;
+
+    /**
      * @var array
      */
     private $attributes;
 
-    public function __construct(AuthorizationChecker $authorizationChecker, array $attributes = [])
+    public function __construct(AuthorizationChecker $authorizationChecker, TokenStorage $tokenStorage, array $attributes = [])
     {
         $this->authorizationChecker = $authorizationChecker;
+        $this->tokenStorage = $tokenStorage;
         $this->attributes = $attributes;
     }
 

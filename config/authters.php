@@ -11,7 +11,7 @@ return [
         'firewall' => [
             'front' => [
                 'middleware' => [
-                    \MerchantOfComplexity\Authters\Application\Http\Middleware\ContextAuthenticationMiddleware::class,
+                    \MerchantOfComplexity\Authters\Application\Http\Middleware\ContextAuthentication::class,
                     'local-login'
                 ]
             ],

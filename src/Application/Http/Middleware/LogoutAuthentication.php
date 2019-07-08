@@ -2,7 +2,6 @@
 
 namespace MerchantOfComplexity\Authters\Application\Http\Middleware;
 
-use Closure;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Http\Request;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenable;
@@ -12,13 +11,8 @@ use MerchantOfComplexity\Authters\Support\Contract\Guard\Logout;
 use MerchantOfComplexity\Authters\Support\Events\IdentityLogout;
 use Symfony\Component\HttpFoundation\Response;
 
-abstract class LogoutAuthenticationMiddleware
+abstract class LogoutAuthentication
 {
-    /**
-     * @var iterable
-     */
-    private $logoutHandlers;
-
     /**
      * @var TokenStorage
      */
@@ -34,15 +28,20 @@ abstract class LogoutAuthenticationMiddleware
      */
     private $dispatcher;
 
-    public function __construct(iterable $logoutHandlers,
-                                TokenStorage $tokenStorage,
+    /**
+     * @var array
+     */
+    private $logoutHandlers;
+
+    public function __construct(TokenStorage $tokenStorage,
                                 TrustResolver $trustResolver,
-                                Dispatcher $dispatcher)
+                                Dispatcher $dispatcher,
+                                Logout ...$logoutHandlers)
     {
-        $this->logoutHandlers = $logoutHandlers;
         $this->tokenStorage = $tokenStorage;
         $this->trustResolver = $trustResolver;
         $this->dispatcher = $dispatcher;
+        $this->logoutHandlers = $logoutHandlers;
     }
 
     public function handle(Request $request)
@@ -60,9 +59,16 @@ abstract class LogoutAuthenticationMiddleware
             $this->tokenStorage->clear();
 
             $this->dispatcher->dispatch(new IdentityLogout($token, $request));
+
+            return $response;
         }
 
         return null;
+    }
+
+    public function addHandler(Logout $logoutHandler): void
+    {
+        $this->logoutHandlers[] = $logoutHandler;
     }
 
     abstract protected function matchRequest(Request $request, Tokenable $token): bool;
