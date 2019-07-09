@@ -4,6 +4,8 @@ namespace MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication;
 
 use MerchantOfComplexity\Authters\Support\Contract\Domain\LocalIdentity;
 use MerchantOfComplexity\Authters\Support\Contract\Domain\Identity;
+use MerchantOfComplexity\Authters\Support\Contract\Firewall\Key\ContextKey;
+use MerchantOfComplexity\Authters\Support\Contract\Firewall\Key\FirewallKey;
 use MerchantOfComplexity\Authters\Support\Contract\Value\Credentials;
 use MerchantOfComplexity\Authters\Support\Contract\Value\IdentifierValue;
 use Serializable;
@@ -25,6 +27,8 @@ interface Tokenable extends Serializable
     public function getIdentity();
 
     public function getCredentials(): Credentials;
+
+    public function getFirewallKey(): FirewallKey;
 
     public function isAuthenticated(): bool;
 

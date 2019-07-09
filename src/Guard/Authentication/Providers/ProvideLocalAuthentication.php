@@ -6,6 +6,7 @@ use MerchantOfComplexity\Authters\Exception\RuntimeException;
 use MerchantOfComplexity\Authters\Support\Contract\Domain\IdentityChecker;
 use MerchantOfComplexity\Authters\Support\Contract\Domain\IdentityProvider;
 use MerchantOfComplexity\Authters\Support\Contract\Domain\LocalIdentity;
+use MerchantOfComplexity\Authters\Support\Contract\Firewall\Key\ContextKey;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\AuthenticationProvider;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\LocalToken;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenable;
@@ -33,13 +34,20 @@ abstract class ProvideLocalAuthentication implements AuthenticationProvider
      */
     private $credentialsValidator;
 
+    /**
+     * @var ContextKey
+     */
+    private $contextKey;
+
     public function __construct(IdentityProvider $userProvider,
                                 IdentityChecker $identityChecker,
-                                CredentialsValidator $credentialsValidator)
+                                CredentialsValidator $credentialsValidator,
+                                ContextKey $contextKey)
     {
         $this->userProvider = $userProvider;
         $this->identityChecker = $identityChecker;
         $this->credentialsValidator = $credentialsValidator;
+        $this->contextKey = $contextKey;
     }
 
     public function authenticate(Tokenable $token): Tokenable
@@ -122,6 +130,7 @@ abstract class ProvideLocalAuthentication implements AuthenticationProvider
 
     public function supportToken(Tokenable $token): bool
     {
-        return $token instanceof LocalToken;
+        return $token instanceof LocalToken
+            && $token->getFirewallKey()->sameValueAs($this->contextKey);
     }
 }

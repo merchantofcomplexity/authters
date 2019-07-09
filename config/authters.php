@@ -1,29 +1,40 @@
 <?php
 
-return [
+use MerchantOfComplexity\Authters\Firewall\Bootstraps\AuthenticatableRegistry;
+use MerchantOfComplexity\Authters\Firewall\Bootstraps\AuthenticationServiceRegistry;
+use MerchantOfComplexity\Authters\Firewall\Bootstraps\ContextRegistry;
+use MerchantOfComplexity\Authters\Firewall\Bootstraps\GuardRegistry;
 
-    'authentication' => [
-
+return
+    [
         'identity_providers' => [
 
         ],
 
-        'firewall' => [
-            'front' => [
-                'middleware' => [
-                    \MerchantOfComplexity\Authters\Application\Http\Middleware\ContextAuthentication::class,
-                    'local-login'
+        'authentication' => [
+
+            'group' => [
+
+                'front' => [
+
+                    'context' => [], // array of options or fqcn firewall context
+
+                    'auth' => [
+                        'local-login',
+                        'local-logout'
+                    ]
                 ]
             ],
 
-            'api' => [
-
+            'bootstraps' => [
+                GuardRegistry::class,
+                AuthenticatableRegistry::class,
+                ContextRegistry::class,
+                AuthenticationServiceRegistry::class
             ]
         ],
 
-    ],
+        'authorization' => [
 
-    'authorization' => [
-
-    ]
-];
+        ],
+    ];

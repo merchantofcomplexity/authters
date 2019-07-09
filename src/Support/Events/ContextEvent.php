@@ -2,30 +2,34 @@
 
 namespace MerchantOfComplexity\Authters\Support\Events;
 
-use MerchantOfComplexity\Authters\Support\Exception\Assert;
+use MerchantOfComplexity\Authters\Support\Contract\Firewall\Key\ContextKey;
 
 final class ContextEvent
 {
+    const PREFIX_SESSION = '_firewall_';
+
     /**
-     * @var string
+     * @var ContextKey
      */
-    private $name;
+    private $contextKey;
 
-    public function __construct(string $name)
+    public function __construct(ContextKey $contextKey)
     {
-        Assert::notBlank($name);
-        Assert::notContains($name, '.', 'Invalid char for context');
-
-        $this->name = $name;
+        $this->contextKey = $contextKey;
     }
 
     public function getName(): string
     {
-        return $this->name;
+        return $this->contextKey->getValue();
     }
 
     public function sessionName(): string
     {
-        return '_firewall_' . $this->name;
+        return self::PREFIX_SESSION . $this->getName();
+    }
+
+    public function __toString(): string
+    {
+        return $this->sessionName();
     }
 }

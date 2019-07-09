@@ -6,7 +6,12 @@ use Illuminate\Support\AggregateServiceProvider;
 
 class AuthtersServiceProvider extends AggregateServiceProvider
 {
+    /**
+     * @var array
+     */
     protected $providers = [
-        ConfigServiceProvider::class
+        ConfigServiceProvider::class,
+        AuthenticationServiceProvider::class,
+        AuthorizationServiceProvider::class,
     ];
 }

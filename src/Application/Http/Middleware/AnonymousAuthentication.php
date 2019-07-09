@@ -4,35 +4,32 @@ namespace MerchantOfComplexity\Authters\Application\Http\Middleware;
 
 use Illuminate\Http\Request;
 use MerchantOfComplexity\Authters\Guard\Authentication\Token\GenericAnonymousToken;
-use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\Authentication as BaseAuthentication;
-use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Authenticatable;
-use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TokenStorage;
+use MerchantOfComplexity\Authters\Support\Contract\Firewall\Key\AnonymousKey;
+use MerchantOfComplexity\Authters\Support\Exception\AuthenticationException;
 use Symfony\Component\HttpFoundation\Response;
 
-final class AnonymousAuthentication implements BaseAuthentication
+final class AnonymousAuthentication extends Authentication
 {
     /**
-     * @var Authenticatable
+     * @var AnonymousKey
      */
-    private $authenticationManager;
+    private $anonymousKey;
 
-    /**
-     * @var TokenStorage
-     */
-    private $tokenStorage;
-
-    public function __construct(Authenticatable $authenticationManager, TokenStorage $tokenStorage)
+    public function __construct(AnonymousKey $anonymousKey)
     {
-        $this->authenticationManager = $authenticationManager;
-        $this->tokenStorage = $tokenStorage;
+        $this->anonymousKey = $anonymousKey;
     }
 
-    public function handle(Request $request): ?Response
+    protected function requireAuthentication(Request $request): bool
     {
-        if (!$this->tokenStorage->hasToken()) {
-            $this->tokenStorage->setToken(
-                $this->authenticationManager->authenticate(new GenericAnonymousToken())
-            );
+        return $this->guard->isStorageEmpty();
+    }
+
+    protected function processAuthentication(Request $request): ?Response
+    {
+        try {
+            $this->guard->storeAuthenticatedToken(new GenericAnonymousToken($this->anonymousKey));
+        } catch (AuthenticationException $exception) {
         }
 
         return null;

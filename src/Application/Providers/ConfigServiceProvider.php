@@ -23,6 +23,6 @@ class ConfigServiceProvider extends ServiceProvider
 
     protected function getConfigPath(): string
     {
-        return __DIR__ . '/../../../../config/authters.php';
+        return __DIR__ . '/../../../config/authters.php';
     }
 }

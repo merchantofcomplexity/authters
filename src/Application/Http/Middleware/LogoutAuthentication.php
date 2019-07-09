@@ -2,86 +2,68 @@
 
 namespace MerchantOfComplexity\Authters\Application\Http\Middleware;
 
-use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Http\Request;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenable;
-use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TokenStorage;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TrustResolver;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Logout;
 use MerchantOfComplexity\Authters\Support\Events\IdentityLogout;
 use MerchantOfComplexity\Authters\Support\Exception\AuthenticationServiceFailure;
 use Symfony\Component\HttpFoundation\Response;
 
-abstract class LogoutAuthentication
+abstract class LogoutAuthentication extends Authentication
 {
-    /**
-     * @var TokenStorage
-     */
-    private $tokenStorage;
-
     /**
      * @var TrustResolver
      */
     private $trustResolver;
 
     /**
-     * @var Dispatcher
-     */
-    private $dispatcher;
-
-    /**
      * @var array
      */
     private $logoutHandlers;
 
-    public function __construct(TokenStorage $tokenStorage,
-                                TrustResolver $trustResolver,
-                                Dispatcher $dispatcher,
+    public function __construct(TrustResolver $trustResolver,
                                 Logout ...$logoutHandlers)
     {
-        $this->tokenStorage = $tokenStorage;
         $this->trustResolver = $trustResolver;
-        $this->dispatcher = $dispatcher;
         $this->logoutHandlers = $logoutHandlers;
     }
 
-    public function handle(Request $request)
+    public function handle(Request $request): ?Response
     {
-        $token = $this->tokenStorage->getToken();
+        $token = $this->guard->storage()->getToken();
 
-        if ($this->requireLogout($request, $token)) {
-            if (!$this->logoutHandlers) {
-                throw AuthenticationServiceFailure::noLogoutHandler();
-            }
-
-            $response = $this->createRedirectResponse($request, $token);
-
-            /** @var Logout $logoutHandler */
-            foreach ($this->logoutHandlers as $logoutHandler) {
-                $logoutHandler->logout($request, $token, $response);
-            }
-
-            $this->tokenStorage->clear();
-
-            $this->dispatcher->dispatch(new IdentityLogout($request, $token));
-
-            return $response;
+        if (!$this->logoutHandlers) {
+            throw AuthenticationServiceFailure::noLogoutHandler();
         }
 
-        return null;
+        $response = $this->createLogoutRedirectResponse($request, $token);
+
+        /** @var Logout $logoutHandler */
+        foreach ($this->logoutHandlers as $logoutHandler) {
+            $logoutHandler->logout($request, $token, $response);
+        }
+
+        $this->guard->clearStorage();
+
+        $this->guard->fireAuthenticationEvent(new IdentityLogout($request, $token));
+
+        return $response;
     }
 
     abstract protected function matchRequest(Request $request, Tokenable $token): bool;
 
-    abstract protected function createRedirectResponse(Request $request, Tokenable $token): Response;
+    abstract protected function createLogoutRedirectResponse(Request $request, Tokenable $token): Response;
 
     public function addHandler(Logout $logoutHandler): void
     {
         $this->logoutHandlers[] = $logoutHandler;
     }
 
-    protected function requireLogout(Request $request, ?Tokenable $token): bool
+    protected function requireAuthentication(Request $request): bool
     {
+        $token = $this->guard->storage()->getToken();
+
         return $token
             && !$this->trustResolver->isAnonymous($token)
             && $this->matchRequest($request, $token);

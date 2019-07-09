@@ -2,17 +2,15 @@
 
 namespace MerchantOfComplexity\Authters\Application\Http\Middleware;
 
-use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Http\Request;
-use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\Authentication as BaseAuthentication;
 use MerchantOfComplexity\Authters\Support\Contract\Domain\RefreshTokenIdentityStrategy;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenable;
-use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TokenStorage;
 use MerchantOfComplexity\Authters\Support\Events\ContextEvent;
+use MerchantOfComplexity\Authters\Support\Exception\AuthenticationException;
 use Symfony\Component\HttpFoundation\Response;
 use function unserialize;
 
-final class ContextAuthentication implements BaseAuthentication
+final class ContextAuthentication extends Authentication
 {
     /**
      * @var ContextEvent
@@ -20,40 +18,30 @@ final class ContextAuthentication implements BaseAuthentication
     private $contextEvent;
 
     /**
-     * @var Dispatcher
-     */
-    private $dispatcher;
-
-    /**
-     * @var TokenStorage
-     */
-    private $tokenStorage;
-
-    /**
      * @var RefreshTokenIdentityStrategy
      */
     private $refreshIdentityStrategy;
 
     public function __construct(ContextEvent $contextEvent,
-                                Dispatcher $dispatcher,
-                                TokenStorage $tokenStorage,
                                 RefreshTokenIdentityStrategy $refreshIdentityStrategy)
     {
         $this->contextEvent = $contextEvent;
-        $this->dispatcher = $dispatcher;
-        $this->tokenStorage = $tokenStorage;
         $this->refreshIdentityStrategy = $refreshIdentityStrategy;
     }
 
-    public function handle(Request $request): ?Response
+    public function processAuthentication(Request $request): ?Response
     {
-        $this->dispatcher->dispatch($this->contextEvent);
+        $this->guard->fireAuthenticationEvent($this->contextEvent);
 
-        if ($tokenString = $request->session()->get($this->contextEvent->sessionName())) {
+        try {
+            $tokenString = $request->session()->get($this->contextEvent->sessionName());
+
             $this->handleSerializedToken($tokenString);
+        } catch (AuthenticationException $exception) {
+            $this->guard->clearStorage();
+        } finally {
+            return null;
         }
-
-        return null;
     }
 
     protected function handleSerializedToken(string $tokenString): void
@@ -62,6 +50,11 @@ final class ContextAuthentication implements BaseAuthentication
 
         $refreshedToken = $this->refreshIdentityStrategy->refreshTokenIdentity($token);
 
-        $this->tokenStorage->setToken($refreshedToken);
+        $this->guard->storage()->setToken($refreshedToken);
+    }
+
+    protected function requireAuthentication(Request $request): bool
+    {
+        return $request->session()->has($this->contextEvent->sessionName());
     }
 }

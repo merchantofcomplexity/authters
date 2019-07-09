@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 interface AuthenticationResponse
 {
-    public function entrypoint(Request $request,AuthenticationException $exception = null): Response;
+    //public function entrypoint(Request $request,AuthenticationException $exception = null): Response;
 
     public function onSuccess(Request $request, Tokenable $token): Response;
 
