@@ -29,7 +29,6 @@ abstract class LogoutAuthentication extends Authentication
         $this->logoutHandlers = $logoutHandlers;
     }
 
-
     protected function processAuthentication(Request $request): ?Response
     {
         $token = $this->guard->storage()->getToken();

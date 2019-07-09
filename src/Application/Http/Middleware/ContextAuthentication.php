@@ -31,8 +31,6 @@ final class ContextAuthentication extends Authentication
 
     public function processAuthentication(Request $request): ?Response
     {
-        $this->guard->fireAuthenticationEvent($this->contextEvent);
-
         try {
             $tokenString = $request->session()->get($this->contextEvent->sessionName());
 
@@ -55,6 +53,8 @@ final class ContextAuthentication extends Authentication
 
     protected function requireAuthentication(Request $request): bool
     {
+        $this->guard->fireAuthenticationEvent($this->contextEvent);
+
         return $request->session()->has($this->contextEvent->sessionName());
     }
 }
