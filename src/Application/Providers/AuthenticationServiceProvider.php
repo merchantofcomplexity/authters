@@ -1,12 +1,11 @@
 <?php
 
-namespace MerchantOfComplexity\Authters\Application\Http\Providers;
+namespace MerchantOfComplexity\Authters\Application\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use MerchantOfComplexity\Authters\Application\Http\Middleware\ContextEventAware;
 use MerchantOfComplexity\Authters\Guard\Authentication\Token\DefaultTokenStorage;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TokenStorage;
-use MerchantOfComplexity\Authters\Support\Events\ContextEvent;
 
 class AuthenticationServiceProvider extends ServiceProvider
 {

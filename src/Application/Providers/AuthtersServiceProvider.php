@@ -1,6 +1,6 @@
 <?php
 
-namespace MerchantOfComplexity\Authters\Application\Http\Providers;
+namespace MerchantOfComplexity\Authters\Application\Providers;
 
 use Illuminate\Support\AggregateServiceProvider;
 
