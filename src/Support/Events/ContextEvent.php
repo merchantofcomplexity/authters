@@ -2,7 +2,7 @@
 
 namespace MerchantOfComplexity\Authters\Support\Events;
 
-use Assert\Assertion;
+use MerchantOfComplexity\Authters\Support\Exception\Assert;
 
 final class ContextEvent
 {
@@ -13,7 +13,8 @@ final class ContextEvent
 
     public function __construct(string $name)
     {
-        Assertion::notBlank($name);
+        Assert::notBlank($name);
+        Assert::notContains($name, '.', 'Invalid char for context');
 
         $this->name = $name;
     }
@@ -25,6 +26,6 @@ final class ContextEvent
 
     public function sessionName(): string
     {
-        return '_authters.' . $this->name;
+        return '_firewall_' . $this->name;
     }
 }
