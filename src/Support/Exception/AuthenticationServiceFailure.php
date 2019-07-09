@@ -40,4 +40,9 @@ class AuthenticationServiceFailure extends AuthenticationException
     {
         return new self("You must at least add one voter to the authorization strategy");
     }
+
+    public static function noLogoutHandler(): self
+    {
+        return new self("You must at least add one logout handler to the authentication logout");
+    }
 }

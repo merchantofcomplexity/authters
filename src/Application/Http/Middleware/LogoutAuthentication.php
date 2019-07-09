@@ -9,6 +9,7 @@ use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TokenSto
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TrustResolver;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Logout;
 use MerchantOfComplexity\Authters\Support\Events\IdentityLogout;
+use MerchantOfComplexity\Authters\Support\Exception\AuthenticationServiceFailure;
 use Symfony\Component\HttpFoundation\Response;
 
 abstract class LogoutAuthentication
@@ -49,6 +50,10 @@ abstract class LogoutAuthentication
         $token = $this->tokenStorage->getToken();
 
         if ($this->requireLogout($request, $token)) {
+            if (!$this->logoutHandlers) {
+                throw AuthenticationServiceFailure::noLogoutHandler();
+            }
+
             $response = $this->createRedirectResponse($request, $token);
 
             /** @var Logout $logoutHandler */
@@ -66,14 +71,14 @@ abstract class LogoutAuthentication
         return null;
     }
 
+    abstract protected function matchRequest(Request $request, Tokenable $token): bool;
+
+    abstract protected function createRedirectResponse(Request $request, Tokenable $token): Response;
+
     public function addHandler(Logout $logoutHandler): void
     {
         $this->logoutHandlers[] = $logoutHandler;
     }
-
-    abstract protected function matchRequest(Request $request, Tokenable $token): bool;
-
-    abstract protected function createRedirectResponse(Request $request, Tokenable $token): Response;
 
     protected function requireLogout(Request $request, ?Tokenable $token): bool
     {
