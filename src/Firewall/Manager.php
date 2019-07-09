@@ -65,6 +65,11 @@ final class Manager
         $this->authenticationProviders[$name] = [$service];
     }
 
+    public function hasFirewall(string $name): bool
+    {
+        return array_key_exists($name, $this->fromConfig('authentication.group', []));
+    }
+
     protected function make(string $name, Request $request): iterable
     {
         return $this->processor->process(
@@ -118,7 +123,7 @@ final class Manager
 
     protected function assertFirewallExists(string $name): void
     {
-        if (!array_key_exists($name, $this->fromConfig('authentication.group', []))) {
+        if (!$this->hasFirewall($name)) {
             throw new InvalidArgumentException(
                 "Firewall name $name not found in configuration"
             );
