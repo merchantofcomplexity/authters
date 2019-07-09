@@ -1,6 +1,7 @@
 <?php
 
 use MerchantOfComplexity\Authters\Application\Http\Middleware\Authorization;
+use MerchantOfComplexity\Authters\Firewall\Bootstraps\AnonymousRegistry;
 use MerchantOfComplexity\Authters\Firewall\Bootstraps\AuthenticatableRegistry;
 use MerchantOfComplexity\Authters\Firewall\Bootstraps\AuthenticationServiceRegistry;
 use MerchantOfComplexity\Authters\Firewall\Bootstraps\ContextRegistry;
@@ -37,7 +38,9 @@ return
                 GuardRegistry::class,
                 AuthenticatableRegistry::class,
                 ContextRegistry::class,
-                AuthenticationServiceRegistry::class
+                AuthenticationServiceRegistry::class,
+                AnonymousRegistry::class,
+
             ]
         ],
 

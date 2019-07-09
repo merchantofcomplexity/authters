@@ -22,9 +22,8 @@ class AuthorizationServiceProvider extends ServiceProvider
 {
     public function boot(Router $router, Manager $manager, Repository $config): void
     {
-        $authorizationMiddleware = $config->get('authters.authorization.middleware');
-
-        $this->app->singleton($authorizationMiddleware); // singleton for access map
+       // $authorizationMiddleware = $config->get('authters.authorization.middleware');
+        //$this->app->bind($authorizationMiddleware); // singleton for access map
 
         /*
         foreach ($router->getMiddlewareGroups() as $group) {
@@ -49,9 +48,9 @@ class AuthorizationServiceProvider extends ServiceProvider
     {
         $this->app->bind(AuthorizationStrategy::class,
             function () use ($authorization): AuthorizationStrategy {
-                $concrete = $authorization['strategy.concrete'];
-                $allowIfAllAbstain = $authorization['strategy.allow_if_all_abstain'] ?? false;
-                $voters = $this->resolveVoters($authorization['strategy.voters']);
+                $concrete = $authorization['strategy']['concrete'];
+                $allowIfAllAbstain = $authorization['strategy']['allow_if_all_abstain'] ?? false;
+                $voters = $this->resolveVoters($authorization['strategy']['voters'] ?? []);
 
                 return new $concrete($allowIfAllAbstain, ...$voters);
             });
@@ -87,6 +86,8 @@ class AuthorizationServiceProvider extends ServiceProvider
 
         if (in_array(DefaultExpressionVoter::ALIAS, $voters)) {
             $this->app->bind(ExpressionLanguage::class);
+
+            $this->app->bind(DefaultExpressionVoter::ALIAS, DefaultExpressionVoter::class);
         }
 
         return collect($voters)->transform(function (string $voter): Votable {
@@ -96,6 +97,6 @@ class AuthorizationServiceProvider extends ServiceProvider
 
     public function provides(): array
     {
-        return [BaseAuthorization::class, AuthorizationStrategy::class];
+        return [BaseAuthorization::class, AuthorizationStrategy::class, RoleHierarchy::class];
     }
 }
