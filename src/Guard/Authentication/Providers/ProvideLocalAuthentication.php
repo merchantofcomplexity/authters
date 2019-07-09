@@ -25,6 +25,11 @@ abstract class ProvideLocalAuthentication implements AuthenticationProvider
     protected $userProvider;
 
     /**
+     * @var ContextKey
+     */
+    protected $contextKey;
+
+    /**
      * @var IdentityChecker
      */
     private $identityChecker;
@@ -33,11 +38,6 @@ abstract class ProvideLocalAuthentication implements AuthenticationProvider
      * @var CredentialsValidator
      */
     private $credentialsValidator;
-
-    /**
-     * @var ContextKey
-     */
-    private $contextKey;
 
     public function __construct(IdentityProvider $userProvider,
                                 IdentityChecker $identityChecker,
