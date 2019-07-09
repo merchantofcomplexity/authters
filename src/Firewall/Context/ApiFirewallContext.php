@@ -4,7 +4,6 @@ namespace MerchantOfComplexity\Authters\Firewall\Context;
 
 use MerchantOfComplexity\Authters\Application\Http\Response\DefaultJsonEntrypoint;
 use MerchantOfComplexity\Authters\Application\Http\Response\DefaultUnauthorizedResponse;
-use MerchantOfComplexity\Authters\Support\Contract\Firewall\FirewallContext;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\MutableFirewallContext;
 
 final class ApiFirewallContext implements MutableFirewallContext
