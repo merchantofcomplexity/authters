@@ -7,7 +7,6 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
 use MerchantOfComplexity\Authters\Firewall\Builder;
 use MerchantOfComplexity\Authters\Firewall\Factory\Guard;
-use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\AuthenticationGuard;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\FirewallContext;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\FirewallRegistry;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\Guardable;
@@ -29,28 +28,21 @@ final class GuardRegistry implements FirewallRegistry
     public function compose(Builder $auth, Closure $make)
     {
         /** @var Builder $auth */
-        $auth = $make($auth);
+        $response = $make($auth);
 
-        $guard = $this->newGuardInstance($auth->context());
+        $this->app->instance(Guardable::class, $this->newGuardInstance($auth->context()));
 
-        $this->app->resolving(AuthenticationGuard::class,
-            function (Application $app, AuthenticationGuard $middleware) use ($guard): void {
-                if (!$middleware->hasGuard()) {
-                    $middleware->setGuard($guard);
-                }
-            });
-
-        return $auth;
+        return $response;
     }
 
     protected function newGuardInstance(FirewallContext $context): Guardable
     {
-        $entrypoint = $this->app->make($context->entryPointId());
+        $entrypoint = $this->app->get($context->entryPointId());
 
         return new Guard(
-            $this->app->make(TokenStorage::class),
-            $this->app->make(Authenticatable::class),
-            $this->app->make(Dispatcher::class),
+            $this->app->get(TokenStorage::class),
+            $this->app->get(Authenticatable::class),
+            $this->app->get(Dispatcher::class),
             $entrypoint
         );
     }

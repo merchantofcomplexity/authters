@@ -6,9 +6,11 @@ use Illuminate\Support\ServiceProvider;
 use MerchantOfComplexity\Authters\Application\Http\Middleware\ContextEventAware;
 use MerchantOfComplexity\Authters\Firewall\Manager;
 use MerchantOfComplexity\Authters\Guard\Authentication\GenericTrustResolver;
+use MerchantOfComplexity\Authters\Guard\Authentication\Token\DefaultTokenStorage;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\AnonymousToken;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TokenStorage;
-use MerchantOfComplexity\DevShared\Support\Auth\TrustResolver;
+use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TrustResolver;
+
 
 class AuthenticationServiceProvider extends ServiceProvider
 {
@@ -16,7 +18,7 @@ class AuthenticationServiceProvider extends ServiceProvider
 
     public function register(): void
     {
-        $this->app->singleton(TokenStorage::class);
+        $this->app->singleton(TokenStorage::class, DefaultTokenStorage::class);
         $this->app->singleton(ContextEventAware::class);
 
         $this->app->bind(TrustResolver::class, function () {
@@ -31,6 +33,6 @@ class AuthenticationServiceProvider extends ServiceProvider
 
     public function provides(): array
     {
-        return [TokenStorage::class, ContextEventAware::class, TrustResolver::class, Manager::class];
+        return [TokenStorage::class, ContextEventAware::class, Manager::class];
     }
 }

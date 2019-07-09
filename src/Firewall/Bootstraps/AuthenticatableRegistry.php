@@ -24,7 +24,7 @@ final class AuthenticatableRegistry implements FirewallRegistry
     public function compose(Builder $auth, Closure $make)
     {
         /** @var Builder $auth */
-        $auth = $make($auth);
+        $response = $make($auth);
 
         $callback = $auth->authenticationProviders();
         $context = $auth->context();
@@ -36,6 +36,6 @@ final class AuthenticatableRegistry implements FirewallRegistry
                 return new AuthenticationManager(...$providers);
             });
 
-        return $auth;
+        return $response;
     }
 }

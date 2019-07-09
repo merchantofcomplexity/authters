@@ -2,7 +2,6 @@
 
 namespace MerchantOfComplexity\Authters\Firewall;
 
-use Generator;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -47,7 +46,7 @@ final class Manager
         $this->processor = $processor;
     }
 
-    public function raise(string $name, Request $request): Generator
+    public function raise(string $name, Request $request): iterable
     {
         $this->assertFirewallExists($name);
 
@@ -63,12 +62,12 @@ final class Manager
 
     public function addAuthenticationProvider(string $name, callable $service): void
     {
-        $this->authenticationProviders[$name] = $service;
+        $this->authenticationProviders[$name] = [$service];
     }
 
-    protected function make(string $name, Request $request): Generator
+    protected function make(string $name, Request $request): iterable
     {
-        yield $this->processor->process(
+        return $this->processor->process(
             $this->prepareBuilder($name),
             $request,
             $this->determineBootstraps()
@@ -80,8 +79,8 @@ final class Manager
         return new Builder(
             $this->determineFirewallContext($name),
             new IdentityProviders(...$this->fromConfig('identity_providers', [])),
-            new AuthenticationProviders(...$this->authenticationProviders),
-            ...$this->firewall[$name]
+            new AuthenticationProviders(...$this->authenticationProviders[$name]),
+            ...array_values($this->firewall[$name]) // sort services with config
         );
     }
 
