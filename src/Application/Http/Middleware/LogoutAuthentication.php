@@ -53,12 +53,12 @@ abstract class LogoutAuthentication
 
             /** @var Logout $logoutHandler */
             foreach ($this->logoutHandlers as $logoutHandler) {
-                $logoutHandler->logout($token, $request, $response);
+                $logoutHandler->logout($request, $token, $response);
             }
 
             $this->tokenStorage->clear();
 
-            $this->dispatcher->dispatch(new IdentityLogout($token, $request));
+            $this->dispatcher->dispatch(new IdentityLogout($request, $token));
 
             return $response;
         }

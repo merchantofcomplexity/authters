@@ -9,6 +9,7 @@ use MerchantOfComplexity\Authters\Support\Contract\Domain\RefreshTokenIdentitySt
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenable;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TokenStorage;
 use MerchantOfComplexity\Authters\Support\Events\ContextEvent;
+use Symfony\Component\HttpFoundation\Response;
 use function unserialize;
 
 final class ContextAuthentication implements BaseAuthentication
@@ -44,7 +45,7 @@ final class ContextAuthentication implements BaseAuthentication
         $this->refreshIdentityStrategy = $refreshIdentityStrategy;
     }
 
-    public function handle(Request $request)
+    public function handle(Request $request): ?Response
     {
         $this->dispatcher->dispatch($this->contextEvent);
 

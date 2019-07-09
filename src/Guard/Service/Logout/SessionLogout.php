@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class SessionLogout implements Logout
 {
-    public function logout(Tokenable $token, Request $request, Response $response): void
+    public function logout(Request $request, Tokenable $token, Response $response): void
     {
         $request->session()->flush();
     }
