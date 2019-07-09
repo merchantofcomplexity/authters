@@ -6,11 +6,11 @@ use MerchantOfComplexity\Authters\Firewall\Bootstraps\AuthenticationServiceRegis
 use MerchantOfComplexity\Authters\Firewall\Bootstraps\ContextRegistry;
 use MerchantOfComplexity\Authters\Firewall\Bootstraps\GuardRegistry;
 use MerchantOfComplexity\Authters\Guard\Authorization\Hierarchy\SymfonyRoleHierarchy;
+use MerchantOfComplexity\Authters\Guard\Authorization\Strategy\UnanimousAuthorizationStrategy;
 use MerchantOfComplexity\Authters\Guard\Authorization\Voter\AuthenticatedTokenVoter;
 use MerchantOfComplexity\Authters\Guard\Authorization\Voter\DefaultExpressionVoter;
 use MerchantOfComplexity\Authters\Guard\Authorization\Voter\RoleHierarchyVoter;
 use MerchantOfComplexity\Authters\Guard\Authorization\Voter\RoleVoter;
-use MerchantOfComplexity\DevShared\Support\Auth\Authorization\Strategy\UnanimousStrategy;
 
 return
     [
@@ -48,7 +48,7 @@ return
             'always_authenticate' => false,
 
             'strategy' => [
-                'concrete' => UnanimousStrategy::class,
+                'concrete' => UnanimousAuthorizationStrategy::class,
 
                 'allow_if_all_abstain' => false,
 
