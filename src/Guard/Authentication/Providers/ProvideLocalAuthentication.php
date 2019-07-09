@@ -22,12 +22,7 @@ abstract class ProvideLocalAuthentication implements AuthenticationProvider
     /**
      * @var IdentityProvider
      */
-    protected $userProvider;
-
-    /**
-     * @var ContextKey
-     */
-    protected $contextKey;
+    private $userProvider;
 
     /**
      * @var IdentityChecker
@@ -38,6 +33,11 @@ abstract class ProvideLocalAuthentication implements AuthenticationProvider
      * @var CredentialsValidator
      */
     private $credentialsValidator;
+
+    /**
+     * @var ContextKey
+     */
+    private $contextKey;
 
     public function __construct(IdentityProvider $userProvider,
                                 IdentityChecker $identityChecker,
@@ -64,12 +64,14 @@ abstract class ProvideLocalAuthentication implements AuthenticationProvider
             throw IdentityNotFound::hideBadCredentials($badCredentials);
         }
 
-        return $this->createAuthenticatedToken($user, $token);
+        return $this->createAuthenticatedToken($user, $token, $this->contextKey);
     }
 
-    abstract protected function createAuthenticatedToken(LocalIdentity $user, Tokenable $token): Tokenable;
+    abstract protected function createAuthenticatedToken(LocalIdentity $user,
+                                                         Tokenable $token,
+                                                         ContextKey $contextKey): Tokenable;
 
-    protected function retrieveUser(Tokenable $token): LocalIdentity
+    private function retrieveUser(Tokenable $token): LocalIdentity
     {
         $identity = $token->getIdentity();
 
@@ -88,7 +90,7 @@ abstract class ProvideLocalAuthentication implements AuthenticationProvider
         return $identity;
     }
 
-    protected function checkIdentity(LocalIdentity $identity, LocalToken $token): void
+    private function checkIdentity(LocalIdentity $identity, LocalToken $token): void
     {
         $this->identityChecker->onPreAuthentication($identity);
 
@@ -98,7 +100,7 @@ abstract class ProvideLocalAuthentication implements AuthenticationProvider
     }
 
     // checkMe abstract this bloc
-    protected function checkCredentials(LocalIdentity $identity, LocalToken $token): void
+    private function checkCredentials(LocalIdentity $identity, LocalToken $token): void
     {
         $currentIdentity = $token->getIdentity();
 
