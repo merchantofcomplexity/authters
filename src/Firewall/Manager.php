@@ -141,7 +141,7 @@ final class Manager
             );
         }
 
-        if (!in_array($serviceId, $this->fromConfig("authentication.group.$name", []))) {
+        if (!in_array($serviceId, $this->fromConfig("authentication.group.$name.auth", []))) {
             throw new InvalidArgumentException(
                 "Service id $serviceId not found in configuration for firewall name $name"
             );
