@@ -5,6 +5,7 @@ use MerchantOfComplexity\Authters\Firewall\Bootstraps\AnonymousRegistry;
 use MerchantOfComplexity\Authters\Firewall\Bootstraps\AuthenticatableRegistry;
 use MerchantOfComplexity\Authters\Firewall\Bootstraps\AuthenticationServiceRegistry;
 use MerchantOfComplexity\Authters\Firewall\Bootstraps\ContextRegistry;
+use MerchantOfComplexity\Authters\Firewall\Bootstraps\ExceptionRegistry;
 use MerchantOfComplexity\Authters\Firewall\Bootstraps\GuardRegistry;
 use MerchantOfComplexity\Authters\Guard\Authorization\Hierarchy\SymfonyRoleHierarchy;
 use MerchantOfComplexity\Authters\Guard\Authorization\Strategy\UnanimousAuthorizationStrategy;
@@ -40,7 +41,7 @@ return
                 ContextRegistry::class,
                 AuthenticationServiceRegistry::class,
                 AnonymousRegistry::class,
-
+                ExceptionRegistry::class,
             ]
         ],
 

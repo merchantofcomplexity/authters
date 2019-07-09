@@ -29,6 +29,6 @@ final class DefaultUnauthorizedResponse implements AccessDenied
     public function onAuthorizationDenied(Request $request, AuthorizationException $exception): Response
     {
         return $this->response->redirectTo($this->safePage)
-            ->with('message', $this->safePage);
+            ->with('message', $exception->getMessage());
     }
 }
