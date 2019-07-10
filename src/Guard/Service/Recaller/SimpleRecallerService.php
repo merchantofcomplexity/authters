@@ -39,8 +39,8 @@ final class SimpleRecallerService extends RecallableService
 
         $this->queueCookie(
             [
-                $identity->getIdentifier()->getValue(),
-                $refreshedIdentity->getRecallerIdentifier()
+                $identity->getIdentifier()->identify(),
+                $refreshedIdentity->getRecallerIdentifier()->identify()
             ]
         );
 

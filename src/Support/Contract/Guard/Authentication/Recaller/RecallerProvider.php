@@ -6,8 +6,6 @@ use MerchantOfComplexity\Authters\Support\Contract\Domain\Identity;
 
 interface RecallerProvider
 {
-    public function getRecallerIdentifier(): ?RecallerIdentifier;
-
     public function requireIdentityOfRecaller(RecallerIdentifier $identifier): Identity;
 
 
