@@ -7,6 +7,7 @@ use MerchantOfComplexity\Authters\Firewall\Bootstraps\AuthenticationServiceRegis
 use MerchantOfComplexity\Authters\Firewall\Bootstraps\ContextRegistry;
 use MerchantOfComplexity\Authters\Firewall\Bootstraps\ExceptionRegistry;
 use MerchantOfComplexity\Authters\Firewall\Bootstraps\GuardRegistry;
+use MerchantOfComplexity\Authters\Firewall\Bootstraps\RecallerRegistry;
 use MerchantOfComplexity\Authters\Guard\Authorization\Hierarchy\SymfonyRoleHierarchy;
 use MerchantOfComplexity\Authters\Guard\Authorization\Strategy\UnanimousAuthorizationStrategy;
 use MerchantOfComplexity\Authters\Guard\Authorization\Voter\AuthenticatedTokenVoter;
@@ -38,6 +39,7 @@ return
             'bootstraps' => [
                 GuardRegistry::class,
                 AuthenticatableRegistry::class,
+                RecallerRegistry::class,
                 ContextRegistry::class,
                 AuthenticationServiceRegistry::class,
                 AnonymousRegistry::class,
