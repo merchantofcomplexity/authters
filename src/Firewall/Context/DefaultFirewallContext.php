@@ -2,7 +2,7 @@
 
 namespace MerchantOfComplexity\Authters\Firewall\Context;
 
-use MerchantOfComplexity\Authters\Application\Http\Response\DefaultHomeEntrypoint;
+use MerchantOfComplexity\Authters\Application\Http\Response\DefaultLoginEntrypoint;
 use MerchantOfComplexity\Authters\Application\Http\Response\DefaultUnauthorizedResponse;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\MutableFirewallContext;
 
@@ -19,7 +19,7 @@ final class DefaultFirewallContext implements MutableFirewallContext
         'is_anonymous' => false,
         'is_stateless' => true,
         'identity_provider_id' => null,
-        'entrypoint_id' => DefaultHomeEntrypoint::class,
+        'entrypoint_id' => DefaultLoginEntrypoint::class,
         'unauthorized_id' => DefaultUnauthorizedResponse::class,
     ];
 

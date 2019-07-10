@@ -8,7 +8,7 @@ use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Response\Ent
 use MerchantOfComplexity\Authters\Support\Exception\AuthenticationException;
 use Symfony\Component\HttpFoundation\Response;
 
-final class DefaultHomeEntrypoint implements Entrypoint
+final class DefaultLoginEntrypoint implements Entrypoint
 {
     /**
      * @var ResponseFactory
@@ -18,17 +18,17 @@ final class DefaultHomeEntrypoint implements Entrypoint
     /**
      * @var string
      */
-    private $home;
+    private $loginUrl;
 
-    public function __construct(ResponseFactory $response, string $home = '/')
+    public function __construct(ResponseFactory $response, string $loginUrl = '/auth/login')
     {
         $this->response = $response;
-        $this->home = $home;
+        $this->loginUrl = $loginUrl;
     }
 
     public function startAuthentication(Request $request, AuthenticationException $exception): Response
     {
-        return $this->response->redirectTo($this->home)
+        return $this->response->redirectTo($this->loginUrl)
             ->with('message', $exception->getMessage());
     }
 }
