@@ -9,6 +9,7 @@ use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\S
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Request\AuthenticationRequest;
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Response\AuthenticationResponse;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\Key\ContextKey;
+use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Recaller\Recallable;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenable;
 use MerchantOfComplexity\Authters\Support\Exception\BadCredentials;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,7 +19,7 @@ final class LocalAuthentication extends Authentication implements BaseStatefulMi
     use HasEventGuard;
 
     /**
-     * @var $recaller
+     * @var Recallable
      */
     private $recaller;
 
@@ -66,7 +67,7 @@ final class LocalAuthentication extends Authentication implements BaseStatefulMi
         $response = $this->responder->onSuccess($request, $token);
 
         if ($this->recaller) {
-            //
+            $this->recaller->loginSuccess($request, $response, $token);
         }
 
         return $response;
@@ -92,7 +93,7 @@ final class LocalAuthentication extends Authentication implements BaseStatefulMi
         return $this->authenticationRequest->match($request);
     }
 
-    public function setRecaller($recaller): void
+    public function setRecaller(Recallable $recaller): void
     {
         $this->recaller = $recaller;
     }
