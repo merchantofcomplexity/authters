@@ -2,14 +2,13 @@
 
 namespace MerchantOfComplexity\Authters\Guard\Service\Recaller;
 
-use Illuminate\Support\Str;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Recaller\RecallerIdentifier as BaseRecallerIdentifier;
 use MerchantOfComplexity\Authters\Support\Contract\Value\Value;
 use MerchantOfComplexity\Authters\Support\Exception\Assert;
 
 final class RecallerIdentifier implements BaseRecallerIdentifier
 {
-    const LENGTH = 32;
+    const LENGTH = 88;
 
     /**
      * @var string
@@ -30,7 +29,9 @@ final class RecallerIdentifier implements BaseRecallerIdentifier
 
     public static function nextIdentity(): BaseRecallerIdentifier
     {
-        return new self(Str::random(self::LENGTH));
+        return new self(
+            base64_encode(random_bytes(64))
+        );
     }
 
     public function sameValueAs(Value $aValue): bool
