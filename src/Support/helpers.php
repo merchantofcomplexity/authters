@@ -24,3 +24,10 @@ if (!function_exists('isGranted')) {
         return app(AuthorizationChecker::class)->isGranted($token, $attributes, $subject ?? request());
     }
 }
+
+if (!function_exists('isNotGranted')) {
+    function isNotGranted(Tokenable $token, array $attributes, object $subject = null): bool
+    {
+        return !isGranted($token, $attributes, $subject);
+    }
+}

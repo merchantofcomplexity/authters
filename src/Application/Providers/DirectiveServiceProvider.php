@@ -26,13 +26,18 @@ class DirectiveServiceProvider extends ServiceProvider
             return $trustResolver->isFullyAuthenticated($tokenStorage->getToken());
         });
 
+        Blade::if('isAuthenticated', function () use ($tokenStorage, $trustResolver) {
+            return $trustResolver->isFullyAuthenticated($tokenStorage->getToken())
+                || $trustResolver->isRemembered($tokenStorage->getToken());
+        });
+
         Blade::if('isGranted', function ($expression) {
             return app(AuthorizationChecker::class)
                 ->isGranted(app(TokenStorage::class)->getToken(), [$expression], request());
         });
 
         Blade::if('isNotGranted', function ($expression) {
-            return false === app(AuthorizationChecker::class)
+            return !app(AuthorizationChecker::class)
                     ->isGranted(app(TokenStorage::class)->getToken(), [$expression], request());
         });
     }
