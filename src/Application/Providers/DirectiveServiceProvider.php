@@ -31,14 +31,22 @@ class DirectiveServiceProvider extends ServiceProvider
                 || $trustResolver->isRemembered($tokenStorage->getToken());
         });
 
-        Blade::if('isGranted', function ($expression) {
+        Blade::if('isGranted', function ($attributes, object $subject = null) {
+            if (!is_array($attributes)) {
+                $attributes = [$attributes];
+            }
+
             return app(AuthorizationChecker::class)
-                ->isGranted(app(TokenStorage::class)->getToken(), [$expression], request());
+                ->isGranted(app(TokenStorage::class)->getToken(), $attributes, $subject ?? request());
         });
 
-        Blade::if('isNotGranted', function ($expression) {
-            return !app(AuthorizationChecker::class)
-                    ->isGranted(app(TokenStorage::class)->getToken(), [$expression], request());
+        Blade::if('isNotGranted', function ($attributes, object $subject = null) {
+            if (!is_array($attributes)) {
+                $attributes = [$attributes];
+            }
+
+            return app(AuthorizationChecker::class)
+                ->isGranted(app(TokenStorage::class)->getToken(), $attributes, $subject ?? request());
         });
     }
 }
