@@ -8,6 +8,7 @@ use MerchantOfComplexity\Authters\Firewall\Manager;
 use MerchantOfComplexity\Authters\Guard\Authentication\GenericTrustResolver;
 use MerchantOfComplexity\Authters\Guard\Authentication\Token\DefaultTokenStorage;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\AnonymousToken;
+use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\RecallerToken;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TokenStorage;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TrustResolver;
 
@@ -24,7 +25,7 @@ class AuthenticationServiceProvider extends ServiceProvider
         $this->app->bind(TrustResolver::class, function () {
             return new GenericTrustResolver(
                 AnonymousToken::class,
-                'recaller_token_todo'
+                RecallerToken::class
             );
         });
 

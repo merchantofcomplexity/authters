@@ -50,6 +50,8 @@ final class Manager
     {
         $this->assertFirewallExists($name);
 
+        // todo assert firewall name in authentication providers exists
+
         return $this->make($name, $request);
     }
 
@@ -62,7 +64,11 @@ final class Manager
 
     public function addAuthenticationProvider(string $name, callable $service): void
     {
-        $this->authenticationProviders[$name] = [$service];
+        if (!isset($this->authenticationProviders[$name])) {
+            $this->authenticationProviders[$name] = [];
+        }
+
+        $this->authenticationProviders[$name] = array_merge($this->authenticationProviders[$name], [$service]);
     }
 
     public function hasFirewall(string $name): bool
