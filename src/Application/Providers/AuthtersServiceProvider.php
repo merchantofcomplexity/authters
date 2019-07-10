@@ -13,5 +13,6 @@ class AuthtersServiceProvider extends AggregateServiceProvider
         ConfigServiceProvider::class,
         AuthenticationServiceProvider::class,
         AuthorizationServiceProvider::class,
+        DirectiveServiceProvider::class
     ];
 }
