@@ -2,7 +2,7 @@
 
 namespace MerchantOfComplexity\Authters\Support\Exception;
 
-class AuthorizationDenied extends AuthenticationException
+class AuthorizationDenied extends AuthorizationException
 {
     public static function reason(string $message = null): AuthorizationDenied
     {
