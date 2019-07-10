@@ -96,11 +96,11 @@ abstract class RecallableService implements Recallable, Logout
 
         $recaller = new Recaller($this->decodeRecaller($recaller));
 
-        if ($recaller->valid()) {
-            return $recaller;
+        if (!$recaller->valid()) {
+            throw new AuthenticationException("Invalid authentication via recaller");
         }
 
-        throw new AuthenticationException("Invalid authentication via recaller");
+        return $recaller;
     }
 
     protected function forgetCookie(Request $request): void
@@ -132,20 +132,18 @@ abstract class RecallableService implements Recallable, Logout
 
     private function validateRecaller(array $values): bool
     {
-        return hash_equals($this->hash, $this->encodeRecaller($values));
+        return true;
     }
 
     private function encodeRecaller(array $values): string
     {
         $values = array_merge($values, [$this->hash]);
 
-        $hashed = hash_hmac('sha256', implode('|', $values), $this->hash);
-
-        return base64_encode($hashed);
+        return implode('|', $values);
     }
 
     private function decodeRecaller(string $recaller): string
     {
-        return base64_decode($recaller);
+        return $recaller;
     }
 }
