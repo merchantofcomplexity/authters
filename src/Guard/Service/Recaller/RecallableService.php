@@ -121,7 +121,7 @@ abstract class RecallableService implements Recallable, Logout
 
     protected function cookieName(): string
     {
-        return '_firewall.recaller.' . $this->contextKey->getValue();
+        return '_firewall_recaller_' . $this->contextKey->getValue();
     }
 
     protected function isRememberMeRequested(Request $request): bool
