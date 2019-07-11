@@ -15,7 +15,7 @@ trait HasAuthorization
     /**
      * @var Container
      */
-    protected $container;
+    private $container;
 
     protected function denyAccessUnlessGranted(array $attributes, object $subject = null): bool
     {
@@ -81,7 +81,7 @@ trait HasAuthorization
 
     protected function trustResolver(): TrustResolver
     {
-        return $this->container->get(TrustResolver::class);
+        return $this->container()->get(TrustResolver::class);
     }
 
     protected function raiseAuthorizationDenied(string $message = null): AuthorizationDenied
