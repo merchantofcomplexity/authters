@@ -55,7 +55,6 @@ final class Firewall
                 $service->setRecaller($this->app->get(Recallable::class));
             }
 
-            // only handle auth middleware
             if ($response = $service->authenticate($request)) {
                 return $response;
             }

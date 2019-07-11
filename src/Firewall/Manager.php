@@ -48,9 +48,11 @@ final class Manager
 
     public function raise(string $name, Request $request): iterable
     {
-        $this->assertFirewallExists($name);
+        $this->assertFirewallExistsInConfig($name);
 
-        // todo assert firewall name in authentication providers exists
+        $this->assertFirewallIsRegistered($name);
+
+        $this->assertAuthenticationProviderIsRegisteredForFirewall($name);
 
         return $this->make($name, $request);
     }
@@ -127,14 +129,17 @@ final class Manager
         return $context instanceof MutableFirewallContext ? $context->toImmutable() : $context;
     }
 
-    protected function assertFirewallExists(string $name): void
+    protected function assertFirewallExistsInConfig(string $name): void
     {
-        if (!$this->hasFirewall($name)) {
+        if (!array_key_exists($name, $this->fromConfig("authentication.group", []))) {
             throw new InvalidArgumentException(
                 "Firewall name $name not found in configuration"
             );
         }
+    }
 
+    protected function assertFirewallIsRegistered(string $name): void
+    {
         if (!isset($this->firewall[$name])) {
             throw new InvalidArgumentException(
                 "No authentication service has been registered for firewall name $name"
@@ -144,16 +149,20 @@ final class Manager
 
     protected function assertServiceIdExists(string $name, string $serviceId): void
     {
-        // dry
-        if (!array_key_exists($name, $this->fromConfig("authentication.group", []))) {
-            throw new InvalidArgumentException(
-                "Firewall name $name not found in configuration"
-            );
-        }
+        $this->assertFirewallExistsInConfig($name);
 
         if (!in_array($serviceId, $this->fromConfig("authentication.group.$name.auth", []))) {
             throw new InvalidArgumentException(
                 "Service id $serviceId not found in configuration for firewall name $name"
+            );
+        }
+    }
+
+    protected function assertAuthenticationProviderIsRegisteredForFirewall(string $name): void
+    {
+        if (!isset($this->authenticationProviders[$name])) {
+            throw new InvalidArgumentException(
+                "No authentication provider has been registered for firewall name $name"
             );
         }
     }
