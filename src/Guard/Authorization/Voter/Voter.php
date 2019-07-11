@@ -26,7 +26,7 @@ abstract class Voter implements Votable
         return $vote;
     }
 
-    abstract protected function supports(string $attribute, object $subject): bool;
+    abstract protected function supports(string $attribute, object $subject = null): bool;
 
-    abstract protected function voteOn(string $attribute, Tokenable $token, object $subject): bool;
+    abstract protected function voteOn(string $attribute, Tokenable $token, object $subject = null): bool;
 }
