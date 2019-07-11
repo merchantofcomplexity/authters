@@ -82,7 +82,7 @@ abstract class ProvideLocalAuthentication implements AuthenticationProvider
         $identity = $this->userProvider->requireIdentityOfIdentifier($identity);
 
         if (!$identity instanceof LocalIdentity) {
-            $exceptionMessage = "User provider must return an implementation of " . LocalIdentity::class;
+            $exceptionMessage = "Identity provider must return an implementation of " . LocalIdentity::class;
 
             throw new AuthenticationServiceFailure($exceptionMessage);
         }

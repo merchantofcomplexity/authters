@@ -6,7 +6,7 @@ use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
-use MerchantOfComplexity\Authters\Exception\InvalidArgumentException;
+use MerchantOfComplexity\Authters\Exception\RuntimeException;
 use MerchantOfComplexity\Authters\Firewall\Manager;
 use MerchantOfComplexity\Authters\Guard\Authorization\AuthorizationChecker;
 use MerchantOfComplexity\Authters\Guard\Authorization\Expression\ExpressionLanguage;
@@ -81,7 +81,7 @@ class AuthorizationServiceProvider extends ServiceProvider
     protected function resolveVoters(array $voters): array
     {
         if (!$voters) {
-            throw new InvalidArgumentException("You must add at least on voter in configuration");
+            throw new RuntimeException("You must add at least on voter in configuration");
         }
 
         if (in_array(DefaultExpressionVoter::ALIAS, $voters)) {

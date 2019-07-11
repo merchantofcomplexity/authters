@@ -12,7 +12,6 @@ use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Recaller
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TokenStorage;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TrustResolver;
 
-
 class AuthenticationServiceProvider extends ServiceProvider
 {
     protected $defer = true;
@@ -20,6 +19,7 @@ class AuthenticationServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(TokenStorage::class, DefaultTokenStorage::class);
+
         $this->app->singleton(ContextEventAware::class);
 
         $this->app->bind(TrustResolver::class, function () {
@@ -34,6 +34,6 @@ class AuthenticationServiceProvider extends ServiceProvider
 
     public function provides(): array
     {
-        return [TokenStorage::class, ContextEventAware::class, Manager::class];
+        return [TokenStorage::class, TrustResolver::class, ContextEventAware::class, Manager::class];
     }
 }

@@ -39,7 +39,6 @@ abstract class LogoutAuthentication extends Authentication
 
         $response = $this->createLogoutRedirectResponse($request, $token);
 
-        /** @var Logout $logoutHandler */
         foreach ($this->logoutHandlers as $logoutHandler) {
             $logoutHandler->logout($request, $token, $response);
         }

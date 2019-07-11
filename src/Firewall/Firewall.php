@@ -10,6 +10,7 @@ use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\A
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\StatefulAuthenticationGuard;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\Guardable;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Recaller\Recallable;
+use Symfony\Component\HttpFoundation\Response;
 
 final class Firewall
 {
@@ -31,25 +32,45 @@ final class Firewall
 
     public function handle(Request $request, Closure $next, string $firewallName)
     {
+        $authenticationServices = $this->manager->raise($firewallName, $request);
+
+        if ($response = $this->startAuthentication($authenticationServices, $request)) {
+            return $response;
+        }
+
+        return $next($request);
+    }
+
+    protected function startAuthentication(iterable $services, Request $request): ?Response
+    {
         /** @var Authentication $service */
-        foreach ($this->manager->raise($firewallName, $request) as $service) {
+        foreach ($services as $service) {
             if ($service instanceof AuthenticationGuard) {
                 $guard = $this->app->get(Guardable::class);
 
                 $service->setGuard($guard);
             }
 
-            if (($service instanceof StatefulAuthenticationGuard && $this->app->bound(Recallable::class))) {
-                $service->setRecaller($this->app->make(Recallable::class));
+            if ($this->serviceNeedRecaller($service)) {
+                $service->setRecaller($this->app->get(Recallable::class));
             }
 
-            $response = $service->handle($request);
-
-            if ($response) {
+            // only handle auth middleware
+            if ($response = $service->authenticate($request)) {
                 return $response;
             }
         }
 
-        return $next($request);
+        return null;
+    }
+
+    protected function serviceNeedGuard($service): bool
+    {
+        return $service instanceof AuthenticationGuard;
+    }
+
+    protected function serviceNeedRecaller($service): bool
+    {
+        return $service instanceof StatefulAuthenticationGuard && $this->app->bound(Recallable::class);
     }
 }

@@ -101,11 +101,11 @@ final class FirewallExceptionHandler
 
     protected function whenIdentityIsNotGranted(Request $request, AuthorizationException $exception): Response
     {
-        if ($this->accessDenied) {
-            return $this->accessDenied->onAuthorizationDenied($request, $exception);
+        if (!$this->accessDenied) {
+            throw $exception;
         }
 
-        throw $exception;
+        return $this->accessDenied->onAuthorizationDenied($request, $exception);
     }
 
     protected function whenIdentityIsNotFullyAuthenticated(Request $request, AuthorizationException $exception): Response

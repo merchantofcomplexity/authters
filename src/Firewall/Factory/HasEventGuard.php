@@ -19,7 +19,6 @@ trait HasEventGuard
     public function fireSuccessLoginEvent(Request $request, Tokenable $token): void
     {
         $this->guard->fireAuthenticationEvent(new IdentityLogin($request, $token));
-
     }
 
     public function fireFailureLoginEvent(Request $request, AuthenticationException $exception): void

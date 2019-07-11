@@ -22,8 +22,8 @@ final class Processor
 
     public function __construct(Application $app)
     {
-        $this->pipeline = new BasePipeline($app);
         $this->app = $app;
+        $this->pipeline = new BasePipeline($app);
     }
 
     public function process(Builder $builder, Request $request, array $bootstraps): Generator

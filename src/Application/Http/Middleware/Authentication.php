@@ -12,7 +12,7 @@ abstract class Authentication implements AuthenticationGuard
 {
     use HasGuard;
 
-    public function handle(Request $request): ?Response
+    public function authenticate(Request $request): ?Response
     {
         if (!$this->requireAuthentication($request)) {
             return null;

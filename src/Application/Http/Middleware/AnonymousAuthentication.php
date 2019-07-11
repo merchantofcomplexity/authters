@@ -29,8 +29,7 @@ final class AnonymousAuthentication extends Authentication
     {
         try {
             $this->guard->storeAuthenticatedToken(new GenericAnonymousToken($this->anonymousKey));
-        } catch (AuthenticationException $exception) {
-        }
+        } catch (AuthenticationException $exception) {}
 
         return null;
     }

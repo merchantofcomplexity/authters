@@ -28,7 +28,8 @@ final class DefaultLoginEntrypoint implements Entrypoint
 
     public function startAuthentication(Request $request, AuthenticationException $exception): Response
     {
-        return $this->response->redirectTo($this->loginUrl)
+        return $this->response
+            ->redirectTo($this->loginUrl)
             ->with('message', $exception->getMessage());
     }
 }

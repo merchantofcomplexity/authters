@@ -26,7 +26,9 @@ final class Authorization
      */
     private $attributes;
 
-    public function __construct(AuthorizationChecker $authorizationChecker, TokenStorage $tokenStorage, array $attributes = [])
+    public function __construct(AuthorizationChecker $authorizationChecker,
+                                TokenStorage $tokenStorage,
+                                array $attributes = [])
     {
         $this->authorizationChecker = $authorizationChecker;
         $this->tokenStorage = $tokenStorage;
@@ -35,9 +37,7 @@ final class Authorization
 
     public function handle(Request $request, Closure $next, ...$attributes)
     {
-        $token = $this->tokenStorage->getToken();
-
-        if (!$token) {
+        if (!$token = $this->tokenStorage->getToken()) {
             throw AuthenticationServiceFailure::credentialsNotFound();
         }
 

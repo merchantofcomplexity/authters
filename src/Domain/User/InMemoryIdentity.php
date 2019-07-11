@@ -38,9 +38,6 @@ final class InMemoryIdentity implements LocalIdentity
 
     public function getRoles(): array
     {
-        return $this->identity['roles'] ?? [
-                RoleValue::fromString('ROLE_USER'),
-                RoleValue::fromString('ROLE_ADMIN'),
-            ];
+        return $this->identity['roles'] ?? [RoleValue::fromString('ROLE_USER'),];
     }
 }

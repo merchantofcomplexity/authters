@@ -7,5 +7,5 @@ use Symfony\Component\HttpFoundation\Response;
 
 interface Authentication
 {
-    public function handle(Request $request): ?Response;
+    public function authenticate(Request $request): ?Response;
 }

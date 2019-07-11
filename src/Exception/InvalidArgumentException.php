@@ -6,5 +6,4 @@ use MerchantOfComplexity\Authters\Support\Contract\Exception\FirewallException;
 
 class InvalidArgumentException extends \InvalidArgumentException implements FirewallException
 {
-
 }

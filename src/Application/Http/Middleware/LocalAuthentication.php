@@ -9,6 +9,7 @@ use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\S
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Request\AuthenticationRequest;
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Response\AuthenticationResponse;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\Key\ContextKey;
+use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\LocalToken;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Recaller\Recallable;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenable;
 use MerchantOfComplexity\Authters\Support\Exception\BadCredentials;
@@ -49,9 +50,7 @@ final class LocalAuthentication extends Authentication implements BaseStatefulMi
 
     protected function processAuthentication(Request $request): ?Response
     {
-        [$email, $password] = $this->extractCredentials($request);
-
-        $token = new GenericLocalToken($email, $password, $this->contextKey);
+        $token = $this->createLocalToken($request);
 
         $this->fireAttemptLoginEvent($request, $token);
 
@@ -73,6 +72,13 @@ final class LocalAuthentication extends Authentication implements BaseStatefulMi
         return $response;
     }
 
+    protected function createLocalToken(Request $request): LocalToken
+    {
+        [$email, $password] = $this->extractCredentials($request);
+
+        return new GenericLocalToken($email, $password, $this->contextKey);
+    }
+
     protected function extractCredentials(Request $request): array
     {
         [$identifier, $credentials] = $this->authenticationRequest->extractCredentials($request);
@@ -87,6 +93,7 @@ final class LocalAuthentication extends Authentication implements BaseStatefulMi
     protected function requireAuthentication(Request $request): bool
     {
         if ($this->guard->storage()->getToken()) {
+            // to remove to re authenticate a remembered token
             return false;
         }
 
