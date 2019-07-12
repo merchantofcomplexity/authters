@@ -93,7 +93,7 @@ final class Manager
             $this->determineFirewallContext($name),
             new IdentityProviders(...$this->fromConfig('identity_providers', [])),
             new AuthenticationProviders(...$this->authenticationProviders[$name]),
-            ...array_values($this->firewall[$name]) // sort services with config
+            ...$this->gatherAuthenticationServices($name)
         );
     }
 
@@ -127,6 +127,27 @@ final class Manager
         }
 
         return $context instanceof MutableFirewallContext ? $context->toImmutable() : $context;
+    }
+
+    protected function gatherAuthenticationServices(string $name): array
+    {
+        $services = $this->fromConfig("authentication.group.$name.auth");
+
+        $sorted = array_fill_keys(array_values($services), false);
+
+        foreach ($this->firewall[$name] as $serviceId => $callable) {
+            if (isset($sorted[$serviceId])) {
+                $sorted[$serviceId] = $callable;
+            }
+        }
+
+        foreach ($sorted as $key => $value) {
+            if (!$value) {
+                throw new InvalidArgumentException("Service name $key registered in config is missing");
+            }
+        }
+
+        return array_values($sorted);
     }
 
     protected function assertFirewallExistsInConfig(string $name): void

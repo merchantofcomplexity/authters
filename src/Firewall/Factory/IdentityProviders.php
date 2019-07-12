@@ -4,6 +4,7 @@ namespace MerchantOfComplexity\Authters\Firewall\Factory;
 
 use Generator;
 use Illuminate\Contracts\Container\Container;
+use MerchantOfComplexity\Authters\Exception\InvalidArgumentException;
 
 final class IdentityProviders
 {
@@ -14,6 +15,10 @@ final class IdentityProviders
 
     public function __construct(string ...$identityProviders)
     {
+        if (!$identityProviders) {
+            throw new InvalidArgumentException("You must provide at least one identity provider");
+        }
+
         $this->identityProviders = $identityProviders;
     }
 

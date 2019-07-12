@@ -41,8 +41,6 @@ final class Builder
         $this->firewallContext = $firewallContext;
         $this->identityProviders = $identityProviders;
         $this->authenticationProviders = $authenticationProviders;
-
-        // services need to be ordered from config
         $this->authenticationServices = $authenticationServices;
     }
 
