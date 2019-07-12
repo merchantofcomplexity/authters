@@ -2,6 +2,8 @@
 
 namespace MerchantOfComplexity\Authters\Guard\Authentication;
 
+use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\AnonymousToken;
+use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\RecallerToken;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenable;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TrustResolver;
 
@@ -10,43 +12,35 @@ final class GenericTrustResolver implements TrustResolver
     /**
      * @var string
      */
-    private $anonymousFqcn;
+    private $anonymous;
 
     /**
      * @var string
      */
-    private $rememberedFqcn;
+    private $remembered;
 
-    public function __construct(string $anonymousFqcn, string $rememberedFqcn)
+    public function __construct(string $anonymous, string $remembered)
     {
-        $this->anonymousFqcn = $anonymousFqcn;
-        $this->rememberedFqcn = $rememberedFqcn;
+        $this->anonymous = $anonymous;
+        $this->remembered = $remembered;
     }
 
     public function isFullyAuthenticated(?Tokenable $token): bool
     {
-        if(!$token){
+        if (!$token) {
             return false;
-        };
+        }
 
         return !$this->isAnonymous($token) && !$this->isRemembered($token);
     }
 
     public function isAnonymous(?Tokenable $token): bool
     {
-        if(!$token){
-            return false;
-        };
-
-        return $token instanceof $this->anonymousFqcn;
+        return $token instanceof $this->anonymous;
     }
 
     public function isRemembered(?Tokenable $token): bool
     {
-        if(!$token){
-            return false;
-        };
-
-        return $token instanceof $this->rememberedFqcn;
+        return $token instanceof $this->remembered;
     }
 }

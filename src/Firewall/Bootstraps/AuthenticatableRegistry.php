@@ -4,10 +4,12 @@ namespace MerchantOfComplexity\Authters\Firewall\Bootstraps;
 
 use Closure;
 use Illuminate\Contracts\Foundation\Application;
-use MerchantOfComplexity\Authters\Firewall\Builder;
 use MerchantOfComplexity\Authters\Guard\Authentication\AuthenticationManager;
+use MerchantOfComplexity\Authters\Support\Contract\Firewall\FirewallContext;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\FirewallRegistry;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Authenticatable;
+use MerchantOfComplexity\Authters\Support\Firewall\AuthenticationProviders;
+use MerchantOfComplexity\Authters\Support\Firewall\FirewallAware;
 
 final class AuthenticatableRegistry implements FirewallRegistry
 {
@@ -21,21 +23,25 @@ final class AuthenticatableRegistry implements FirewallRegistry
         $this->app = $app;
     }
 
-    public function compose(Builder $auth, Closure $make)
+    public function compose(FirewallAware $firewall, Closure $make)
     {
-        /** @var Builder $auth */
-        $response = $make($auth);
+        $response = $make($firewall);
 
-        $callback = $auth->authenticationProviders();
-        $context = $auth->context();
-
-        $this->app->bind(Authenticatable::class,
-            function (Application $app) use ($callback, $context): Authenticatable {
-                $providers = $callback($app, $context);
-
-                return new AuthenticationManager(...$providers);
-            });
+        $this->registerAuthenticationManager(
+            $firewall->context(),
+            $firewall->getProviders()
+        );
 
         return $response;
+    }
+
+    protected function registerAuthenticationManager(FirewallContext $context, AuthenticationProviders $providers)
+    {
+        $this->app->bind(Authenticatable::class,
+            function (Application $app) use ($context, $providers): Authenticatable {
+                $authenticationProviders = $providers($app, $context);
+
+                return new AuthenticationManager(...$authenticationProviders);
+            });
     }
 }

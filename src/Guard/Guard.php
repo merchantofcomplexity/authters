@@ -1,14 +1,14 @@
 <?php
 
-namespace MerchantOfComplexity\Authters\Firewall\Factory;
+namespace MerchantOfComplexity\Authters\Guard;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Http\Request;
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Response\Entrypoint;
-use MerchantOfComplexity\Authters\Support\Contract\Firewall\Guardable;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Authenticatable;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenable;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TokenStorage;
+use MerchantOfComplexity\Authters\Support\Contract\Guard\Guardable;
 use MerchantOfComplexity\Authters\Support\Exception\AuthenticationException;
 use Symfony\Component\HttpFoundation\Response;
 

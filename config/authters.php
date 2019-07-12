@@ -41,7 +41,7 @@ return
                 AuthenticatableRegistry::class,
                 RecallerRegistry::class,
                 ContextRegistry::class,
-                AuthenticationServiceRegistry::class,
+                //AuthenticationServiceRegistry::class,
                 AnonymousRegistry::class,
                 ExceptionRegistry::class,
             ]

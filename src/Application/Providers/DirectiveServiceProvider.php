@@ -12,8 +12,6 @@ class DirectiveServiceProvider extends ServiceProvider
 {
     public function boot(TokenStorage $tokenStorage, TrustResolver $trustResolver)
     {
-        // do not resolve Authorization checker as dependency auth manager is not set
-
         Blade::if('isAnonymous', function () use ($tokenStorage, $trustResolver) {
             return $trustResolver->isAnonymous($tokenStorage->getToken());
         });

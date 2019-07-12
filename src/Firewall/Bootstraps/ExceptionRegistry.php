@@ -7,11 +7,12 @@ use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Foundation\Application;
 use MerchantOfComplexity\Authters\Exception\FirewallExceptionHandler;
 use MerchantOfComplexity\Authters\Exception\RuntimeException;
-use MerchantOfComplexity\Authters\Firewall\Builder;
+use MerchantOfComplexity\Authters\Support\Contract\Exception\DebugFirewall;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\FirewallContext;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\FirewallRegistry;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TokenStorage;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TrustResolver;
+use MerchantOfComplexity\Authters\Support\Firewall\FirewallAware;
 
 final class ExceptionRegistry implements FirewallRegistry
 {
@@ -25,25 +26,16 @@ final class ExceptionRegistry implements FirewallRegistry
         $this->app = $app;
     }
 
-    public function compose(Builder $auth, Closure $make)
+    public function compose(FirewallAware $firewall, Closure $make)
     {
-        $exceptionId = $this->registerFirewallExceptionHandler($auth->context());
+        $exceptionId = $this->registerFirewallExceptionHandler($firewall->context());
 
-        $this->app->resolving(ExceptionHandler::class,
-            function (ExceptionHandler $handler) use ($exceptionId): void {
-                if (!method_exists($handler, 'setFirewallHandler')) {
-                    throw new RuntimeException(
-                        "Method setFirewallHandler does not exists on " . ExceptionHandler::class
-                    );
-                }
+        $this->resolveOnExceptionId($exceptionId);
 
-                $handler->setFirewallHandler($exceptionId);
-            });
-
-        return $make($auth);
+        return $make($firewall);
     }
 
-    private function registerFirewallExceptionHandler(FirewallContext $context): string
+    protected function registerFirewallExceptionHandler(FirewallContext $context): string
     {
         $alias = 'firewall.exception_handler.' . $context->contextKey()->getValue();
 
@@ -59,5 +51,19 @@ final class ExceptionRegistry implements FirewallRegistry
         });
 
         return $alias;
+    }
+
+    protected function resolveOnExceptionId(string $exceptionId): void
+    {
+        $this->app->resolving(ExceptionHandler::class,
+            function (ExceptionHandler $handler) use ($exceptionId): void {
+                if (!$handler instanceof DebugFirewall) {
+                    throw new RuntimeException(
+                        "Illuminate Exception handler must implement " . DebugFirewall::class
+                    );
+                }
+
+                $handler->setFirewallExceptionHandlerId($exceptionId);
+            });
     }
 }

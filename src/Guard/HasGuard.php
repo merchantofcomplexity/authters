@@ -1,8 +1,9 @@
 <?php
 
-namespace MerchantOfComplexity\Authters\Firewall\Factory;
+namespace MerchantOfComplexity\Authters\Guard;
 
-use MerchantOfComplexity\Authters\Support\Contract\Firewall\Guardable;
+
+use MerchantOfComplexity\Authters\Support\Contract\Guard\Guardable;
 
 trait HasGuard
 {

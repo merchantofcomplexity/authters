@@ -1,6 +1,6 @@
 <?php
 
-namespace MerchantOfComplexity\Authters\Firewall\Factory;
+namespace MerchantOfComplexity\Authters\Support\Firewall;
 
 use Generator;
 use Illuminate\Contracts\Container\Container;

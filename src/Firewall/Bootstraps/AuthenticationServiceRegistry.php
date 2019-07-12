@@ -4,8 +4,8 @@ namespace MerchantOfComplexity\Authters\Firewall\Bootstraps;
 
 use Closure;
 use Illuminate\Contracts\Foundation\Application;
-use MerchantOfComplexity\Authters\Firewall\Builder;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\FirewallRegistry;
+use MerchantOfComplexity\Authters\Support\Firewall\FirewallAware;
 
 final class AuthenticationServiceRegistry implements FirewallRegistry
 {
@@ -19,12 +19,8 @@ final class AuthenticationServiceRegistry implements FirewallRegistry
         $this->app = $app;
     }
 
-    public function compose(Builder $auth, Closure $make)
+    public function compose(FirewallAware $firewall, Closure $make)
     {
-        foreach ($auth->services() as $authenticationService) {
-            $auth->addRegistry($authenticationService);
-        }
-
-        return $make($auth);
+        return $make($firewall);
     }
 }

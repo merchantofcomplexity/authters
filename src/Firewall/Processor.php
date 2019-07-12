@@ -7,6 +7,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Pipeline\Pipeline;
 use Illuminate\Http\Request;
 use Illuminate\Pipeline\Pipeline as BasePipeline;
+use MerchantOfComplexity\Authters\Support\Firewall\FirewallAware;
 
 final class Processor
 {
@@ -26,24 +27,25 @@ final class Processor
         $this->pipeline = new BasePipeline($app);
     }
 
-    public function process(Builder $builder, Request $request, array $bootstraps): Generator
+    public function process(FirewallAware $firewallAware, Request $request, array $bootstraps): Generator
     {
-        // checkMe request should/could be used against heavy service
-        // or service which could be easily dropped against a matcher
+        foreach ($this->buildFirewall($firewallAware, $bootstraps) as $service) {
+            if (is_string($service)) {
+                $service = $this->app->get($service);
+            }
 
-        foreach ($this->makeAuthentication($builder, $bootstraps) as $service) {
-            yield $service($this->app, $builder->context());
+            yield $service($this->app, $firewallAware->context(), $request);
         }
     }
 
-    private function makeAuthentication(Builder $builder, array $bootstraps): array
+    protected function buildFirewall(FirewallAware $firewallAware, array $bootstraps): array
     {
         return $this->pipeline
             ->via('compose')
             ->through($bootstraps)
-            ->send($builder)
-            ->then(function () use ($builder): array {
-                return $builder->getRegistries();
+            ->send($firewallAware)
+            ->then(function () use ($firewallAware): array {
+                return $firewallAware->allServices();
             });
     }
 }

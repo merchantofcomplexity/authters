@@ -3,9 +3,14 @@
 namespace MerchantOfComplexity\Authters\Support\Contract\Firewall;
 
 use Closure;
-use MerchantOfComplexity\Authters\Firewall\Builder;
+use MerchantOfComplexity\Authters\Support\Firewall\FirewallAware;
 
 interface FirewallRegistry
 {
-    public function compose(Builder $auth, Closure $make);
+    /**
+     * @param FirewallAware $firewall
+     * @param Closure $make
+     * @return FirewallAware|Closure
+     */
+    public function compose(FirewallAware $firewall, Closure $make);
 }

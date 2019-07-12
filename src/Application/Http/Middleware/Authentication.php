@@ -3,7 +3,7 @@
 namespace MerchantOfComplexity\Authters\Application\Http\Middleware;
 
 use Illuminate\Http\Request;
-use MerchantOfComplexity\Authters\Firewall\Factory\HasGuard;
+use MerchantOfComplexity\Authters\Guard\HasGuard;
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\AuthenticationGuard;
 use MerchantOfComplexity\Authters\Support\Exception\AuthenticationException;
 use Symfony\Component\HttpFoundation\Response;

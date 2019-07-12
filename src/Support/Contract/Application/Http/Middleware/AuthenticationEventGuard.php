@@ -10,7 +10,7 @@ interface AuthenticationEventGuard extends AuthenticationGuard
 {
     public function fireAttemptLoginEvent(Request $request, Tokenable $token): void;
 
-    public function fireSuccessLoginEvent(Tokenable $token, Request $request): void;
+    public function fireSuccessLoginEvent(Request $request, Tokenable $token): void;
 
     public function fireFailureLoginEvent(Request $request, AuthenticationException $exception): void;
 }

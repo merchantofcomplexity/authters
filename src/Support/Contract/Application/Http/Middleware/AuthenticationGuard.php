@@ -2,7 +2,7 @@
 
 namespace MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware;
 
-use MerchantOfComplexity\Authters\Support\Contract\Firewall\Guardable;
+use MerchantOfComplexity\Authters\Support\Contract\Guard\Guardable;
 
 interface AuthenticationGuard extends Authentication
 {

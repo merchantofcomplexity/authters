@@ -3,8 +3,9 @@
 namespace MerchantOfComplexity\Authters\Application\Http\Middleware;
 
 use Illuminate\Http\Request;
-use MerchantOfComplexity\Authters\Firewall\Factory\HasEventGuard;
+use MerchantOfComplexity\Authters\Firewall\Guard\HasEventGuard;
 use MerchantOfComplexity\Authters\Guard\Authentication\Token\GenericLocalToken;
+use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\AuthenticationEventGuard;
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\StatefulAuthenticationGuard as BaseStatefulMiddleware;
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Request\AuthenticationRequest;
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Response\AuthenticationResponse;
@@ -15,7 +16,7 @@ use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenabl
 use MerchantOfComplexity\Authters\Support\Exception\BadCredentials;
 use Symfony\Component\HttpFoundation\Response;
 
-final class LocalAuthentication extends Authentication implements BaseStatefulMiddleware
+final class LocalAuthentication extends Authentication implements BaseStatefulMiddleware, AuthenticationEventGuard
 {
     use HasEventGuard;
 

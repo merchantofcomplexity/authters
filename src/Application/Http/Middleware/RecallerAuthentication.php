@@ -3,12 +3,13 @@
 namespace MerchantOfComplexity\Authters\Application\Http\Middleware;
 
 use Illuminate\Http\Request;
-use MerchantOfComplexity\Authters\Firewall\Factory\HasEventGuard;
+use MerchantOfComplexity\Authters\Firewall\Guard\HasEventGuard;
+use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\AuthenticationEventGuard;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Recaller\Recallable;
 use MerchantOfComplexity\Authters\Support\Exception\AuthenticationException;
 use Symfony\Component\HttpFoundation\Response;
 
-final class RecallerAuthentication extends Authentication
+final class RecallerAuthentication extends Authentication implements AuthenticationEventGuard
 {
     use HasEventGuard;
 

@@ -1,9 +1,10 @@
 <?php
 
-namespace MerchantOfComplexity\Authters\Firewall\Factory;
+namespace MerchantOfComplexity\Authters\Firewall\Guard;
 
 use Illuminate\Http\Request;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenable;
+use MerchantOfComplexity\Authters\Support\Contract\Guard\Guardable;
 use MerchantOfComplexity\Authters\Support\Events\IdentityAttemptLogin;
 use MerchantOfComplexity\Authters\Support\Events\IdentityLogin;
 use MerchantOfComplexity\Authters\Support\Events\IdentityLoginFailed;
@@ -11,6 +12,11 @@ use MerchantOfComplexity\Authters\Support\Exception\AuthenticationException;
 
 trait HasEventGuard
 {
+    /**
+     * @var Guardable
+     */
+    protected $guard;
+
     public function fireAttemptLoginEvent(Request $request, Tokenable $token): void
     {
         $this->guard->fireAuthenticationEvent(new IdentityAttemptLogin($request, $token));

@@ -1,8 +1,9 @@
 <?php
 
-namespace MerchantOfComplexity\Authters\Firewall\Factory;
+namespace MerchantOfComplexity\Authters\Support\Firewall;
 
 use Illuminate\Contracts\Container\Container;
+use MerchantOfComplexity\Authters\Exception\InvalidArgumentException;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\FirewallContext;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\AuthenticationProvider;
 
@@ -23,7 +24,7 @@ final class AuthenticationProviders
         $this->authenticationProviders = $authenticationProviders;
     }
 
-    public function add(callable $authenticationProvider): void
+    public function add($authenticationProvider): void
     {
         $this->authenticationProviders[] = $authenticationProvider;
     }
@@ -40,8 +41,16 @@ final class AuthenticationProviders
             return $this->resolved;
         }
 
+        if (!$this->authenticationProviders) {
+            throw new InvalidArgumentException("No authentication providers has been registered");
+        }
+
         return $this->resolved = collect($this->authenticationProviders)
-            ->transform(function (callable $provider) use ($container, $context): AuthenticationProvider {
+            ->transform(function ($provider) use ($container, $context): AuthenticationProvider {
+                if (is_string($provider)) {
+                    $provider = $container->get($provider);
+                }
+
                 return $provider($container, $context);
             })->toArray();
     }

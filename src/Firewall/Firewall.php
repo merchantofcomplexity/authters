@@ -8,8 +8,8 @@ use Illuminate\Http\Request;
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\Authentication;
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\AuthenticationGuard;
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\StatefulAuthenticationGuard;
-use MerchantOfComplexity\Authters\Support\Contract\Firewall\Guardable;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Recaller\Recallable;
+use MerchantOfComplexity\Authters\Support\Contract\Guard\Guardable;
 use Symfony\Component\HttpFoundation\Response;
 
 final class Firewall
@@ -45,6 +45,10 @@ final class Firewall
     {
         /** @var Authentication $service */
         foreach ($services as $service) {
+            if (!$service) {
+                continue;
+            }
+
             if ($service instanceof AuthenticationGuard) {
                 $guard = $this->app->get(Guardable::class);
 
