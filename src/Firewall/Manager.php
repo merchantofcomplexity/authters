@@ -44,12 +44,12 @@ final class Manager
         $this->app = $app;
         $this->config = $app->get('config')->get('authters');
         $this->processor = $processor;
+
+        $this->prepareFirewall();
     }
 
     public function raise(string $name, Request $request): iterable
     {
-        $this->assertFirewallExistsInConfig($name);
-
         $this->assertFirewallIsRegistered($name);
 
         $this->assertAuthenticationProviderIsRegisteredForFirewall($name);
@@ -59,23 +59,23 @@ final class Manager
 
     public function addAuthenticationService(string $name, string $serviceId, callable $service): void
     {
-        $this->assertServiceIdExists($name, $serviceId);
+        $this->assertFirewallIsRegistered($name);
+
+        $this->assertServiceIdExistsInConfig($name, $serviceId);
 
         $this->firewall[$name][$serviceId] = $service;
     }
 
     public function addAuthenticationProvider(string $name, callable $service): void
     {
-        if (!isset($this->authenticationProviders[$name])) {
-            $this->authenticationProviders[$name] = [];
-        }
+        $this->assertFirewallExistsInConfig($name);
 
         $this->authenticationProviders[$name] = array_merge($this->authenticationProviders[$name], [$service]);
     }
 
     public function hasFirewall(string $name): bool
     {
-        return array_key_exists($name, $this->fromConfig('authentication.group', []));
+        return isset($this->firewall[$name]);
     }
 
     protected function make(string $name, Request $request): iterable
@@ -168,10 +168,8 @@ final class Manager
         }
     }
 
-    protected function assertServiceIdExists(string $name, string $serviceId): void
+    protected function assertServiceIdExistsInConfig(string $name, string $serviceId): void
     {
-        $this->assertFirewallExistsInConfig($name);
-
         if (!in_array($serviceId, $this->fromConfig("authentication.group.$name.auth", []))) {
             throw new InvalidArgumentException(
                 "Service id $serviceId not found in configuration for firewall name $name"
@@ -185,6 +183,20 @@ final class Manager
             throw new InvalidArgumentException(
                 "No authentication provider has been registered for firewall name $name"
             );
+        }
+    }
+
+    protected function prepareFirewall(): void
+    {
+        $firewall = array_keys($this->fromConfig("authentication.group", []));
+
+        if (!$firewall) {
+            throw new InvalidArgumentException("No firewall has been configured");
+        }
+
+        foreach ($firewall as $firewallName) {
+            $this->firewall[$firewallName] = [];
+            $this->authenticationProviders[$firewallName] = [];
         }
     }
 
