@@ -36,9 +36,9 @@ final class SecurityVoter
         return $this->getStorage()->getToken();
     }
 
-    public function isGranted(Tokenable $token, array $attributes, object $subject = null)
+    public function isGranted(array $attributes, object $subject = null)
     {
-        return $this->container->get(AuthorizationChecker::class)->isGranted($token, $attributes, $subject);
+        return $this->container->get(AuthorizationChecker::class)->isGranted($attributes, $subject);
     }
 
     public function getStorage(): TokenStorage
