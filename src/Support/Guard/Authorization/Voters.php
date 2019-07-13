@@ -44,6 +44,6 @@ final class Voters
 
     public function isEmpty(): bool
     {
-        return !empty($this->voters);
+        return empty($this->voters);
     }
 }
