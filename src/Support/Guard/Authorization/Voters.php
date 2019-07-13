@@ -2,10 +2,11 @@
 
 namespace MerchantOfComplexity\Authters\Support\Guard\Authorization;
 
+use Countable;
 use Generator;
 use Illuminate\Contracts\Foundation\Application;
 
-final class Voters
+final class Voters implements Countable
 {
     /**
      * @var Application
@@ -45,5 +46,10 @@ final class Voters
     public function isEmpty(): bool
     {
         return empty($this->voters);
+    }
+
+    public function count(): int
+    {
+        return count($this->voters);
     }
 }
