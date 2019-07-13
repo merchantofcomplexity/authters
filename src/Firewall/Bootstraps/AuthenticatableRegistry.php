@@ -25,14 +25,14 @@ final class AuthenticatableRegistry implements FirewallRegistry
 
     public function compose(FirewallAware $firewall, Closure $make)
     {
-        $response = $make($firewall);
+        $auth = $make($firewall);
 
         $this->registerAuthenticationManager(
             $firewall->context(),
             $firewall->getProviders()
         );
 
-        return $response;
+        return $auth;
     }
 
     protected function registerAuthenticationManager(FirewallContext $context, AuthenticationProviders $providers)

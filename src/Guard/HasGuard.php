@@ -2,7 +2,6 @@
 
 namespace MerchantOfComplexity\Authters\Guard;
 
-
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Guardable;
 
 trait HasGuard

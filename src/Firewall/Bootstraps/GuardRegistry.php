@@ -27,13 +27,13 @@ final class GuardRegistry implements FirewallRegistry
 
     public function compose(FirewallAware $firewall, Closure $make)
     {
-        $response = $make($firewall);
+        $auth = $make($firewall);
 
         $guard = $this->newGuardInstance($firewall->context());
 
         $this->app->instance(Guardable::class, $guard);
 
-        return $response;
+        return $auth;
     }
 
     protected function newGuardInstance(FirewallContext $context): Guardable
