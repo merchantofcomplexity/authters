@@ -7,7 +7,7 @@ use MerchantOfComplexity\Authters\Support\Contract\Guard\Authorization\Authoriza
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authorization\Votable;
 use MerchantOfComplexity\Authters\Support\Exception\AuthenticationServiceFailure;
 
-class UnanimousAuthorizationStrategy implements AuthorizationStrategy
+final class ConsensusAuthorizationStrategy implements AuthorizationStrategy
 {
     /**
      * @var bool
@@ -15,11 +15,16 @@ class UnanimousAuthorizationStrategy implements AuthorizationStrategy
     private $allowIfAllAbstain;
 
     /**
+     * @var bool
+     */
+    private $allowIfEqual;
+
+    /**
      * @var Votable[]
      */
     private $voters;
 
-    public function __construct(bool $allowIfAllAbstain, Votable ...$voters)
+    public function __construct(bool $allowIfAllAbstain, bool $allowIfEqual, Votable ...$voters)
     {
         if (!$voters) {
             throw AuthenticationServiceFailure::noAuthorizationVoters();
@@ -27,11 +32,13 @@ class UnanimousAuthorizationStrategy implements AuthorizationStrategy
 
         $this->voters = $voters;
         $this->allowIfAllAbstain = $allowIfAllAbstain;
+        $this->allowIfEqual = $allowIfEqual;
     }
 
     public function decide(Tokenable $token, array $attributes, object $subject = null): bool
     {
         $grant = 0;
+        $deny = 0;
 
         foreach ($attributes as $attribute) {
             foreach ($this->voters as $voter) {
@@ -43,14 +50,20 @@ class UnanimousAuthorizationStrategy implements AuthorizationStrategy
                         break;
 
                     case Votable::ACCESS_DENIED:
-                        return false;
-
-                    default:
+                        ++$deny;
                         break;
                 }
             }
         }
 
-        return ($grant > 0) ?? $this->allowIfAllAbstain;
+        if ($grant > $deny) {
+            return true;
+        }
+
+        if ($deny > $grant) {
+            return false;
+        }
+
+        return ($grant > 0) ? $this->allowIfEqual : $this->allowIfAllAbstain;
     }
 }

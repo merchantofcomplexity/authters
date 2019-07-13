@@ -7,7 +7,7 @@ use MerchantOfComplexity\Authters\Support\Contract\Guard\Authorization\Authoriza
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authorization\Votable;
 use MerchantOfComplexity\Authters\Support\Exception\AuthenticationServiceFailure;
 
-class UnanimousAuthorizationStrategy implements AuthorizationStrategy
+final class AffirmativeAuthorizationStrategy implements AuthorizationStrategy
 {
     /**
      * @var bool
@@ -21,7 +21,7 @@ class UnanimousAuthorizationStrategy implements AuthorizationStrategy
 
     public function __construct(bool $allowIfAllAbstain, Votable ...$voters)
     {
-        if (!$voters) {
+        if (0 === count($voters)) {
             throw AuthenticationServiceFailure::noAuthorizationVoters();
         }
 
@@ -31,7 +31,7 @@ class UnanimousAuthorizationStrategy implements AuthorizationStrategy
 
     public function decide(Tokenable $token, array $attributes, object $subject = null): bool
     {
-        $grant = 0;
+        $deny = 0;
 
         foreach ($attributes as $attribute) {
             foreach ($this->voters as $voter) {
@@ -39,18 +39,14 @@ class UnanimousAuthorizationStrategy implements AuthorizationStrategy
 
                 switch ($decision) {
                     case Votable::ACCESS_GRANTED:
-                        ++$grant;
-                        break;
+                        return true;
 
                     case Votable::ACCESS_DENIED:
-                        return false;
-
-                    default:
-                        break;
+                        $deny++;
                 }
             }
         }
 
-        return ($grant > 0) ?? $this->allowIfAllAbstain;
+        return ($deny > 0) ? false : $this->allowIfAllAbstain;
     }
 }

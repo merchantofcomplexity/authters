@@ -6,5 +6,9 @@ use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenabl
 
 interface AuthorizationStrategy
 {
+    const AFFIRMATIVE = 'affirmative';
+    const CONSENSUS = 'consensus';
+    const UNANIMOUS = 'unanimous';
+
     public function decide(Tokenable $token, array $attributes, object $subject = null): bool;
 }
