@@ -67,6 +67,13 @@ class AuthorizationServiceProvider extends ServiceProvider
                     $alwaysAuthenticate
                 );
             });
+
+        $this->app->afterResolving(BaseAuthorization::class,
+            function (BaseAuthorization $auth, Application $app): void {
+                if(method_exists($auth, 'setRequest')){
+                    $auth->setRequest($app['request']);
+                }
+            });
     }
 
     protected function registerRoleHierarchy(array $roleHierarchy): void
