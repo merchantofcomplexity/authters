@@ -97,7 +97,7 @@ class AuthorizationServiceProvider extends ServiceProvider
             $this->app->bind(DefaultExpressionVoter::ALIAS, DefaultExpressionVoter::class);
         }
 
-        return new Voters($this->app, $voters);
+        return new Voters($this->app, ...$voters);
     }
 
     public function provides(): array
