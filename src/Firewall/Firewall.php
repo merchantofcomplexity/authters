@@ -43,6 +43,8 @@ final class Firewall
 
     protected function startAuthentication(iterable $services, Request $request): ?Response
     {
+        $guard = $this->app->get(Guardable::class);
+
         /** @var Authentication $service */
         foreach ($services as $service) {
             if (!$service) {
@@ -50,8 +52,6 @@ final class Firewall
             }
 
             if ($service instanceof AuthenticationGuard) {
-                $guard = $this->app->get(Guardable::class);
-
                 $service->setGuard($guard);
             }
 

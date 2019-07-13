@@ -1,12 +1,14 @@
 <?php
 
-namespace MerchantOfComplexity\Authters\Firewall\Context;
+namespace MerchantOfComplexity\Authters\Support\Firewall\Context;
 
-use MerchantOfComplexity\Authters\Application\Http\Response\DefaultLoginEntrypoint;
+use MerchantOfComplexity\Authters\Application\Http\Response\DefaultJsonEntrypoint;
 use MerchantOfComplexity\Authters\Application\Http\Response\DefaultUnauthorizedResponse;
+use MerchantOfComplexity\Authters\Firewall\Context\HasFirewallContext;
+use MerchantOfComplexity\Authters\Firewall\Context\HasMutableContext;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\MutableFirewallContext;
 
-final class DefaultFirewallContext implements MutableFirewallContext
+final class ApiFirewallContext implements MutableFirewallContext
 {
     use HasFirewallContext, HasMutableContext;
 
@@ -14,12 +16,12 @@ final class DefaultFirewallContext implements MutableFirewallContext
      * @var array
      */
     protected $context = [
-        'context_key' => 'front',
-        'anonymous_key' => 'anonymous_front_key',
-        'is_anonymous' => false,
+        'context_key' => 'api',
+        'anonymous_key' => 'anonymous_api_key',
+        'is_anonymous' => true,
         'is_stateless' => true,
         'identity_provider_id' => null,
-        'entrypoint_id' => DefaultLoginEntrypoint::class,
+        'entrypoint_id' => DefaultJsonEntrypoint::class,
         'unauthorized_id' => DefaultUnauthorizedResponse::class,
     ];
 
