@@ -1,33 +1,39 @@
 <?php
 
+use MerchantOfComplexity\Authters\Support\Contract\Domain\Identity;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenable;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TokenStorage;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authorization\AuthorizationChecker;
 
 if (!function_exists('getToken')) {
-    function getToken(): Tokenable
+    function getToken(): ?Tokenable
     {
         return app(TokenStorage::class)->getToken();
     }
 }
 
 if (!function_exists('getIdentity')) {
-    function getIdentity()
+    function getIdentity(): ?Identity
     {
-        return getToken()->getIdentity();
+        $identity =  getToken()->getIdentity();
+        if($identity instanceof Identity){
+            return $identity;
+        }
+
+        return null;
     }
 }
 
 if (!function_exists('isGranted')) {
-    function isGranted(Tokenable $token, array $attributes, object $subject = null): bool
+    function isGranted(array $attributes, object $subject = null): bool
     {
-        return app(AuthorizationChecker::class)->isGranted($token, $attributes, $subject ?? request());
+        return app(AuthorizationChecker::class)->isGranted($attributes, $subject);
     }
 }
 
 if (!function_exists('isNotGranted')) {
-    function isNotGranted(Tokenable $token, array $attributes, object $subject = null): bool
+    function isNotGranted(string $attribute, object $subject = null): bool
     {
-        return !isGranted($token, $attributes, $subject);
+        return !isGranted([$attribute], $subject);
     }
 }

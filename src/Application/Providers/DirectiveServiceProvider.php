@@ -34,17 +34,15 @@ class DirectiveServiceProvider extends ServiceProvider
                 $attributes = [$attributes];
             }
 
-            return app(AuthorizationChecker::class)
-                ->isGranted(app(TokenStorage::class)->getToken(), $attributes, $subject ?? request());
+            return app(AuthorizationChecker::class)->isGranted($attributes, $subject ?? request());
         });
 
-        Blade::if('isNotGranted', function ($attributes, object $subject = null) {
+        Blade::if('isNotGranted', function (string $attributes, object $subject = null) {
             if (!is_array($attributes)) {
                 $attributes = [$attributes];
             }
 
-            return app(AuthorizationChecker::class)
-                ->isGranted(app(TokenStorage::class)->getToken(), $attributes, $subject ?? request());
+            return app(AuthorizationChecker::class)->isGranted($attributes, $subject ?? request());
         });
     }
 }
