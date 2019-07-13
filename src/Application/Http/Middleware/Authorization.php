@@ -5,16 +5,16 @@ namespace MerchantOfComplexity\Authters\Application\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TokenStorage;
-use MerchantOfComplexity\Authters\Support\Contract\Guard\Authorization\AuthorizationChecker;
+use MerchantOfComplexity\Authters\Support\Contract\Guard\Authorization\AuthorizationStrategy;
 use MerchantOfComplexity\Authters\Support\Exception\AuthenticationServiceFailure;
 use MerchantOfComplexity\Authters\Support\Exception\AuthorizationDenied;
 
 final class Authorization
 {
     /**
-     * @var AuthorizationChecker
+     * @var AuthorizationStrategy
      */
-    private $authorizationChecker;
+    private $authorizationStrategy;
 
     /**
      * @var TokenStorage
@@ -26,11 +26,11 @@ final class Authorization
      */
     private $attributes;
 
-    public function __construct(AuthorizationChecker $authorizationChecker,
+    public function __construct(AuthorizationStrategy $authorizationStrategy,
                                 TokenStorage $tokenStorage,
                                 array $attributes = [])
     {
-        $this->authorizationChecker = $authorizationChecker;
+        $this->authorizationStrategy = $authorizationStrategy;
         $this->tokenStorage = $tokenStorage;
         $this->attributes = $attributes;
     }
@@ -43,7 +43,7 @@ final class Authorization
 
         $attributes = array_merge($this->attributes, $attributes);
 
-        if ($attributes && !$this->authorizationChecker->isGranted($token, $attributes, $request)) {
+        if ($attributes && !$this->authorizationStrategy->decide($token, $attributes, $request)) {
             throw AuthorizationDenied::reason();
         }
 

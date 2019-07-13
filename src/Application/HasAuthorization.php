@@ -19,11 +19,7 @@ trait HasAuthorization
 
     protected function denyAccessUnlessGranted(array $attributes, object $subject = null): bool
     {
-        return $this->authorizationChecker()->isGranted(
-            $this->requireToken(),
-            $attributes,
-            $subject ?? request()
-        );
+        return $this->authorizationChecker()->isGranted($attributes,$subject ?? request());
     }
 
     /**

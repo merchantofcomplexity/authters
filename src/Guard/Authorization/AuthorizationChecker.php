@@ -8,6 +8,7 @@ use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenabl
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TokenStorage;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authorization\AuthorizationChecker as BaseAuthorizationChecker;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authorization\AuthorizationStrategy;
+use MerchantOfComplexity\Authters\Support\Exception\AuthenticationServiceFailure;
 
 final class AuthorizationChecker implements BaseAuthorizationChecker
 {
@@ -47,8 +48,12 @@ final class AuthorizationChecker implements BaseAuthorizationChecker
         $this->alwaysAuthenticate = $alwaysAuthenticate;
     }
 
-    public function isGranted(Tokenable $token, array $attributes, object $subject = null): bool
+    public function isGranted(array $attributes, object $subject = null): bool
     {
+        if (!$token = $this->tokenStorage->getToken()) {
+            throw AuthenticationServiceFailure::credentialsNotFound();
+        }
+
         $token = $this->authenticateToken($token);
 
         return $this->authorizationStrategy->decide($token, $attributes, $subject ?? $this->request);
