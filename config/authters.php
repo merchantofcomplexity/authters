@@ -3,7 +3,6 @@
 use MerchantOfComplexity\Authters\Application\Http\Middleware\Authorization;
 use MerchantOfComplexity\Authters\Firewall\Bootstraps\AnonymousRegistry;
 use MerchantOfComplexity\Authters\Firewall\Bootstraps\AuthenticatableRegistry;
-use MerchantOfComplexity\Authters\Firewall\Bootstraps\AuthenticationServiceRegistry;
 use MerchantOfComplexity\Authters\Firewall\Bootstraps\ContextRegistry;
 use MerchantOfComplexity\Authters\Firewall\Bootstraps\ExceptionRegistry;
 use MerchantOfComplexity\Authters\Firewall\Bootstraps\GuardRegistry;
@@ -29,10 +28,7 @@ return
 
                     'context' => [], // array of options or fqcn firewall context
 
-                    'auth' => [
-                        'local-login',
-                        'local-logout'
-                    ]
+                    'auth' => []
                 ]
             ],
 
@@ -57,6 +53,8 @@ return
                 'concrete' => UnanimousAuthorizationStrategy::class,
 
                 'allow_if_all_abstain' => false,
+
+                'allow_if_equal' => false, // for consensus strategy only
 
                 'voters' => [
                     AuthenticatedTokenVoter::class,
