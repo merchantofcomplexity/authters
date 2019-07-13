@@ -6,6 +6,7 @@ use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenabl
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authorization\AuthorizationStrategy;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authorization\Votable;
 use MerchantOfComplexity\Authters\Support\Exception\AuthenticationServiceFailure;
+use MerchantOfComplexity\Authters\Support\Guard\Authorization\Voters;
 
 final class AffirmativeAuthorizationStrategy implements AuthorizationStrategy
 {
@@ -15,13 +16,13 @@ final class AffirmativeAuthorizationStrategy implements AuthorizationStrategy
     private $allowIfAllAbstain;
 
     /**
-     * @var Votable[]
+     * @var Voters
      */
     private $voters;
 
-    public function __construct(bool $allowIfAllAbstain, Votable ...$voters)
+    public function __construct(Voters $voters, bool $allowIfAllAbstain)
     {
-        if (0 === count($voters)) {
+        if ($voters->isEmpty()) {
             throw AuthenticationServiceFailure::noAuthorizationVoters();
         }
 
@@ -34,7 +35,8 @@ final class AffirmativeAuthorizationStrategy implements AuthorizationStrategy
         $deny = 0;
 
         foreach ($attributes as $attribute) {
-            foreach ($this->voters as $voter) {
+            /** @var Votable $voter */
+            foreach ($this->voters->make() as $voter) {
                 $decision = $voter->vote($token, [$attribute], $subject);
 
                 switch ($decision) {

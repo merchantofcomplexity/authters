@@ -16,13 +16,13 @@ use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TokenSto
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authorization\AuthorizationChecker as BaseAuthorization;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authorization\AuthorizationStrategy;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authorization\RoleHierarchy;
-use MerchantOfComplexity\Authters\Support\Contract\Guard\Authorization\Votable;
+use MerchantOfComplexity\Authters\Support\Guard\Authorization\Voters;
 
 class AuthorizationServiceProvider extends ServiceProvider
 {
     public function boot(Router $router, Manager $manager, Repository $config): void
     {
-       // $authorizationMiddleware = $config->get('authters.authorization.middleware');
+        // $authorizationMiddleware = $config->get('authters.authorization.middleware');
         //$this->app->bind($authorizationMiddleware); // singleton for access map
 
         /*
@@ -50,9 +50,9 @@ class AuthorizationServiceProvider extends ServiceProvider
             function () use ($authorization): AuthorizationStrategy {
                 $concrete = $authorization['strategy']['concrete'];
                 $allowIfAllAbstain = $authorization['strategy']['allow_if_all_abstain'] ?? false;
-                $voters = $this->resolveVoters($authorization['strategy']['voters'] ?? []);
+                $voters = $this->collectVoters($authorization['strategy']['voters'] ?? []);
 
-                return new $concrete($allowIfAllAbstain, ...$voters);
+                return new $concrete($voters, $allowIfAllAbstain);
             });
     }
 
@@ -78,7 +78,7 @@ class AuthorizationServiceProvider extends ServiceProvider
         }
     }
 
-    protected function resolveVoters(array $voters): array
+    protected function collectVoters(array $voters): Voters
     {
         if (!$voters) {
             throw new RuntimeException("You must add at least on voter in configuration");
@@ -90,9 +90,7 @@ class AuthorizationServiceProvider extends ServiceProvider
             $this->app->bind(DefaultExpressionVoter::ALIAS, DefaultExpressionVoter::class);
         }
 
-        return collect($voters)->transform(function (string $voter): Votable {
-            return $this->app->make($voter);
-        })->toArray();
+        return new Voters($this->app, $voters);
     }
 
     public function provides(): array
