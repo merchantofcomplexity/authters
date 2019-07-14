@@ -2,11 +2,12 @@
 
 namespace MerchantOfComplexity\Authters\Domain\Role;
 
+use function get_class;
 use MerchantOfComplexity\Authters\Support\Contract\Domain\Role;
 use MerchantOfComplexity\Authters\Support\Contract\Value\Value;
 use MerchantOfComplexity\Authters\Support\Exception\Assert;
 
-final class RoleValue implements Role, Value
+class RoleValue implements Role, Value
 {
     const PREFIX = 'ROLE_';
 
@@ -41,6 +42,7 @@ final class RoleValue implements Role, Value
 
     public function sameValueAs(Value $aValue): bool
     {
-        return $aValue instanceof $this && $this->getRole() === $aValue->getRole();
+        return get_class($aValue) === get_class($this)
+            && $this->getRole() === $aValue->getRole();
     }
 }

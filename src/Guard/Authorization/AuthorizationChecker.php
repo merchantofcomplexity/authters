@@ -59,6 +59,11 @@ final class AuthorizationChecker implements BaseAuthorizationChecker
         return $this->authorizationStrategy->decide($token, $attributes, $subject ?? $this->request);
     }
 
+    public function isNotGranted(array $attributes, object $subject = null): bool
+    {
+        return !$this->isGranted($attributes, $subject);
+    }
+
     protected function authenticateToken(Tokenable $token): Tokenable
     {
         if ($this->alwaysAuthenticate || !$token->isAuthenticated()) {

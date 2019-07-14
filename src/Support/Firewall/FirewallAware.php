@@ -63,14 +63,14 @@ final class FirewallAware
 
     public function addPreService(string $serviceId, callable $service): FirewallAware
     {
-        $this->preServices = [$serviceId => $service];
+        $this->preServices[$serviceId] = $service;
 
         return $this;
     }
 
     public function addPostService(string $serviceId, callable $service): FirewallAware
     {
-        $this->postServices = [$serviceId => $service];
+        $this->postServices[$serviceId] = $service;
 
         return $this;
     }

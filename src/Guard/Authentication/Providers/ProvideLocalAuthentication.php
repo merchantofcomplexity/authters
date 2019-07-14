@@ -2,6 +2,7 @@
 
 namespace MerchantOfComplexity\Authters\Guard\Authentication\Providers;
 
+use MerchantOfComplexity\Authters\Domain\Role\SwitchIdentityRole;
 use MerchantOfComplexity\Authters\Exception\RuntimeException;
 use MerchantOfComplexity\Authters\Support\Contract\Domain\IdentityChecker;
 use MerchantOfComplexity\Authters\Support\Contract\Domain\IdentityProvider;
@@ -128,6 +129,19 @@ abstract class ProvideLocalAuthentication implements AuthenticationProvider
                 throw BadCredentials::invalid();
             }
         }
+    }
+
+    protected function mergeDynamicRoles(LocalIdentity $identity, Tokenable $token): array
+    {
+        $roles = $identity->getRoles();
+
+        foreach ($token->getRoles() as $role) {
+            if ($role instanceof SwitchIdentityRole) {
+                $roles[] = $role;
+            }
+        }
+
+        return $roles;
     }
 
     public function supportToken(Tokenable $token): bool

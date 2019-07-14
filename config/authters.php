@@ -7,12 +7,12 @@ use MerchantOfComplexity\Authters\Firewall\Bootstraps\ContextRegistry;
 use MerchantOfComplexity\Authters\Firewall\Bootstraps\ExceptionRegistry;
 use MerchantOfComplexity\Authters\Firewall\Bootstraps\GuardRegistry;
 use MerchantOfComplexity\Authters\Firewall\Bootstraps\RecallerRegistry;
+use MerchantOfComplexity\Authters\Firewall\Bootstraps\SwitchIdentityRegistry;
 use MerchantOfComplexity\Authters\Guard\Authorization\Hierarchy\SymfonyRoleHierarchy;
 use MerchantOfComplexity\Authters\Guard\Authorization\Strategy\UnanimousAuthorizationStrategy;
 use MerchantOfComplexity\Authters\Guard\Authorization\Voter\AuthenticatedTokenVoter;
 use MerchantOfComplexity\Authters\Guard\Authorization\Voter\DefaultExpressionVoter;
 use MerchantOfComplexity\Authters\Guard\Authorization\Voter\RoleHierarchyVoter;
-use MerchantOfComplexity\Authters\Guard\Authorization\Voter\RoleVoter;
 
 return
     [
@@ -39,6 +39,7 @@ return
                 ContextRegistry::class,
                 //AuthenticationServiceRegistry::class,
                 AnonymousRegistry::class,
+                SwitchIdentityRegistry::class,
                 ExceptionRegistry::class,
             ]
         ],
@@ -59,7 +60,6 @@ return
                 'voters' => [
                     AuthenticatedTokenVoter::class,
                     RoleHierarchyVoter::class,
-                    RoleVoter::class,
                     DefaultExpressionVoter::ALIAS,
                 ],
             ],
