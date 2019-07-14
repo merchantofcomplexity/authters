@@ -16,7 +16,7 @@ final class AuthenticationManager implements Authenticatable
 
     public function __construct(AuthenticationProvider ...$providers)
     {
-        if (0 === count($providers)) {
+        if (!$providers) {
             throw AuthenticationServiceFailure::noAuthenticationProvider();
         }
 

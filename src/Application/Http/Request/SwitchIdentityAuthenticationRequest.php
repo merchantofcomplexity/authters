@@ -8,7 +8,7 @@ use MerchantOfComplexity\Authters\Support\Contract\Value\IdentifierValue;
 use MerchantOfComplexity\Authters\Support\Value\Identifier\EmailIdentity;
 use MerchantOfComplexity\Authters\Support\Value\Identifier\NullIdentifier;
 
-class SwitchIdentityAuthenticationRequest implements AuthenticationRequest
+final class SwitchIdentityAuthenticationRequest implements AuthenticationRequest
 {
     const IDENTIFIER = '_switch_identity';
     const EXIT = '_exit_identity';

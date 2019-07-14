@@ -4,25 +4,16 @@ namespace MerchantOfComplexity\Authters\Application\Http\Middleware;
 
 use Illuminate\Http\Request;
 use MerchantOfComplexity\Authters\Application\Http\Request\SwitchIdentityAuthenticationRequest;
-use MerchantOfComplexity\Authters\Firewall\Guard\HasEventGuard;
 use MerchantOfComplexity\Authters\Guard\Authentication\Authenticator\SwitchIdentityAuthenticator;
-use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\AuthenticationGuard;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 
-class SwitchIdentityAuthentication extends Authentication implements AuthenticationGuard
+final class SwitchIdentityAuthentication extends Authentication
 {
-    use HasEventGuard;
-
     /**
      * @var SwitchIdentityAuthenticator
      */
     private $authenticator;
-
-    /**
-     * @var SwitchIdentityAuthenticationRequest
-     */
-    private $authenticationRequest;
 
     /**
      * @var bool

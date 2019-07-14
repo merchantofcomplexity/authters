@@ -7,7 +7,7 @@ use MerchantOfComplexity\Authters\Support\Contract\Domain\Role;
 use MerchantOfComplexity\Authters\Support\Contract\Value\Value;
 use MerchantOfComplexity\Authters\Support\Exception\Assert;
 
-class RoleValue implements Role, Value
+final class RoleValue implements Role, Value
 {
     const PREFIX = 'ROLE_';
 

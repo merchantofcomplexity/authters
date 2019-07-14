@@ -94,7 +94,7 @@ final class LocalAuthentication extends Authentication implements BaseStatefulMi
     protected function requireAuthentication(Request $request): bool
     {
         if ($this->guard->storage()->getToken()) {
-            // to remove to re authenticate a remembered token
+            // checkMe to remove to re authenticate a remembered token
             return false;
         }
 
