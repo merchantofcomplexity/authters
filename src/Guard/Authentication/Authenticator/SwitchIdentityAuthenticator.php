@@ -161,6 +161,9 @@ final class SwitchIdentityAuthenticator
     public function isIdentityGranted(Request $request): bool
     {
         return $this->authenticationRequest->match($request)
-            && $this->authorizationChecker->isGranted(['ROLE_PREVIOUS_ADMIN', 'ROLE_USER']);
+            && (
+                $this->authorizationChecker->isGranted(['ROLE_PREVIOUS_ADMIN'])
+                || $this->authorizationChecker->isGranted(['ROLE_USER'])
+            );
     }
 }
