@@ -75,7 +75,9 @@ final class SwitchIdentityAuthenticator
             throw new AuthenticationServiceFailure("Original token from switch identity not found");
         }
 
-        $identity = $this->identityProvider->requireIdentityOfIdentifier($source->getIdentity()->getIdentifier());
+        $identifier = $source->getIdentity()->getIdentifier();
+
+        $identity = $this->identityProvider->requireIdentityOfIdentifier($identifier);
 
         $source->setIdentity($identity);
 
@@ -86,8 +88,8 @@ final class SwitchIdentityAuthenticator
 
     protected function attemptSwitchIdentity(IdentityEmail $identifier, Tokenable $token): ?Tokenable
     {
-        if ($current = $this->currentIdentity($identifier, $token)) {
-            return $current;
+        if ($source = $this->extractOriginalToken($token)) {
+            throw new AuthorizationDenied("Already switch identity");
         }
 
         $this->assertIdentityAllowedToSwitch();
@@ -95,27 +97,16 @@ final class SwitchIdentityAuthenticator
         return $this->createSwitchIdentityToken($identifier, $token);
     }
 
-    protected function currentIdentity(IdentifierValue $identifier, Tokenable $token): ?Tokenable
-    {
-        $source = $this->extractOriginalToken($token);
-
-        if (!$source) {
-            return null;
-        }
-
-        if ($token->getIdentity()->getIdentifier()->sameValueAs($identifier)) {
-            return $token;
-        }
-
-        throw new AuthorizationDenied("Already switch identity");
-    }
-
     protected function createSwitchIdentityToken(IdentifierValue $identifier, Tokenable $currentToken): Tokenable
     {
         $identity = $this->identityProvider->requireIdentityOfIdentifier($identifier);
 
         if (!$identity instanceof LocalIdentity) {
-            throw new AuthenticationServiceFailure("Can only switch local identity");
+            throw new AuthenticationServiceFailure("Can only switch from a local identity instance");
+        }
+
+        if($identity->getIdentifier()->sameValueAs($currentToken->getIdentity()->getIdentifier())){
+            throw new AuthorizationDenied("Can not switch to your own identity");
         }
 
         $roles = array_merge(

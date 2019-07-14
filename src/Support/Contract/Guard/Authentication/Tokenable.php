@@ -22,7 +22,7 @@ interface Tokenable extends Serializable
     public function setIdentity($identity): void;
 
     /**
-     * @param Identity|LocalIdentity|IdentifierValue
+     * @@return  Identity|LocalIdentity|IdentifierValue
      */
     public function getIdentity();
 
