@@ -3,6 +3,7 @@
 namespace MerchantOfComplexity\Authters\Firewall\Bootstraps;
 
 use Closure;
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Request;
 use MerchantOfComplexity\Authters\Application\Http\Middleware\SwitchIdentityAuthentication;
@@ -48,6 +49,7 @@ final class SwitchIdentityRegistry implements FirewallRegistry
                 $app->get(AuthorizationChecker::class),
                 $app->get($context->identityProviderId()),
                 $this->authenticationRequest,
+                $app->get(Dispatcher::class),
                 $context->contextKey()
             );
 

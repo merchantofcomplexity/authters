@@ -2,6 +2,7 @@
 
 namespace MerchantOfComplexity\Authters\Guard\Authentication\Authenticator;
 
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Http\Request;
 use MerchantOfComplexity\Authters\Application\Http\Request\SwitchIdentityAuthenticationRequest;
 use MerchantOfComplexity\Authters\Domain\Role\RoleValue;
@@ -14,6 +15,9 @@ use MerchantOfComplexity\Authters\Support\Contract\Firewall\Key\ContextKey;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenable;
 use MerchantOfComplexity\Authters\Support\Contract\Value\IdentifierValue;
 use MerchantOfComplexity\Authters\Support\Contract\Value\IdentityEmail;
+use MerchantOfComplexity\Authters\Support\Events\IdentitySwitchAttempt;
+use MerchantOfComplexity\Authters\Support\Events\IdentitySwitchExit;
+use MerchantOfComplexity\Authters\Support\Events\IdentitySwitchSuccess;
 use MerchantOfComplexity\Authters\Support\Exception\AuthenticationServiceFailure;
 use MerchantOfComplexity\Authters\Support\Exception\AuthorizationDenied;
 
@@ -35,6 +39,11 @@ final class SwitchIdentityAuthenticator
     private $authenticationRequest;
 
     /**
+     * @var Dispatcher
+     */
+    private $dispatcher;
+
+    /**
      * @var ContextKey
      */
     private $contextKey;
@@ -42,18 +51,24 @@ final class SwitchIdentityAuthenticator
     public function __construct(AuthorizationChecker $authorizationChecker,
                                 IdentityProvider $identityProvider,
                                 SwitchIdentityAuthenticationRequest $authenticationRequest,
+                                Dispatcher $dispatcher,
                                 ContextKey $contextKey)
     {
         $this->authorizationChecker = $authorizationChecker;
         $this->identityProvider = $identityProvider;
         $this->authenticationRequest = $authenticationRequest;
+        $this->dispatcher = $dispatcher;
         $this->contextKey = $contextKey;
     }
 
     public function handleAuthentication(Request $request, Tokenable $currenToken): ?Tokenable
     {
         if ($this->authenticationRequest->isExitIdentityRequest($request)) {
-            return $this->attemptExitIdentity($currenToken);
+            if ($exitToken = $this->attemptExitIdentity($currenToken)) {
+                $this->dispatcher->dispatch(new IdentitySwitchExit($request, $exitToken));
+            }
+
+            return $exitToken;
         }
 
         if ($this->authenticationRequest->isSwitchIdentityRequest($request)) {
@@ -63,7 +78,15 @@ final class SwitchIdentityAuthenticator
                 throw new AuthenticationServiceFailure("Switch identity allow for email identifier only");
             }
 
-            return $this->attemptSwitchIdentity($identifier, $currenToken);
+            $this->dispatcher->dispatch(new IdentitySwitchAttempt($request, $currenToken));
+
+            $switchedToken = $this->attemptSwitchIdentity($identifier, $currenToken);
+
+            if ($switchedToken) {
+                $this->dispatcher->dispatch(new IdentitySwitchSuccess($request, $switchedToken));
+            }
+
+            return $switchedToken;
         }
 
         return null;
@@ -80,8 +103,6 @@ final class SwitchIdentityAuthenticator
         $identity = $this->identityProvider->requireIdentityOfIdentifier($identifier);
 
         $source->setIdentity($identity);
-
-        // dispatch event
 
         return $source;
     }
@@ -105,7 +126,7 @@ final class SwitchIdentityAuthenticator
             throw new AuthenticationServiceFailure("Can only switch from a local identity instance");
         }
 
-        if($identity->getIdentifier()->sameValueAs($currentToken->getIdentity()->getIdentifier())){
+        if ($identity->getIdentifier()->sameValueAs($currentToken->getIdentity()->getIdentifier())) {
             throw new AuthorizationDenied("Can not switch to your own identity");
         }
 
@@ -125,8 +146,6 @@ final class SwitchIdentityAuthenticator
             $this->contextKey,
             $roles
         );
-
-        // dispatch event
 
         return $switchIdentityToken;
     }
@@ -154,7 +173,7 @@ final class SwitchIdentityAuthenticator
         return $this->authenticationRequest->match($request)
             && (
                 $this->authorizationChecker->isGranted(['ROLE_PREVIOUS_ADMIN'])
-                || $this->authorizationChecker->isGranted(['ROLE_USER'])
+                || $this->authorizationChecker->isGranted(['ROLE_USER']) // checkMe
             );
     }
 }
