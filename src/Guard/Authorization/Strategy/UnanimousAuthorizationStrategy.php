@@ -8,7 +8,7 @@ use MerchantOfComplexity\Authters\Support\Contract\Guard\Authorization\Votable;
 use MerchantOfComplexity\Authters\Support\Exception\AuthenticationServiceFailure;
 use MerchantOfComplexity\Authters\Support\Guard\Authorization\Voters;
 
-class UnanimousAuthorizationStrategy implements AuthorizationStrategy
+final class UnanimousAuthorizationStrategy implements AuthorizationStrategy
 {
     /**
      * @var bool
