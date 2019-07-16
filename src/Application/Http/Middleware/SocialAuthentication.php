@@ -16,6 +16,8 @@ use MerchantOfComplexity\Authters\Support\Exception\AuthenticationException;
 use MerchantOfComplexity\Authters\Support\Exception\AuthenticationServiceFailure;
 use MerchantOfComplexity\Authters\Support\Exception\IdentityNotFound;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
+use function get_class;
 
 class SocialAuthentication extends Authentication implements AuthenticationEventGuard
 {
@@ -54,7 +56,7 @@ class SocialAuthentication extends Authentication implements AuthenticationEvent
                 try {
                     $token = $this->guard->storeAuthenticatedToken($token);
                 } catch (IdentityNotFound $needRegistration) {
-                    // keep workflow
+                    //
                 } finally {
                     $this->guard->storage()->setToken($token);
 
@@ -68,12 +70,8 @@ class SocialAuthentication extends Authentication implements AuthenticationEvent
             $auth = new AuthenticationException('foo');
 
             return $this->redirectToSocialProvider->startAuthentication($request, $auth);
-        } catch (AuthenticationException $exception) {
-            return $this->onException($request, $exception);
-        } catch (InvalidStateException | InvalidArgumentException |ClientException $exception) {
-            $exception = new AuthenticationServiceFailure("Authentication failed", 0, $exception);
-
-            return $this->onException($request, $exception);
+        } catch (Throwable $exception) {
+            return $this->handleException($request, $exception);
         }
     }
 
@@ -86,6 +84,29 @@ class SocialAuthentication extends Authentication implements AuthenticationEvent
             $socialIdentity->getSocialCredentials(),
             $this->contextKey
         );
+    }
+
+    protected function handleException(Request $request, Throwable $exception): Response
+    {
+        if ($exception instanceof AuthenticationException) {
+            return $this->onException($request, $exception);
+        }
+
+        $handled = [
+            InvalidStateException::class,
+            InvalidArgumentException::class,
+            ClientException::class
+        ];
+
+        if (in_array(get_class($exception), $handled)) {
+            $exception = new AuthenticationServiceFailure(
+                "Authentication failed", 0, $exception
+            );
+
+            return $this->onException($request, $exception);
+        }
+
+        throw $exception;
     }
 
     protected function onException(Request $request, AuthenticationException $exception): Response
