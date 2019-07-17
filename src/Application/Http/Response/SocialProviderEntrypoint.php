@@ -20,7 +20,7 @@ class SocialProviderEntrypoint implements Entrypoint
         $this->oauthManager = $oauthManager;
     }
 
-    public function startAuthentication(Request $request, AuthenticationException $exception): Response
+    public function startAuthentication(Request $request, AuthenticationException $exception = null): Response
     {
         return $this->oauthManager->socialiteInstance($request)->redirect();
     }

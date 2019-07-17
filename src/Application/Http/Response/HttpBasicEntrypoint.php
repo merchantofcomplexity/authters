@@ -27,7 +27,7 @@ final class HttpBasicEntrypoint implements Entrypoint
         $this->realmName = $realmName;
     }
 
-    public function startAuthentication(Request $request, AuthenticationException $exception): Response
+    public function startAuthentication(Request $request, AuthenticationException $exception = null): Response
     {
         $statusCode = Response::HTTP_UNAUTHORIZED;
 

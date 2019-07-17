@@ -20,7 +20,7 @@ final class DefaultJsonEntrypoint implements Entrypoint
         $this->response = $response;
     }
 
-    public function startAuthentication(Request $request, AuthenticationException $exception): Response
+    public function startAuthentication(Request $request, AuthenticationException $exception = null): Response
     {
        $message = $exception->getMessage() ?? ' You must login first';
 

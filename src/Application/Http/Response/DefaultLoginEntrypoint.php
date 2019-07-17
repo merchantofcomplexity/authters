@@ -26,10 +26,10 @@ final class DefaultLoginEntrypoint implements Entrypoint
         $this->loginUrl = $loginUrl;
     }
 
-    public function startAuthentication(Request $request, AuthenticationException $exception): Response
+    public function startAuthentication(Request $request, AuthenticationException $exception = null): Response
     {
-        return $this->response
-            ->redirectTo($this->loginUrl)
-            ->with('message', $exception->getMessage());
+        $message = $exception->getMessage() ?? ' You must login first';
+
+        return $this->response->redirectTo($this->loginUrl)->with('message', $message);
     }
 }
