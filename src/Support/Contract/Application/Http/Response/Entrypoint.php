@@ -8,5 +8,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 interface Entrypoint
 {
-    public function startAuthentication(Request $request, AuthenticationException $exception): Response;
+    public function startAuthentication(Request $request,
+                                        AuthenticationException $exception = null): Response;
 }
