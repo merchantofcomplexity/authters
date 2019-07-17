@@ -66,10 +66,7 @@ class SocialAuthentication extends Authentication implements AuthenticationEvent
 
             $this->oAuthFactory->authenticationRequest()->extractCredentials($request);
 
-            // fixMe exception from entrypoint should be optional
-            $auth = new AuthenticationException('foo');
-
-            return $this->redirectToSocialProvider->startAuthentication($request, $auth);
+            return $this->redirectToSocialProvider->startAuthentication($request);
         } catch (Throwable $exception) {
             return $this->handleException($request, $exception);
         }
