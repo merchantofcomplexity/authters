@@ -35,7 +35,7 @@ class SocialAuthenticationRequest implements AuthenticationRequest
         return $this->isLogin($request);
     }
 
-    public function extractCredentials(Request $request)
+    public function extractCredentials(Request $request): SocialProviderName
     {
         try {
             $provider = $request->route()->parameter($this->routeProviderParameter, null);

@@ -47,7 +47,7 @@ final class GenericSocialIdentity implements SocialIdentity, IdentifierValue
 
     public function getRoles(): array
     {
-        return ['ROLE_SOCIAL_USER']; // checkMe
+        return [];
     }
 
     public function identify(): array
