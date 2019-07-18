@@ -15,20 +15,20 @@ class SocialPreAuthentication extends SocialAuthentication
             // first we create a token with a "need registration" role
             // if we succeed to authenticate the token, identity has been already registered
             // we store a new token with a "login" role
-            // we keep workflow in both case to be handled in a controller
+            // we keep workflow in both case to be handled in a endpoint
             $token = $this->authenticator->createRegistrationSocialToken($request, $this->contextKey);
 
             try {
-                $token = $this->guard->authenticateToken($token);
-                $token = $this->authenticator->createLoginSocialToken($token);
-
+                $token = $this->authenticator->createLoginSocialToken(
+                    $this->guard->authenticateToken($token)
+                );
             } catch (IdentityNotFound $notFound) {
-            } finally {
-                $this->guard->storage()->setToken($token);
-
-                return null;
+                //
             }
 
+            $this->guard->storage()->setToken($token);
+
+            return null;
         } catch (Throwable $exception) {
             return $this->onException($request, $exception);
         }
@@ -36,6 +36,7 @@ class SocialPreAuthentication extends SocialAuthentication
 
     protected function requireAuthentication(Request $request): bool
     {
-        return $this->guard->isStorageEmpty() && $this->authenticator->isRedirect($request);
+        return $this->guard->isStorageEmpty()
+            && $this->authenticator->socialRequest()->isRedirect($request);
     }
 }

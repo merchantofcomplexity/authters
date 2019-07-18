@@ -29,20 +29,31 @@ abstract class SocialAuthentication extends Authentication implements Authentica
      */
     protected $contextKey;
 
-    public function __construct(SocialAuthenticator $authenticator,ContextKey $contextKey)
+    public function __construct(SocialAuthenticator $authenticator, ContextKey $contextKey)
     {
         $this->authenticator = $authenticator;
         $this->contextKey = $contextKey;
     }
 
+    /**
+     * @param Request $request
+     * @param Throwable $exception
+     * @return Response
+     * @throws Throwable
+     */
     protected function onException(Request $request, Throwable $exception): Response
     {
         $this->guard->clearStorage();
 
-        return $this->guard->startAuthentication($request, $this->handleException($exception));
+        return $this->guard->startAuthentication($request, $this->handleAuthenticationException($exception));
     }
 
-    private function handleException(Throwable $exception): AuthenticationException
+    /**
+     * @param Throwable $exception
+     * @return AuthenticationException
+     * @throws Throwable
+     */
+    private function handleAuthenticationException(Throwable $exception): AuthenticationException
     {
         if ($exception instanceof AuthenticationException) {
             return $exception;
@@ -55,11 +66,9 @@ abstract class SocialAuthentication extends Authentication implements Authentica
         ];
 
         if (in_array(get_class($exception), $handled)) {
-            $exception = new AuthenticationException(
-                "Authentication failed", 0, $exception
-            );
+            $message = 'Authentication failed';
 
-            return $exception;
+            return new AuthenticationException($message, 0, $exception);
         }
 
         throw $exception;

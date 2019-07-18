@@ -3,6 +3,7 @@
 namespace MerchantOfComplexity\Authters\Application\Http\Response;
 
 use Illuminate\Http\Request;
+use MerchantOfComplexity\Authters\Application\Http\Request\SocialAuthenticationRequest;
 use MerchantOfComplexity\Authters\Guard\Service\Social\SocialOAuthFactory;
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Response\Entrypoint;
 use MerchantOfComplexity\Authters\Support\Exception\AuthenticationException;
@@ -15,13 +16,21 @@ class SocialProviderEntrypoint implements Entrypoint
      */
     private $oauthManager;
 
-    public function __construct(SocialOAuthFactory $oauthManager)
+    /**
+     * @var SocialAuthenticationRequest
+     */
+    private $authenticationRequest;
+
+    public function __construct(SocialOAuthFactory $oauthManager, SocialAuthenticationRequest $authenticationRequest)
     {
         $this->oauthManager = $oauthManager;
+        $this->authenticationRequest = $authenticationRequest;
     }
 
     public function startAuthentication(Request $request, AuthenticationException $exception = null): Response
     {
-        return $this->oauthManager->socialiteInstance($request)->redirect();
+        $provider = $this->authenticationRequest->extractCredentials($request);
+
+        return $this->oauthManager->socialiteInstance($provider)->redirect();
     }
 }

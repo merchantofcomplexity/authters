@@ -28,7 +28,7 @@ final class SocialLoginAuthentication extends SocialAuthentication
     protected function processAuthentication(Request $request): ?Response
     {
         try {
-            $this->authenticator->extractCredentials($request);
+            $this->authenticator->extractProviderName($request);
 
             return $this->entrypoint->startAuthentication($request);
         } catch (Throwable $exception) {
@@ -38,6 +38,6 @@ final class SocialLoginAuthentication extends SocialAuthentication
 
     protected function requireAuthentication(Request $request): bool
     {
-        return $this->guard->isStorageEmpty() && $this->authenticator->isLogin($request);
+        return $this->guard->isStorageEmpty() && $this->authenticator->socialRequest()->isLogin($request);
     }
 }
