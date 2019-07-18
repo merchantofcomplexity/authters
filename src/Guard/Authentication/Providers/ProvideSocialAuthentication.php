@@ -9,6 +9,7 @@ use MerchantOfComplexity\Authters\Support\Contract\Domain\SocialIdentity;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\Key\ContextKey;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\AuthenticationProvider;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenable;
+use MerchantOfComplexity\Authters\Support\Contract\Value\IdentifierValue;
 use MerchantOfComplexity\Authters\Support\Exception\AuthenticationServiceFailure;
 
 class ProvideSocialAuthentication implements AuthenticationProvider
@@ -59,7 +60,7 @@ class ProvideSocialAuthentication implements AuthenticationProvider
     {
         $identifier = $token->getIdentity();
 
-        if ($identifier instanceof SocialIdentity && $token->isAuthenticated()) {
+        if (!$identifier instanceof IdentifierValue && $identifier instanceof SocialIdentity) {
             return $identifier;
         }
 

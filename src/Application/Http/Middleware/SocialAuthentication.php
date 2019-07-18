@@ -7,14 +7,17 @@ use Illuminate\Http\Request;
 use InvalidArgumentException;
 use Laravel\Socialite\Two\InvalidStateException;
 use MerchantOfComplexity\Authters\Application\Http\Response\SocialProviderEntrypoint;
+use MerchantOfComplexity\Authters\Domain\Role\RoleValue;
 use MerchantOfComplexity\Authters\Firewall\Guard\HasEventGuard;
 use MerchantOfComplexity\Authters\Guard\Authentication\Token\SocialToken;
 use MerchantOfComplexity\Authters\Guard\Service\Social\SocialOAuthFactory;
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\AuthenticationEventGuard;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\Key\ContextKey;
+use MerchantOfComplexity\Authters\Support\Contract\Value\IdentifierValue;
 use MerchantOfComplexity\Authters\Support\Exception\AuthenticationException;
 use MerchantOfComplexity\Authters\Support\Exception\AuthenticationServiceFailure;
 use MerchantOfComplexity\Authters\Support\Exception\IdentityNotFound;
+use MerchantOfComplexity\Authters\Support\Roles\SocialRoles;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 use function get_class;
@@ -52,9 +55,11 @@ class SocialAuthentication extends Authentication implements AuthenticationEvent
         try {
             if ($this->oAuthFactory->authenticationRequest()->isRedirect($request)) {
                 $token = $this->createSocialToken($request);
+                $token = $this->addRoles($token);
 
                 try {
                     $token = $this->guard->storeAuthenticatedToken($token);
+                    $token = $this->addRoles($token);
                 } catch (IdentityNotFound $needRegistration) {
                     //
                 } finally {
@@ -80,6 +85,24 @@ class SocialAuthentication extends Authentication implements AuthenticationEvent
             $socialIdentity,
             $socialIdentity->getSocialCredentials(),
             $this->contextKey
+        );
+    }
+
+    protected function addRoles(SocialToken $token): SocialToken
+    {
+        $roles = $token->getRoles();
+
+        if ($token->getIdentity() instanceof IdentifierValue) {
+            $roles[] = RoleValue::fromString(SocialRoles::NEED_REGISTRATION);
+        } else[
+            $roles[] = RoleValue::fromString(SocialRoles::LOGIN)
+        ];
+
+        return new SocialToken(
+            $token->getIdentity(),
+            $token->getCredentials(),
+            $token->getFirewallKey(),
+            $roles
         );
     }
 
