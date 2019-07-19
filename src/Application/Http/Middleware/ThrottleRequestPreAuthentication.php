@@ -74,6 +74,40 @@ final class ThrottleRequestPreAuthentication implements BaseAuthentication
         );
     }
 
+    protected function resolveRequestSignature(Request $request, ?IdentifierValue $identifier): string
+    {
+        if ($identifier) {
+            $identifierValue = $identifier->getValue();
+
+            $value = is_array($identifierValue) ? implode(',', $identifierValue) : $identifierValue;
+
+            return sha1($value);
+        }
+
+        return sha1($request->route()->getDomain() . '|' . $request->ip());
+    }
+
+    protected function resolveMaxAttempts(int $maxAttempts, ?IdentifierValue $identifier): int
+    {
+        if (Str::contains($maxAttempts, '|')) {
+            $maxAttempts = explode('|', $maxAttempts, 2)[$identifier ? 1 : 0];
+        }
+
+        return $maxAttempts;
+    }
+
+    protected function addHeaders(Response $response,
+                                  int $maxAttempts,
+                                  int $remainingAttempts,
+                                  int $retryAfter = null): Response
+    {
+        $headers = $this->getHeaders($maxAttempts, $remainingAttempts, $retryAfter);
+
+        $response->headers->add($headers);
+
+        return $response;
+    }
+
     protected function getHeaders(int $maxAttempts, int $remainingAttempts, int $retryAfter = null)
     {
         $headers = [
@@ -109,35 +143,5 @@ final class ThrottleRequestPreAuthentication implements BaseAuthentication
         }
 
         return null;
-    }
-
-    protected function resolveRequestSignature(Request $request, ?IdentifierValue $identifier): string
-    {
-        if ($identifier) {
-            return sha1($identifier->getValue());
-        }
-
-        return sha1($request->route()->getDomain() . '|' . $request->ip());
-    }
-
-    protected function resolveMaxAttempts(int $maxAttempts, ?IdentifierValue $identifier): int
-    {
-        if (Str::contains($maxAttempts, '|')) {
-            $maxAttempts = explode('|', $maxAttempts, 2)[$identifier ? 1 : 0];
-        }
-
-        return $maxAttempts;
-    }
-
-    protected function addHeaders(Response $response,
-                                  int $maxAttempts,
-                                  int $remainingAttempts,
-                                  int $retryAfter = null): Response
-    {
-        $response->headers->add(
-            $this->getHeaders($maxAttempts, $remainingAttempts, $retryAfter)
-        );
-
-        return $response;
     }
 }
