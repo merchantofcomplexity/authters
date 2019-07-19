@@ -17,9 +17,9 @@ trait HasAuthorization
      */
     private $container;
 
-    protected function denyAccessUnlessGranted(array $attributes, object $subject = null): bool
+    protected function isGranted(array $attributes, object $subject = null): bool
     {
-        return $this->authorizationChecker()->isGranted($attributes,$subject ?? request());
+        return $this->authorizationChecker()->isGranted($attributes, $subject ?? request());
     }
 
     /**
@@ -28,9 +28,9 @@ trait HasAuthorization
      * @return bool
      * @throws AuthorizationDenied
      */
-    protected function requireAccessUnlessGranted(array $attributes, object $subject = null): bool
+    protected function denyAccessUnlessGranted(array $attributes, object $subject = null): bool
     {
-        if (!$this->denyAccessUnlessGranted($attributes, $subject)) {
+        if (!$this->isGranted($attributes, $subject)) {
             $this->raiseAuthorizationDenied();
         }
 
