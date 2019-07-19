@@ -5,12 +5,11 @@ namespace MerchantOfComplexity\Authters\Firewall;
 use Closure;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Request;
-use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\Authentication;
+use Illuminate\Pipeline\Pipeline;
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\AuthenticationGuard;
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\StatefulAuthenticationGuard;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Recaller\Recallable;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Guardable;
-use Symfony\Component\HttpFoundation\Response;
 
 final class Firewall
 {
@@ -34,45 +33,36 @@ final class Firewall
     {
         $authenticationServices = $this->manager->raise($firewallName, $request);
 
-        if ($response = $this->startAuthentication($authenticationServices, $request)) {
-            return $response;
+        return $this->startAuthentication($authenticationServices, $request, $next);
+    }
+
+    protected function startAuthentication(iterable $services, Request $request, Closure $next)
+    {
+        // fixMe temporary
+        $iterator = array_filter(iterator_to_array($services));
+
+        foreach ($iterator as $service) {
+            $this->setGuardOnService($service);
         }
 
-        return $next($request);
+        return (new Pipeline($this->app))
+            ->via('authenticate')
+            ->send($request)
+            ->through($iterator)
+            ->then(function () use ($request, $next) {
+                return $next($request);
+            });
     }
 
-    protected function startAuthentication(iterable $services, Request $request): ?Response
+    protected function setGuardOnService($service): void
     {
-        /** @var Authentication $service */
-        foreach ($services as $service) {
-            if (!$service) {
-                continue;
-            }
-
-            if ($service instanceof AuthenticationGuard) {
-                $guard = $this->app->get(Guardable::class);
-                $service->setGuard($guard);
-            }
-
-            if ($this->serviceNeedRecaller($service)) {
-                $service->setRecaller($this->app->get(Recallable::class));
-            }
-
-            if ($response = $service->authenticate($request)) {
-                return $response;
-            }
+        if ($service instanceof AuthenticationGuard) {
+            $guard = $this->app->get(Guardable::class);
+            $service->setGuard($guard);
         }
 
-        return null;
-    }
-
-    protected function serviceNeedGuard($service): bool
-    {
-        return $service instanceof AuthenticationGuard;
-    }
-
-    protected function serviceNeedRecaller($service): bool
-    {
-        return $service instanceof StatefulAuthenticationGuard && $this->app->bound(Recallable::class);
+        if ($service instanceof StatefulAuthenticationGuard && $this->app->bound(Recallable::class)) {
+            $service->setRecaller($this->app->get(Recallable::class));
+        }
     }
 }

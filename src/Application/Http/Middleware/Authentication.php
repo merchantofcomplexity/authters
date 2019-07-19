@@ -2,6 +2,7 @@
 
 namespace MerchantOfComplexity\Authters\Application\Http\Middleware;
 
+use Closure;
 use Illuminate\Http\Request;
 use MerchantOfComplexity\Authters\Guard\HasGuard;
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\AuthenticationGuard;
@@ -12,23 +13,25 @@ abstract class Authentication implements AuthenticationGuard
 {
     use HasGuard;
 
-    public function authenticate(Request $request): ?Response
+    public function authenticate(Request $request, Closure $next)
     {
         if (!$this->requireAuthentication($request)) {
-            return null;
+            return $next($request);
         }
+
+        $response = null;
 
         try {
             $response = $this->processAuthentication($request);
         } catch (AuthenticationException $exception) {
-            if(method_exists($this, 'fireFailureLoginEvent')){
+            if (method_exists($this, 'fireFailureLoginEvent')) {
                 $this->fireFailureLoginEvent($request, $exception);
             }
 
             return $this->guard->startAuthentication($request, $exception);
         }
 
-        return $response;
+        return $response ?? $next($request);
     }
 
     abstract protected function requireAuthentication(Request $request): bool;
