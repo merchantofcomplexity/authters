@@ -77,7 +77,8 @@ final class DefaultExpressionVoter implements Votable
 
     private function supportAttribute($attribute): bool
     {
-        return Str::contains($attribute, '(') && Str::contains($attribute, ')');
+        return $attribute instanceof Expression
+            || Str::contains($attribute, '(') && Str::contains($attribute, ')');
     }
 
     private function getVariables(Tokenable $token, $subject): array
