@@ -35,6 +35,11 @@ trait HasTokenAttributes
         return $this->attributes[$key] ?? $default;
     }
 
+    public function setAttributes(array $attributes): void
+    {
+        $this->attributes = $attributes;
+    }
+
     public function getAttributes(): array
     {
         return $this->attributes;

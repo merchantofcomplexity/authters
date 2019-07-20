@@ -2,9 +2,8 @@
 
 namespace MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication;
 
-use MerchantOfComplexity\Authters\Support\Contract\Domain\LocalIdentity;
 use MerchantOfComplexity\Authters\Support\Contract\Domain\Identity;
-use MerchantOfComplexity\Authters\Support\Contract\Firewall\Key\ContextKey;
+use MerchantOfComplexity\Authters\Support\Contract\Domain\LocalIdentity;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\Key\FirewallKey;
 use MerchantOfComplexity\Authters\Support\Contract\Value\Credentials;
 use MerchantOfComplexity\Authters\Support\Contract\Value\IdentifierValue;
@@ -34,13 +33,15 @@ interface Tokenable extends Serializable
 
     public function setAuthenticated(bool $isAuthenticated): void;
 
-    public function setAttribute(string $key, $value): void;
-
     public function removeAttribute(string $key): bool;
 
     public function hasAttribute(string $key): bool;
 
+    public function setAttribute(string $key, $value): void;
+
     public function getAttribute(string $key, $default = null);
 
     public function getAttributes(): array;
+
+    public function setAttributes(array $attributes): void;
 }
