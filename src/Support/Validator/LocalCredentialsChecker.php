@@ -45,7 +45,7 @@ class LocalCredentialsChecker implements CredentialsChecker
                 throw BadCredentials::hasChanged();
             }
 
-            if ($tokenCredential instanceof ClearCredentials) {
+            if (!$tokenCredential instanceof EncodedCredentials) {
                 $this->validatePassword($identity->getPassword(), $tokenCredential);
             }
         } else {
