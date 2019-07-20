@@ -32,7 +32,7 @@ final class SocialLoginAuthentication extends SocialAuthentication
 
             return $this->entrypoint->startAuthentication($request);
         } catch (Throwable $exception) {
-            return $this->onException($request, $exception);
+            return $this->handleAuthenticationFailure($request, $exception);
         }
     }
 

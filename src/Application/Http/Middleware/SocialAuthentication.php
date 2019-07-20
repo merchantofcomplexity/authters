@@ -41,11 +41,19 @@ abstract class SocialAuthentication extends Authentication implements Authentica
      * @return Response
      * @throws Throwable
      */
-    protected function onException(Request $request, Throwable $exception): Response
+    protected function handleAuthenticationFailure(Request $request, Throwable $exception): Response
     {
         $this->guard->clearStorage();
 
-        return $this->guard->startAuthentication($request, $this->handleAuthenticationException($exception));
+        $authenticationException = $this->handleAuthenticationException($exception);
+
+        if ($authenticationException) {
+            $this->fireFailureLoginEvent($request, $authenticationException);
+
+            return $this->guard->startAuthentication($request, $authenticationException);
+        }
+
+        throw $exception;
     }
 
     /**
@@ -53,7 +61,7 @@ abstract class SocialAuthentication extends Authentication implements Authentica
      * @return AuthenticationException
      * @throws Throwable
      */
-    private function handleAuthenticationException(Throwable $exception): AuthenticationException
+    private function handleAuthenticationException(Throwable $exception): ?AuthenticationException
     {
         if ($exception instanceof AuthenticationException) {
             return $exception;
@@ -71,6 +79,6 @@ abstract class SocialAuthentication extends Authentication implements Authentica
             return new AuthenticationException($message, 0, $exception);
         }
 
-        throw $exception;
+        return null;
     }
 }

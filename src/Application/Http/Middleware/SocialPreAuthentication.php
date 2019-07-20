@@ -18,6 +18,8 @@ class SocialPreAuthentication extends SocialAuthentication
             // we keep workflow in both case to be handled in a endpoint
             $token = $this->authenticator->createRegistrationSocialToken($request, $this->contextKey);
 
+            $this->fireAttemptLoginEvent($request, $token);
+
             try {
                 $token = $this->authenticator->createLoginSocialToken(
                     $this->guard->authenticateToken($token)
@@ -26,11 +28,13 @@ class SocialPreAuthentication extends SocialAuthentication
                 //
             }
 
+            $this->fireSuccessLoginEvent($request, $token);
+
             $this->guard->storage()->setToken($token);
 
             return null;
         } catch (Throwable $exception) {
-            return $this->onException($request, $exception);
+            return $this->handleAuthenticationFailure($request, $exception);
         }
     }
 
