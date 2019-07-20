@@ -67,7 +67,8 @@ class CredentialEnforcerAuthentication extends Authentication
 
                     $authenticatedToken = $this->authenticator->enforceToken($newToken);
 
-                    $this->guard->storage()->setToken($authenticatedToken);
+                    // could be avoided
+                    $this->guard->storeAuthenticatedToken($authenticatedToken);
 
                     return response()->redirectToIntended();
                 } catch (AuthenticationException $exception) {
@@ -93,9 +94,7 @@ class CredentialEnforcerAuthentication extends Authentication
     {
         $credentials = $this->enforcerRequest->extractCredentials($request);
 
-        $token = new GenericLocalToken($token->getIdentity(), $credentials, $this->contextKey);
-
-        return $this->guard->authenticateToken($token);
+        return new GenericLocalToken($token->getIdentity(), $credentials, $this->contextKey);
     }
 
     protected function extractFullyAuthenticatedToken(): ?LocalToken
