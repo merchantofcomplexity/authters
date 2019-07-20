@@ -138,7 +138,7 @@ final class ThrottleRequestPreAuthentication implements BaseAuthentication
     {
         $token = $this->storage->getToken();
 
-        if ($token->getIdentity() instanceof Identity) {
+        if ($token && $token->getIdentity() instanceof Identity) {
             return $token->getIdentity()->getIdentifier();
         }
 
