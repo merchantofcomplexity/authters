@@ -70,7 +70,7 @@ class CredentialEnforcerAuthentication extends Authentication
 
                     $response = response()->redirectTo($request->session()->get(self::ROUTE_INTENDED_KEY));
 
-                    $request->session()->forget(self::ROUTE_INTENDED_KEY);
+                    $this->forgetIntended($request);
 
                     return $response;
                 } catch (AuthenticationException $exception) {
@@ -78,7 +78,7 @@ class CredentialEnforcerAuthentication extends Authentication
                 }
             }
 
-            $request->session()->put(self::ROUTE_INTENDED_KEY, $request->fullUrl());
+            $this->saveRouteIntended($request);
 
             return $this->authenticator->startAuthentication($request);
         }
@@ -87,7 +87,7 @@ class CredentialEnforcerAuthentication extends Authentication
             throw new AuthenticationException("Authentication denied");
         }
 
-        $request->session()->forget(self::ROUTE_INTENDED_KEY);
+        $this->forgetIntended($request);
 
         return null;
     }
@@ -120,5 +120,15 @@ class CredentialEnforcerAuthentication extends Authentication
                 $this->enforcerRequest->match($request)
                 || $this->authenticator->matchEnforcerRoutes($request)
             );
+    }
+
+    protected function forgetIntended(Request $request): void
+    {
+        $request->session()->forget(self::ROUTE_INTENDED_KEY);
+    }
+
+    protected function saveRouteIntended(Request $request)
+    {
+        $request->session()->put(self::ROUTE_INTENDED_KEY, $request->fullUrl());
     }
 }
