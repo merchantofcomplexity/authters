@@ -33,7 +33,10 @@ final class ProvideRecallerAuthentication implements AuthenticationProvider
 
         $this->identityChecker->onPreAuthentication($identity);
 
-        return new GenericRecallerToken($identity, $this->contextKey);
+        $newToken = new GenericRecallerToken($identity, $this->contextKey);
+        $newToken->setAttributes($token->getAttributes());
+
+        return $newToken;
     }
 
     public function supportToken(Tokenable $token): bool

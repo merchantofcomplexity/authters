@@ -48,12 +48,16 @@ class ProvideSocialAuthentication implements AuthenticationProvider
 
         $this->identityChecker->onPreAuthentication($identity);
 
-        return new SocialToken(
+        $newToken = new SocialToken(
             $identity,
             $identity->getSocialCredentials(),
             $this->contextKey,
             $identity->getRoles()
         );
+
+        $newToken->setAttributes($token->getAttributes());
+
+        return $newToken;
     }
 
     protected function retrieveIdentity(SocialToken $token): SocialIdentity

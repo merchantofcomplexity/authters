@@ -55,17 +55,21 @@ final class SocialAuthenticator
             throw new AuthenticationServiceFailure("Invalid identifier");
         }
 
-        return new SocialToken(
+        $newToken = new SocialToken(
             $token->getIdentity(),
             $token->getCredentials(),
             $token->getFirewallKey(),
             [RoleValue::fromString(SocialRoles::LOGIN)]
         );
+
+        $newToken->setAttributes($token->getAttributes());
+
+        return $newToken;
     }
 
     public function extractProviderName(Request $request): SocialProviderName
     {
-        return  $this->authenticationRequest->extractCredentials($request);
+        return $this->authenticationRequest->extractCredentials($request);
     }
 
     public function socialRequest(): SocialAuthenticationRequest
