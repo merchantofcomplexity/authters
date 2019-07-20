@@ -14,7 +14,7 @@ use MerchantOfComplexity\Authters\Support\Exception\BadCredentials;
 use MerchantOfComplexity\Authters\Support\Value\Credentials\EmptyCredentials;
 use Symfony\Component\HttpFoundation\Response;
 
-class EnforcerCredentialAuthenticator
+class CredentialEnforcerAuthenticator
 {
     const TOKEN_ATTRIBUTE = 'credential_enforcer';
 
@@ -80,7 +80,7 @@ class EnforcerCredentialAuthenticator
         return $this->entrypoint->startAuthentication($request, $exception);
     }
 
-    // copy of ProvideLocalAuthentication
+    // fixMe copy of ProvideLocalAuthentication
     protected function assertValidCredentials(LocalToken $token): void
     {
         $identity = $token->getIdentity();

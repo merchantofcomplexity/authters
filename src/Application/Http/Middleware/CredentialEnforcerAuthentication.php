@@ -3,7 +3,7 @@
 namespace MerchantOfComplexity\Authters\Application\Http\Middleware;
 
 use Illuminate\Http\Request;
-use MerchantOfComplexity\Authters\Guard\Authentication\Authenticator\EnforcerCredentialAuthenticator;
+use MerchantOfComplexity\Authters\Guard\Authentication\Authenticator\CredentialEnforcerAuthenticator;
 use MerchantOfComplexity\Authters\Guard\Authentication\Token\GenericLocalToken;
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Request\AuthenticationRequest;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\Key\ContextKey;
@@ -14,8 +14,10 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CredentialEnforcerAuthentication extends Authentication
 {
+    const ROUTE_INTENDED_KEY = 'credential_enforcer_route';
+
     /**
-     * @var EnforcerCredentialAuthenticator
+     * @var CredentialEnforcerAuthenticator
      */
     private $authenticator;
 
@@ -34,7 +36,7 @@ class CredentialEnforcerAuthentication extends Authentication
      */
     private $trustResolver;
 
-    public function __construct(EnforcerCredentialAuthenticator $authenticator,
+    public function __construct(CredentialEnforcerAuthenticator $authenticator,
                                 ContextKey $contextKey,
                                 AuthenticationRequest $enforcerRequest,
                                 TrustResolver $trustResolver)
@@ -47,18 +49,15 @@ class CredentialEnforcerAuthentication extends Authentication
 
     protected function processAuthentication(Request $request): ?Response
     {
-        // do we have a valid token
         if (!$token = $this->extractFullyAuthenticatedToken()) {
             $exception = new AuthenticationException("Login first");
 
             return $this->guard->startAuthentication($request, $exception);
         }
 
-        // are we on the enforcer form
         if (!$this->authenticator->isTokenEnforced($token)) {
             if ($this->authenticator->isEnforcerForm($request)) {
-
-                return null; /// endpoint
+                return null;
             }
 
             if ($this->authenticator->isEnforcerPost($request)) {
@@ -67,25 +66,28 @@ class CredentialEnforcerAuthentication extends Authentication
 
                     $authenticatedToken = $this->authenticator->enforceToken($newToken);
 
-                    // could be avoided
                     $this->guard->storeAuthenticatedToken($authenticatedToken);
 
-                    return response()->redirectToIntended();
+                    $response = response()->redirectTo($request->session()->get(self::ROUTE_INTENDED_KEY));
+
+                    $request->session()->forget(self::ROUTE_INTENDED_KEY);
+
+                    return $response;
                 } catch (AuthenticationException $exception) {
                     return $this->authenticator->startAuthentication($request, $exception);
                 }
             }
 
-            // on routes to protected
+            $request->session()->put(self::ROUTE_INTENDED_KEY, $request->fullUrl());
+
             return $this->authenticator->startAuthentication($request);
         }
 
-        // token enforced
-
-        // nothing to do here if enforcer routes
         if ($this->authenticator->matchEnforcerRoutes($request)) {
             throw new AuthenticationException("Authentication denied");
         }
+
+        $request->session()->forget(self::ROUTE_INTENDED_KEY);
 
         return null;
     }
