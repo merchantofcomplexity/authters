@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\InteractsWithTime;
 use Illuminate\Support\Str;
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\Authentication as BaseAuthentication;
+use MerchantOfComplexity\Authters\Support\Contract\Domain\Identity;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\Key\ContextKey;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TokenStorage;
 use MerchantOfComplexity\Authters\Support\Contract\Value\IdentifierValue;
@@ -42,7 +43,7 @@ final class ThrottleRequestPreAuthentication implements BaseAuthentication
 
     public function authenticate(Request $request, Closure $next, int $maxAttempts = 60, int $decayMinutes = 1)
     {
-        $identifier = $this->getIdentifier();
+        $identifier = $this->getIdentifierFromToken();
 
         $key = $this->resolveRequestSignature($request, $identifier);
 
@@ -59,7 +60,7 @@ final class ThrottleRequestPreAuthentication implements BaseAuthentication
         return $this->addHeaders($response, $maxAttempts, $this->calculateRemainingAttempts($key, $maxAttempts));
     }
 
-    protected function buildException(string $key, int $maxAttempts)
+    protected function buildException(string $key, int $maxAttempts): ThrottleRequestsException
     {
         $retryAfter = $this->getTimeUntilNextRetry($key);
 
@@ -69,9 +70,7 @@ final class ThrottleRequestPreAuthentication implements BaseAuthentication
             $retryAfter
         );
 
-        return new ThrottleRequestsException(
-            'Too Many Attempts.', null, $headers
-        );
+        return new ThrottleRequestsException('Too Many Attempts.', null, $headers);
     }
 
     protected function resolveRequestSignature(Request $request, ?IdentifierValue $identifier): string
@@ -84,7 +83,9 @@ final class ThrottleRequestPreAuthentication implements BaseAuthentication
             return sha1($value);
         }
 
-        return sha1($request->route()->getDomain() . '|' . $request->ip());
+        $values = [$this->contextKey->getValue(), $request->route()->getDomain(), $request->ip()];
+
+        return sha1(implode('|', $values));
     }
 
     protected function resolveMaxAttempts(int $maxAttempts, ?IdentifierValue $identifier): int
@@ -133,13 +134,12 @@ final class ThrottleRequestPreAuthentication implements BaseAuthentication
         return $this->rateLimiter->availableIn($key);
     }
 
-    protected function getIdentifier(): ?IdentifierValue
+    protected function getIdentifierFromToken(): ?IdentifierValue
     {
-        if ($token = $this->storage->getToken()) {
-            $identity = $token->getIdentity();
+        $token = $this->storage->getToken();
 
-            return $identity instanceof IdentifierValue
-                ? null : $identity->getIdentifier();
+        if ($token->getIdentity() instanceof Identity) {
+            return $token->getIdentity()->getIdentifier();
         }
 
         return null;

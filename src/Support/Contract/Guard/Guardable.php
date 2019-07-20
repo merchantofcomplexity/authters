@@ -14,7 +14,7 @@ interface Guardable
 
     public function storeAuthenticatedToken(Tokenable $token): Tokenable;
 
-    public function startAuthentication(Request $request, AuthenticationException $exception): Response;
+    public function startAuthentication(Request $request, AuthenticationException $exception = null): Response;
 
     /**
      * @param mixed $authenticationEvent

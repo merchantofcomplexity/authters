@@ -59,7 +59,7 @@ class Guard implements Guardable
         return $authenticatedToken;
     }
 
-    public function startAuthentication(Request $request, AuthenticationException $exception): Response
+    public function startAuthentication(Request $request, AuthenticationException $exception = null): Response
     {
         return $this->entrypoint->startAuthentication($request, $exception);
     }
