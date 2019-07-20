@@ -11,12 +11,10 @@ use MerchantOfComplexity\Authters\Support\Contract\Firewall\Key\ContextKey;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\AuthenticationProvider;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\LocalToken;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenable;
-use MerchantOfComplexity\Authters\Support\Contract\Validator\CredentialsValidator;
-use MerchantOfComplexity\Authters\Support\Contract\Value\ClearCredentials;
+use MerchantOfComplexity\Authters\Support\Contract\Validator\CredentialsChecker;
 use MerchantOfComplexity\Authters\Support\Exception\AuthenticationServiceFailure;
 use MerchantOfComplexity\Authters\Support\Exception\BadCredentials;
 use MerchantOfComplexity\Authters\Support\Exception\IdentityNotFound;
-use MerchantOfComplexity\Authters\Support\Value\Credentials\EmptyCredentials;
 
 abstract class ProvideLocalAuthentication implements AuthenticationProvider
 {
@@ -31,9 +29,9 @@ abstract class ProvideLocalAuthentication implements AuthenticationProvider
     private $identityChecker;
 
     /**
-     * @var CredentialsValidator
+     * @var CredentialsChecker
      */
-    private $credentialsValidator;
+    private $credentialsChecker;
 
     /**
      * @var ContextKey
@@ -42,12 +40,12 @@ abstract class ProvideLocalAuthentication implements AuthenticationProvider
 
     public function __construct(IdentityProvider $userProvider,
                                 IdentityChecker $identityChecker,
-                                CredentialsValidator $credentialsValidator,
+                                CredentialsChecker $credentialsChecker,
                                 ContextKey $contextKey)
     {
         $this->userProvider = $userProvider;
         $this->identityChecker = $identityChecker;
-        $this->credentialsValidator = $credentialsValidator;
+        $this->credentialsChecker = $credentialsChecker;
         $this->contextKey = $contextKey;
     }
 
@@ -83,7 +81,7 @@ abstract class ProvideLocalAuthentication implements AuthenticationProvider
         $identity = $this->userProvider->requireIdentityOfIdentifier($identity);
 
         if (!$identity instanceof LocalIdentity) {
-             throw new AuthenticationServiceFailure(
+            throw new AuthenticationServiceFailure(
                 "Identity provider must return an implementation of " . LocalIdentity::class
             );
         }
@@ -95,40 +93,9 @@ abstract class ProvideLocalAuthentication implements AuthenticationProvider
     {
         $this->identityChecker->onPreAuthentication($identity);
 
-        $this->checkCredentials($identity, $token);
+        $this->credentialsChecker->checkCredentials($identity, $token);
 
         $this->identityChecker->onPostAuthentication($identity);
-    }
-
-    // checkMe abstract this bloc
-    private function checkCredentials(LocalIdentity $identity, LocalToken $token): void
-    {
-        $currentIdentity = $token->getIdentity();
-
-        if ($currentIdentity instanceof LocalIdentity) {
-            if (!$currentIdentity->getPassword()->sameValueAs($identity->getPassword())) {
-                throw BadCredentials::hasChanged();
-            }
-        } else {
-            /** @var ClearCredentials $presentedPassword */
-            $presentedPassword = $token->getCredentials();
-
-            if ($presentedPassword instanceof EmptyCredentials) {
-                throw BadCredentials::emptyCredentials();
-            }
-
-            if (!is_callable($this->credentialsValidator)) {
-                throw new RuntimeException("Credentials Validator must be a callable");
-            }
-
-            if (!$this->credentialsValidator->supportsCredentials($identity->getPassword(), $presentedPassword)) {
-                throw new RuntimeException("Credentials Validator does not support credentials");
-            }
-
-            if (!($this->credentialsValidator)($identity->getPassword(), $presentedPassword)) {
-                throw BadCredentials::invalid();
-            }
-        }
     }
 
     protected function mergeDynamicRoles(LocalIdentity $identity, Tokenable $token): array
