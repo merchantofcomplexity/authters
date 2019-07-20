@@ -3,13 +3,14 @@
 namespace MerchantOfComplexity\Authters\Guard\Authentication\Token;
 
 use MerchantOfComplexity\Authters\Guard\Authentication\Token\Concerns\HasConstructorRoles;
-use MerchantOfComplexity\Authters\Guard\Authentication\Token\Concerns\HasTokenSerializer;
+use MerchantOfComplexity\Authters\Guard\Authentication\Token\Concerns\HasTokenAttributes;
 use MerchantOfComplexity\Authters\Guard\Authentication\Token\Concerns\HasTokenIdentity;
+use MerchantOfComplexity\Authters\Guard\Authentication\Token\Concerns\HasTokenSerializer;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenable;
 
 abstract class Token implements Tokenable
 {
-    use HasConstructorRoles, HasTokenIdentity, HasTokenSerializer;
+    use HasConstructorRoles, HasTokenIdentity, HasTokenAttributes, HasTokenSerializer;
 
     /**
      * @var bool

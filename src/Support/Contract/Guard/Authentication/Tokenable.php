@@ -33,4 +33,14 @@ interface Tokenable extends Serializable
     public function isAuthenticated(): bool;
 
     public function setAuthenticated(bool $isAuthenticated): void;
+
+    public function setAttribute(string $key, $value): void;
+
+    public function removeAttribute(string $key): bool;
+
+    public function hasAttribute(string $key): bool;
+
+    public function getAttribute(string $key, $default = null);
+
+    public function getAttributes(): array;
 }
