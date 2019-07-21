@@ -28,7 +28,7 @@ trait HasConstructorRoles
             }
 
             if (is_string($role)) {
-                $this->roleNames = $role;
+                $this->roleNames[] = $role;
 
                 return RoleValue::fromString($role);
             }
@@ -43,6 +43,7 @@ trait HasConstructorRoles
     {
         return !empty($this->roles);
     }
+
 
     public function getRoles(): array
     {

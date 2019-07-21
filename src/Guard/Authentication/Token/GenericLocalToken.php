@@ -2,6 +2,7 @@
 
 namespace MerchantOfComplexity\Authters\Guard\Authentication\Token;
 
+use MerchantOfComplexity\Authters\Firewall\Key\FirewallContextKey;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\Key\ContextKey;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\Key\FirewallKey;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\LocalToken;
@@ -39,17 +40,21 @@ final class GenericLocalToken extends Token implements LocalToken
 
     public function getFirewallKey(): FirewallKey
     {
+        if (is_string($this->contextKey)) {
+            $this->contextKey = new FirewallContextKey($this->contextKey);
+        }
+
         return $this->contextKey;
     }
 
     public function serialize(): string
     {
-        return serialize([$this->credentials, $this->contextKey, parent::serialize()]);
+        return serialize([$this->contextKey->getValue(), parent::serialize()]);
     }
 
     public function unserialize($serialized)
     {
-        [$this->credentials, $this->contextKey, $parentStr] = unserialize($serialized, [Tokenable::class]);
+        [$this->contextKey, $parentStr] = unserialize($serialized, [Tokenable::class]);
 
         parent::unserialize($parentStr);
     }

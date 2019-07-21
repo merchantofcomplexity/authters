@@ -11,6 +11,10 @@ use Serializable;
 
 interface Tokenable extends Serializable
 {
+    /**
+     * @deprecated use getRoleNames
+     * @return array
+     */
     public function getRoles(): array;
 
     public function getRoleNames(): array;

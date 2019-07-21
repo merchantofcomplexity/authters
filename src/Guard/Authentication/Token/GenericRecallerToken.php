@@ -2,6 +2,7 @@
 
 namespace MerchantOfComplexity\Authters\Guard\Authentication\Token;
 
+use MerchantOfComplexity\Authters\Firewall\Key\FirewallContextKey;
 use MerchantOfComplexity\Authters\Support\Contract\Domain\Identity;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\Key\ContextKey;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\Key\FirewallKey;
@@ -32,12 +33,16 @@ final class GenericRecallerToken extends Token implements RecallerToken
 
     public function getFirewallKey(): FirewallKey
     {
+        if (is_string($this->contextKey)) {
+            $this->contextKey = new FirewallContextKey($this->contextKey);
+        }
+
         return $this->contextKey;
     }
 
     public function serialize(): string
     {
-        return serialize([$this->contextKey, parent::serialize()]);
+        return serialize([$this->contextKey->getValue(), parent::serialize()]);
     }
 
     public function unserialize($serialized)
