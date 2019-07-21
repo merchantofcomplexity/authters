@@ -51,8 +51,17 @@ class CredentialEnforcerAuthenticator
         return $token;
     }
 
+    public function startAuthentication(Request $request, AuthenticationException $exception = null): Response
+    {
+        return $this->entrypoint->startAuthentication($request, $exception);
+    }
+
     public function isTokenEnforced(LocalToken $token): bool
     {
+        if (!$token->hasAttribute(self::TOKEN_ATTRIBUTE)) {
+            $token->setAttribute(self::TOKEN_ATTRIBUTE, false);
+        }
+
         return true === $token->getAttribute(self::TOKEN_ATTRIBUTE, false);
     }
 
@@ -69,10 +78,5 @@ class CredentialEnforcerAuthenticator
     public function matchEnforcerRoutes(Request $request): bool
     {
         return $this->isEnforcerForm($request) || $this->isEnforcerPost($request);
-    }
-
-    public function startAuthentication(Request $request, AuthenticationException $exception = null): Response
-    {
-        return $this->entrypoint->startAuthentication($request, $exception);
     }
 }

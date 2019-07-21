@@ -50,9 +50,7 @@ class CredentialEnforcerAuthentication extends Authentication
     protected function processAuthentication(Request $request): ?Response
     {
         if (!$token = $this->extractFullyAuthenticatedToken()) {
-            $exception = new AuthenticationException("Login first");
-
-            return $this->guard->startAuthentication($request, $exception);
+            return $this->guard->startAuthentication($request);
         }
 
         if (!$this->authenticator->isTokenEnforced($token)) {
@@ -68,9 +66,9 @@ class CredentialEnforcerAuthentication extends Authentication
 
                     $this->guard->storeAuthenticatedToken($authenticatedToken);
 
-                    $response = response()->redirectTo($request->session()->get(self::ROUTE_INTENDED_KEY));
+                    $response = response()->redirectTo($this->getRouteIntended($request));
 
-                    $this->forgetIntended($request);
+                    $this->forgetRouteIntended($request);
 
                     return $response;
                 } catch (AuthenticationException $exception) {
@@ -87,7 +85,7 @@ class CredentialEnforcerAuthentication extends Authentication
             throw new AuthenticationException("Authentication denied");
         }
 
-        $this->forgetIntended($request);
+        $this->forgetRouteIntended($request);
 
         return null;
     }
@@ -104,11 +102,8 @@ class CredentialEnforcerAuthentication extends Authentication
         /** @var LocalToken $token */
         $token = $this->guard->storage()->getToken();
 
-        if ($this->trustResolver->isFullyAuthenticated($token)) {
-            return $token;
-        }
-
-        return null;
+        return $this->trustResolver->isFullyAuthenticated($token)
+            ? $token : null;
     }
 
     protected function requireAuthentication(Request $request): bool
@@ -122,7 +117,7 @@ class CredentialEnforcerAuthentication extends Authentication
             );
     }
 
-    protected function forgetIntended(Request $request): void
+    protected function forgetRouteIntended(Request $request): void
     {
         $request->session()->forget(self::ROUTE_INTENDED_KEY);
     }
@@ -130,5 +125,10 @@ class CredentialEnforcerAuthentication extends Authentication
     protected function saveRouteIntended(Request $request)
     {
         $request->session()->put(self::ROUTE_INTENDED_KEY, $request->fullUrl());
+    }
+
+    protected function getRouteIntended(Request $request): string
+    {
+        return $request->session()->get(self::ROUTE_INTENDED_KEY, '/');
     }
 }

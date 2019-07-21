@@ -7,7 +7,7 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Request;
 use MerchantOfComplexity\Authters\Application\Http\Middleware\SwitchIdentityAuthentication;
-use MerchantOfComplexity\Authters\Application\Http\Request\SwitchIdentityAuthenticationRequest;
+use MerchantOfComplexity\Authters\Application\Http\Request\SwitchIdentityRequest;
 use MerchantOfComplexity\Authters\Guard\Authentication\Authenticator\SwitchIdentityAuthenticator;
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\Authentication;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\FirewallContext;
@@ -18,11 +18,11 @@ use MerchantOfComplexity\Authters\Support\Firewall\FirewallAware;
 final class SwitchIdentityRegistry implements FirewallRegistry
 {
     /**
-     * @var SwitchIdentityAuthenticationRequest
+     * @var SwitchIdentityRequest
      */
     private $authenticationRequest;
 
-    public function __construct(SwitchIdentityAuthenticationRequest $authenticationRequest)
+    public function __construct(SwitchIdentityRequest $authenticationRequest)
     {
         $this->authenticationRequest = $authenticationRequest;
     }

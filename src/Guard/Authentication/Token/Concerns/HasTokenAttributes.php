@@ -14,6 +14,11 @@ trait HasTokenAttributes
         $this->attributes[$key] = $value;
     }
 
+    public function getAttribute(string $key, $default = null)
+    {
+        return $this->attributes[$key] ?? $default;
+    }
+
     public function removeAttribute(string $key): bool
     {
         if (!$this->hasAttribute($key)) {
@@ -28,11 +33,6 @@ trait HasTokenAttributes
     public function hasAttribute(string $key): bool
     {
         return isset($this->attributes[$key]);
-    }
-
-    public function getAttribute(string $key, $default = null)
-    {
-        return $this->attributes[$key] ?? $default;
     }
 
     public function setAttributes(array $attributes): void

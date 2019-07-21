@@ -67,7 +67,7 @@ abstract class ProvideLocalAuthentication implements AuthenticationProvider
     }
 
     abstract protected function createAuthenticatedToken(LocalIdentity $user,
-                                                         Tokenable $token,
+                                                         LocalToken $token,
                                                          ContextKey $contextKey): Tokenable;
 
     private function retrieveUser(Tokenable $token): LocalIdentity

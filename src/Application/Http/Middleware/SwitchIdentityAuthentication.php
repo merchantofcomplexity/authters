@@ -3,7 +3,7 @@
 namespace MerchantOfComplexity\Authters\Application\Http\Middleware;
 
 use Illuminate\Http\Request;
-use MerchantOfComplexity\Authters\Application\Http\Request\SwitchIdentityAuthenticationRequest;
+use MerchantOfComplexity\Authters\Application\Http\Request\SwitchIdentityRequest;
 use MerchantOfComplexity\Authters\Guard\Authentication\Authenticator\SwitchIdentityAuthenticator;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -42,8 +42,8 @@ final class SwitchIdentityAuthentication extends Authentication
 
     protected function createRedirectResponse(Request $request): Response
     {
-        $identifier = SwitchIdentityAuthenticationRequest::IDENTIFIER;
-        $exit = SwitchIdentityAuthenticationRequest::EXIT;
+        $identifier = SwitchIdentityRequest::IDENTIFIER_QUERY;
+        $exit = SwitchIdentityRequest::EXIT_QUERY;
 
         if ($request->query->has($identifier)) {
             $request->query->remove($identifier);
