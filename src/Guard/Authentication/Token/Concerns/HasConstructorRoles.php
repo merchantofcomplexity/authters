@@ -13,14 +13,23 @@ trait HasConstructorRoles
      */
     private $roles;
 
+    /**
+     * @var string[]
+     */
+    private $roleNames = [];
+
     public function __construct(array $roles = [])
     {
         $this->roles = collect($roles)->transform(function ($role) {
             if ($role instanceof Role) {
+                $this->roleNames[] = $role->getRole();
+
                 return $role;
             }
 
             if (is_string($role)) {
+                $this->roleNames = $role;
+
                 return RoleValue::fromString($role);
             }
 
@@ -38,5 +47,10 @@ trait HasConstructorRoles
     public function getRoles(): array
     {
         return $this->roles;
+    }
+
+    public function getRoleNames(): array
+    {
+        return $this->roleNames;
     }
 }

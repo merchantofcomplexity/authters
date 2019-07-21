@@ -2,9 +2,9 @@
 
 namespace MerchantOfComplexity\Authters\Guard\Authentication\Token\Concerns;
 
+use Illuminate\Contracts\Support\Arrayable;
 use MerchantOfComplexity\Authters\Exception\RuntimeException;
-use MerchantOfComplexity\Authters\Support\Contract\Domain\Identity;
-use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenable;
+use function is_array;
 
 trait HasTokenSerializer
 {
@@ -15,23 +15,28 @@ trait HasTokenSerializer
 
     public function unserialize($serialized)
     {
+        $this->__unserialize(is_array($serialized) ? $serialized : unserialize($serialized));
+    }
+
+    public function __unserialize(array $data): void
+    {
         [
-            $this->identity,
-            $this->isAuthenticated,
-            $this->roles,
-            $this->attributes
-        ] = unserialize($serialized, [Tokenable::class]);
+            'identity' => $this->identity,
+            'is_authenticated' => $this->isAuthenticated,
+            'roles' => $this->roles,
+            'role_names' => $this->roleNames,
+            'attributes' => $this->attributes
+        ] = $data;
     }
 
     public function toArray(): array
     {
         return [
-            $this->identity instanceof Identity ? $this->transformUser() : clone $this->identity,
-            $this->isAuthenticated,
-            array_map(function ($role) {
-                return clone $role;
-            }, $this->roles),
-            $this->attributes
+            'identity' => $this->identity,
+            'is_authenticated' => $this->isAuthenticated,
+            'roles' => $this->roles,
+            'role_names' => $this->roleNames,
+            'attributes' => $this->attributes
         ];
     }
 
@@ -54,14 +59,5 @@ trait HasTokenSerializer
     public function __toString(): string
     {
         return $this->toJson();
-    }
-
-    /**
-     * to override
-     * @return Identity
-     */
-    protected function transformUser(): Identity
-    {
-        return clone $this->identity;
     }
 }

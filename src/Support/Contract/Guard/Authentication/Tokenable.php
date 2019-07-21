@@ -2,8 +2,8 @@
 
 namespace MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication;
 
+use MerchantOfComplexity\Authters\Exception\RuntimeException;
 use MerchantOfComplexity\Authters\Support\Contract\Domain\Identity;
-use MerchantOfComplexity\Authters\Support\Contract\Domain\LocalIdentity;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\Key\FirewallKey;
 use MerchantOfComplexity\Authters\Support\Contract\Value\Credentials;
 use MerchantOfComplexity\Authters\Support\Contract\Value\IdentifierValue;
@@ -11,17 +11,19 @@ use Serializable;
 
 interface Tokenable extends Serializable
 {
-    public function hasRoles(): bool;
-
     public function getRoles(): array;
 
+    public function getRoleNames(): array;
+
+    public function hasRoles(): bool;
+
     /**
-     * @param Identity|LocalIdentity|IdentifierValue
+     * @param Identity|IdentifierValue
      */
     public function setIdentity($identity): void;
 
     /**
-     * @@return  Identity|LocalIdentity|IdentifierValue
+     * @@return Identity|IdentifierValue
      */
     public function getIdentity();
 
@@ -39,7 +41,12 @@ interface Tokenable extends Serializable
 
     public function setAttribute(string $key, $value): void;
 
-    public function getAttribute(string $key, $default = null);
+    /**
+     * @param string $key
+     * @return mixed
+     * @throws RuntimeException
+     */
+    public function getAttribute(string $key);
 
     public function getAttributes(): array;
 

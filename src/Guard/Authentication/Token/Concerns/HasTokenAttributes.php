@@ -2,6 +2,8 @@
 
 namespace MerchantOfComplexity\Authters\Guard\Authentication\Token\Concerns;
 
+use MerchantOfComplexity\Authters\Exception\RuntimeException;
+
 trait HasTokenAttributes
 {
     /**
@@ -14,9 +16,12 @@ trait HasTokenAttributes
         $this->attributes[$key] = $value;
     }
 
-    public function getAttribute(string $key, $default = null)
+    public function getAttribute(string $key)
     {
-        return $this->attributes[$key] ?? $default;
+        if (!$this->hasAttribute($key)) {
+            throw new RuntimeException("Attribute $key does not exists in " . get_called_class());
+        }
+        return $this->attributes[$key];
     }
 
     public function removeAttribute(string $key): bool
