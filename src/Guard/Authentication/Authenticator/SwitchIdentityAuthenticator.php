@@ -4,9 +4,8 @@ namespace MerchantOfComplexity\Authters\Guard\Authentication\Authenticator;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Http\Request;
-use MerchantOfComplexity\Authters\Domain\Role\RoleValue;
 use MerchantOfComplexity\Authters\Domain\Role\SwitchIdentityRole;
-use MerchantOfComplexity\Authters\Guard\Authentication\Token\GenericLocalToken;
+use MerchantOfComplexity\Authters\Guard\Authentication\Token\SwitchIdentityToken;
 use MerchantOfComplexity\Authters\Guard\Authorization\AuthorizationChecker;
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Request\SwitchIdentityAuthenticationRequest;
 use MerchantOfComplexity\Authters\Support\Contract\Domain\IdentityProvider;
@@ -125,25 +124,15 @@ final class SwitchIdentityAuthenticator
             throw new AuthorizationDenied("Can not switch to your own identity");
         }
 
-        $roles = array_merge(
-            $identity->getRoles(),
-            [
-                SwitchIdentityRole::fromSource(
-                    RoleValue::fromString('ROLE_PREVIOUS_ADMIN'),
-                    $currentToken
-                )
-            ]
-        );
+        $roles = array_merge($identity->getRoles(), [SwitchIdentityRole::fromSource($currentToken)]);
 
-        return new GenericLocalToken($identity, $identity->getPassword(), $this->contextKey, $roles);
+        return new SwitchIdentityToken($identity, $identity->getPassword(), $this->contextKey, $roles, $currentToken);
     }
 
     protected function extractOriginalToken(Tokenable $token): ?Tokenable
     {
-        foreach ($token->getRoles() as $role) {
-            if ($role instanceof SwitchIdentityRole) {
-                return $role->getSource();
-            }
+        if ($token instanceof SwitchIdentityToken) {
+            return $token->getOriginalToken();
         }
 
         return null;
@@ -160,7 +149,7 @@ final class SwitchIdentityAuthenticator
     {
         return $this->switchIdentityRequest->match($request)
             && (
-                $this->authorizationChecker->isGranted(['ROLE_PREVIOUS_ADMIN'])
+                $this->authorizationChecker->isGranted([SwitchIdentityRole::NAME])
                 || $this->authorizationChecker->isGranted(['is_fully_authenticated()'])
             );
     }

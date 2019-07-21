@@ -2,8 +2,6 @@
 
 namespace MerchantOfComplexity\Authters\Guard\Authorization\Hierarchy;
 
-use MerchantOfComplexity\Authters\Domain\Role\RoleValue;
-use MerchantOfComplexity\Authters\Support\Contract\Domain\Role;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authorization\RoleHierarchy;
 
 final class SymfonyRoleHierarchy implements RoleHierarchy
@@ -47,20 +45,17 @@ final class SymfonyRoleHierarchy implements RoleHierarchy
         }
     }
 
-    public function getReachableRoles(array $roles): array
+    public function getReachableRoles(string ...$roles): array
     {
         $reachableRoles = $roles;
 
-        /** @var Role $role */
         foreach ($roles as $role) {
-            $role = $role->getRole();
-
             if (!array_key_exists($role, $this->map)) {
                 continue;
             }
 
             foreach ((array)$this->map[$role] as $r) {
-                $reachableRoles[] = RoleValue::fromString($r);
+                $reachableRoles[] = $r;
             }
         }
 

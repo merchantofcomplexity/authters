@@ -102,7 +102,7 @@ abstract class ProvideLocalAuthentication implements AuthenticationProvider
     {
         $roles = $identity->getRoles();
 
-        foreach ($token->getRoles() as $role) {
+        foreach ($token->getRoleNames() as $role) {
             if ($role instanceof SwitchIdentityRole) {
                 $roles[] = $role;
             }

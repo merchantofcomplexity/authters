@@ -2,7 +2,6 @@
 
 namespace MerchantOfComplexity\Authters\Guard\Authentication\Token\Concerns;
 
-use Illuminate\Contracts\Support\Arrayable;
 use MerchantOfComplexity\Authters\Exception\RuntimeException;
 use function is_array;
 
@@ -23,7 +22,6 @@ trait HasTokenSerializer
         [
             'identity' => $this->identity,
             'is_authenticated' => $this->isAuthenticated,
-            'roles' => $this->roles,
             'role_names' => $this->roleNames,
             'attributes' => $this->attributes
         ] = $data;
@@ -34,7 +32,6 @@ trait HasTokenSerializer
         return [
             'identity' => $this->identity,
             'is_authenticated' => $this->isAuthenticated,
-            'roles' => $this->roles,
             'role_names' => $this->roleNames,
             'attributes' => $this->attributes
         ];

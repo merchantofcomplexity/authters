@@ -25,7 +25,7 @@ class RoleVoter implements Votable
             $vote = self::ACCESS_DENIED;
 
             foreach ($roles as $role) {
-                if ($attribute === $role->getRole()) {
+                if ($attribute === $role) {
                     return self::ACCESS_GRANTED;
                 }
             }
@@ -36,6 +36,6 @@ class RoleVoter implements Votable
 
     protected function extractRoles(Tokenable $token): array
     {
-        return $token->getRoles();
+        return $token->getRoleNames();
     }
 }

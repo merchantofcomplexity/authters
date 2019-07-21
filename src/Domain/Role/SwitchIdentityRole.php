@@ -7,8 +7,10 @@ use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenabl
 
 final class SwitchIdentityRole implements Role
 {
+    const NAME = 'ROLE_PREVIOUS_ADMIN';
+
     /**
-     * @var RoleValue
+     * @var string
      */
     private $role;
 
@@ -17,20 +19,20 @@ final class SwitchIdentityRole implements Role
      */
     private $token;
 
-    protected function __construct(RoleValue $role, Tokenable $token)
+    protected function __construct(Tokenable $token)
     {
-        $this->role = $role;
+        $this->role = self::NAME;
         $this->token = $token;
     }
 
-    public static function fromSource(RoleValue $role, Tokenable $source): self
+    public static function fromSource(Tokenable $source): self
     {
-        return new self(clone $role, clone $source);
+        return new self(clone $source);
     }
 
     public function getRole(): string
     {
-        return $this->role->getRole();
+        return $this->role;
     }
 
     public function getSource(): Tokenable

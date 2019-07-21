@@ -42,7 +42,7 @@ final class GenericRecallerToken extends Token implements RecallerToken
 
     public function serialize(): string
     {
-        return serialize([$this->contextKey->getValue(), parent::serialize()]);
+        return serialize([$this->getFirewallKey()->getValue(), parent::serialize()]);
     }
 
     public function unserialize($serialized)

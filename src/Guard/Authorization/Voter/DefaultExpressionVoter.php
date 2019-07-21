@@ -5,7 +5,6 @@ namespace MerchantOfComplexity\Authters\Guard\Authorization\Voter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use MerchantOfComplexity\Authters\Guard\Authorization\Expression\ExpressionLanguage;
-use MerchantOfComplexity\Authters\Support\Contract\Domain\Role;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenable;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TrustResolver;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authorization\RoleHierarchy;
@@ -83,15 +82,11 @@ final class DefaultExpressionVoter implements Votable
 
     private function getVariables(Tokenable $token, $subject): array
     {
-        $roles = $this->getTokenRoles($token);
-
         $variables = [
             'token' => $token,
             'identity' => $token->getIdentity(),
             'subject' => $subject,
-            'roles' => array_map(function (Role $role) {
-                return $role->getRole();
-            }, $roles),
+            'roles' => $this->getTokenRoles($token),
             'trust_resolver' => $this->trustResolver
         ];
 
@@ -104,10 +99,10 @@ final class DefaultExpressionVoter implements Votable
 
     private function getTokenRoles(Tokenable $token): array
     {
-        $roles = $token->getRoles();
+        $roles = $token->getRoleNames();
 
         if ($this->roleHierarchy) {
-            return $this->roleHierarchy->getReachableRoles($roles);
+            return $this->roleHierarchy->getReachableRoles(...$roles);
         }
 
         return $roles;

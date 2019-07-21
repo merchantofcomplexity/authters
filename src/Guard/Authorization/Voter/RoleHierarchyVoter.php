@@ -19,6 +19,6 @@ final class RoleHierarchyVoter extends RoleVoter
 
     protected function extractRoles(Tokenable $token): array
     {
-        return $this->roleHierarchy->getReachableRoles($token->getRoles());
+        return $this->roleHierarchy->getReachableRoles(...$token->getRoleNames());
     }
 }

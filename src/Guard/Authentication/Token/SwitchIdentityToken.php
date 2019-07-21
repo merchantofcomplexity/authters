@@ -3,13 +3,14 @@
 namespace MerchantOfComplexity\Authters\Guard\Authentication\Token;
 
 use MerchantOfComplexity\Authters\Firewall\Key\FirewallContextKey;
+use MerchantOfComplexity\Authters\Support\Contract\Domain\Identity;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\Key\ContextKey;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\Key\FirewallKey;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\LocalToken;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenable;
 use MerchantOfComplexity\Authters\Support\Contract\Value\Credentials;
 
-final class GenericLocalToken extends Token implements LocalToken
+class SwitchIdentityToken extends Token implements LocalToken
 {
     /**
      * @var Credentials
@@ -21,16 +22,30 @@ final class GenericLocalToken extends Token implements LocalToken
      */
     private $contextKey;
 
-    public function __construct($user, Credentials $credentials, ContextKey $contextKey, array $roles = [])
+    /**
+     * @var GenericLocalToken
+     */
+    private $originalToken;
+
+    public function __construct(Identity $identity,
+                                Credentials $credentials,
+                                ContextKey $contextKey,
+                                array $roles,
+                                GenericLocalToken $originalToken)
     {
         parent::__construct($roles);
 
-        $this->setIdentity($user);
+        $this->setIdentity($identity);
+        $this->setAuthenticated(true);
 
         $this->credentials = $credentials;
         $this->contextKey = $contextKey;
+        $this->originalToken = $originalToken;
+    }
 
-        $this->hasRoles() and $this->setAuthenticated(true);
+    public function getOriginalToken(): GenericLocalToken
+    {
+        return $this->originalToken;
     }
 
     public function getCredentials(): Credentials
@@ -49,12 +64,16 @@ final class GenericLocalToken extends Token implements LocalToken
 
     public function serialize(): string
     {
-        return serialize([$this->getFirewallKey()->getValue(), parent::serialize()]);
+        return serialize([
+            $this->getFirewallKey()->getValue(),
+            $this->originalToken,
+            parent::serialize()
+        ]);
     }
 
     public function unserialize($serialized)
     {
-        [$this->contextKey, $parentStr] = unserialize($serialized, [Tokenable::class]);
+        [$this->contextKey, $this->originalToken, $parentStr] = unserialize($serialized, [Tokenable::class]);
 
         parent::unserialize($parentStr);
     }
