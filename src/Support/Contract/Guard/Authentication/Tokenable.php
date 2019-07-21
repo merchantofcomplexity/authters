@@ -11,8 +11,6 @@ use Serializable;
 
 interface Tokenable extends Serializable
 {
-    public function getRoles(): array;
-
     public function getRoleNames(): array;
 
     public function hasRoles(): bool;

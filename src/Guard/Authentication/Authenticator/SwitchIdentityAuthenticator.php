@@ -94,14 +94,14 @@ final class SwitchIdentityAuthenticator
 
         $identifier = $source->getIdentity()->getIdentifier();
 
-        $identity = $this->identityProvider->requireIdentityOfIdentifier($identifier);
-
-        $source->setIdentity($identity);
+        $source->setIdentity(
+            $this->identityProvider->requireIdentityOfIdentifier($identifier)
+        );
 
         return $source;
     }
 
-    protected function attemptSwitchIdentity(IdentifierValue $identifier, Tokenable $token): ?Tokenable
+    protected function attemptSwitchIdentity(IdentifierValue $identifier, Tokenable $token): ?SwitchIdentityToken
     {
         if ($source = $this->extractOriginalToken($token)) {
             throw new AuthorizationDenied("Already switch identity");
@@ -112,7 +112,7 @@ final class SwitchIdentityAuthenticator
         return $this->createSwitchIdentityToken($identifier, $token);
     }
 
-    protected function createSwitchIdentityToken(IdentifierValue $identifier, Tokenable $currentToken): Tokenable
+    protected function createSwitchIdentityToken(IdentifierValue $identifier, Tokenable $currentToken): SwitchIdentityToken
     {
         $identity = $this->identityProvider->requireIdentityOfIdentifier($identifier);
 
