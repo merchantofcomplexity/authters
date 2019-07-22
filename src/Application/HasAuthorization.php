@@ -17,18 +17,23 @@ trait HasAuthorization
      */
     private $container;
 
-    protected function isGranted(array $attributes, object $subject = null): bool
+    /**
+     * @param string|array $attributes
+     * @param object|null $subject
+     * @return bool
+     */
+    protected function isGranted($attributes, object $subject = null): bool
     {
-        return $this->authorizationChecker()->isGranted($attributes, $subject ?? request());
+        return $this->authorizationChecker()->isGranted((array)$attributes, $subject ?? request());
     }
 
     /**
-     * @param array $attributes
+     * @param string|array $attributes
      * @param object|null $subject
      * @return bool
      * @throws AuthorizationDenied
      */
-    protected function denyAccessUnlessGranted(array $attributes, object $subject = null): bool
+    protected function denyAccessUnlessGranted($attributes, object $subject = null): bool
     {
         if (!$this->isGranted($attributes, $subject)) {
             $this->raiseAuthorizationDenied();
