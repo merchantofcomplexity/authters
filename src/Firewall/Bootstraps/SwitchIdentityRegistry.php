@@ -30,15 +30,13 @@ final class SwitchIdentityRegistry implements FirewallRegistry
     public function compose(FirewallAware $firewall, Closure $make)
     {
         if (true === $firewall->context()->getAttribute('switch_identity')) {
-            $service = $this->createSwitchIdentityAuthentication();
-
-            $firewall->addPostService('switch_identity', $service);
+            $firewall->addPostService('switch_identity', $this->createService());
         }
 
         return $make($firewall);
     }
 
-    private function createSwitchIdentityAuthentication(): callable
+    protected function createService(): callable
     {
         return function (Application $app, FirewallContext $context, Request $request): ?Authentication {
             if (!$this->authenticationRequest->match($request)) {

@@ -3,6 +3,7 @@
 use MerchantOfComplexity\Authters\Application\Http\Middleware\Authorization;
 use MerchantOfComplexity\Authters\Firewall\Bootstraps\AnonymousRegistry;
 use MerchantOfComplexity\Authters\Firewall\Bootstraps\AuthenticatableRegistry;
+use MerchantOfComplexity\Authters\Firewall\Bootstraps\AuthenticationServiceRegistry;
 use MerchantOfComplexity\Authters\Firewall\Bootstraps\ContextRegistry;
 use MerchantOfComplexity\Authters\Firewall\Bootstraps\ExceptionRegistry;
 use MerchantOfComplexity\Authters\Firewall\Bootstraps\GuardRegistry;
@@ -28,7 +29,11 @@ return
 
                     'context' => [], // array of options or fqcn firewall context
 
-                    'auth' => []
+                    'auth' => [
+                        /**
+                         * list of provision
+                         */
+                    ]
                 ]
             ],
 
@@ -37,7 +42,7 @@ return
                 AuthenticatableRegistry::class,
                 RecallerRegistry::class,
                 ContextRegistry::class,
-                //AuthenticationServiceRegistry::class,
+                AuthenticationServiceRegistry::class,
                 AnonymousRegistry::class,
                 SwitchIdentityRegistry::class,
                 ExceptionRegistry::class,

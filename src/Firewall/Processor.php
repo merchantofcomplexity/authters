@@ -7,6 +7,8 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Pipeline\Pipeline;
 use Illuminate\Http\Request;
 use Illuminate\Pipeline\Pipeline as BasePipeline;
+use MerchantOfComplexity\Authters\Support\Contract\Firewall\FirewallContext;
+use MerchantOfComplexity\Authters\Support\Contract\Firewall\FirewallProvision;
 use MerchantOfComplexity\Authters\Support\Firewall\FirewallAware;
 
 final class Processor
@@ -29,12 +31,25 @@ final class Processor
 
     public function process(FirewallAware $firewallAware, Request $request, array $bootstraps): Generator
     {
-        foreach ($this->buildFirewall($firewallAware, $bootstraps) as $service) {
+        $services = $this->buildFirewall($firewallAware, $bootstraps);
+
+        return $this->generateService($services, $firewallAware->context(), $request);
+    }
+
+    protected function generateService(iterable $services, FirewallContext $context, Request $request): Generator
+    {
+        foreach ($services as $service) {
             if (is_string($service)) {
                 $service = $this->app->get($service);
             }
 
-            yield $service($this->app, $firewallAware->context(), $request);
+            if ($service instanceof FirewallProvision) {
+                $service = $service->match($request) ? $service->callAuthentication() : null;
+            }
+
+            if ($service) {
+                yield $service($this->app, $context, $request);
+            }
         }
     }
 

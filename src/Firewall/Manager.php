@@ -60,7 +60,7 @@ final class Manager
 
     public function hasFirewall(string $name): bool
     {
-        return $this->firewall->hasFirewall($name);
+        return $this->firewall->exists($name);
     }
 
     protected function make(string $name, Request $request): iterable

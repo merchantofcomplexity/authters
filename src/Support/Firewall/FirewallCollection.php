@@ -35,19 +35,15 @@ final class FirewallCollection
 
     public function addService(string $name, string $serviceId, $service): void
     {
-        $this->assertValidServiceType($service);
-
         $this->requireFirewall($name)->addService($serviceId, $service);
     }
 
     public function addProvider(string $name, $provider): void
     {
-        $this->assertValidServiceType($provider);
-
         $this->requireFirewall($name)->addProvider($provider);
     }
 
-    public function hasFirewall(string $name): bool
+    public function exists(string $name): bool
     {
         return $this->collection->filter(function (FirewallAware $firewall) use ($name) {
             return $firewall->isFirewall($name);
@@ -61,7 +57,7 @@ final class FirewallCollection
 
     protected function requireFirewall(string $name): FirewallAware
     {
-        if (!$this->hasFirewall($name)) {
+        if (!$this->exists($name)) {
             throw new InvalidArgumentException("Unknown firewall name $name");
         }
 
@@ -75,38 +71,27 @@ final class FirewallCollection
         $firewall = $this->fromConfig("authentication.group", []);
 
         if (!$firewall) {
-            throw new InvalidArgumentException("You must provide at least one firewall and one authentication service");
+            throw new InvalidArgumentException(
+                "You must provide at least one firewall and one authentication service"
+            );
         }
 
         foreach ($firewall as $firewallName => $key) {
-            if (!isset($key['auth']) || empty($key['auth'])) {
+            $auth = $key['auth'] ?? [];
+
+            if (empty($auth)) {
                 $message = "Configuration of each firewall must have an auth key ";
                 $message .= "with at least one authentication service";
 
                 throw new InvalidArgumentException($message);
             }
 
-            $auth = array_fill_keys(array_values($key['auth']), false);
-
-            $this->collection->push(new FirewallAware($firewallName, $auth));
+            $this->collection->push(new FirewallAware($firewallName, ...$auth));
         }
     }
 
     protected function fromConfig(string $key, $default = null)
     {
         return Arr::get($this->config, $key, $default);
-    }
-
-    protected function assertValidServiceType($service): void
-    {
-        if (is_callable($service)) {
-            return;
-        }
-
-        if (is_string($service) && (class_exists($service) || $this->app->bound($service))) {
-            return;
-        }
-
-        throw new InvalidArgumentException("Authentication Service must be a callable, a fqcn class or bound in ioc");
     }
 }

@@ -3,15 +3,16 @@
 namespace MerchantOfComplexity\Authters\Support\Firewall;
 
 use MerchantOfComplexity\Authters\Exception\InvalidArgumentException;
+use MerchantOfComplexity\Authters\Exception\RuntimeException;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\FirewallContext;
+use MerchantOfComplexity\Authters\Support\Contract\Firewall\FirewallProvision;
 
-// checkMe class expose too much, probably get back to a passable factory to the pipeline
 final class FirewallAware
 {
     /**
      * @var string
      */
-    private $firewallName;
+    private $name;
 
     /**
      * @var array
@@ -43,10 +44,10 @@ final class FirewallAware
      */
     private $firewallContext;
 
-    public function __construct(string $firewallName, array $definedServices)
+    public function __construct(string $name, string ...$services)
     {
-        $this->firewallName = $firewallName;
-        $this->services = $definedServices;
+        $this->name = $name;
+        $this->services = array_fill_keys(array_values($services), false);
         $this->providers = new AuthenticationProviders();
     }
 
@@ -75,6 +76,17 @@ final class FirewallAware
         return $this;
     }
 
+    public function resolveProvisionService(string $provisionKey, FirewallProvision $provision): void
+    {
+        if (!isset($this->services[$provisionKey])) {
+            throw new InvalidArgumentException("provision service $provisionKey does not exists");
+        }
+
+        $this->services[$provision->serviceId()] = $provision;
+
+        unset($this->services[$provisionKey]);
+    }
+
     public function addProvider($provider): FirewallAware
     {
         $this->providers->add($provider);
@@ -82,26 +94,19 @@ final class FirewallAware
         return $this;
     }
 
-    public function getFirewallName(): string
+    public function getServices(): array
     {
-        return $this->firewallName;
-    }
-
-    protected function getServices(): array
-    {
-        foreach ($this->services as $serviceId => $callback) {
-            if (!$callback) {
-                $message = "Service id $serviceId has not been registered for firewall name {$this->firewallName}";
-
-                throw new InvalidArgumentException($message);
-            }
-        }
-
         return $this->services;
     }
 
     public function allServices(): array
     {
+        foreach ($this->services as $serviceId => $resolved) {
+            if (!$resolved) {
+                throw new RuntimeException("Service id $serviceId has not been resolved");
+            }
+        }
+
         return array_merge($this->preServices, $this->getServices(), $this->postServices);
     }
 
@@ -112,7 +117,12 @@ final class FirewallAware
 
     public function isFirewall(string $aName): bool
     {
-        return $this->firewallName === $aName;
+        return $this->name === $aName;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
     }
 
     public function context(): FirewallContext

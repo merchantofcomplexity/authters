@@ -10,7 +10,7 @@ use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Authenti
 final class AuthenticationProviders
 {
     /**
-     * @var callable[]
+     * @var []
      */
     private $authenticationProviders;
 
@@ -24,9 +24,14 @@ final class AuthenticationProviders
         $this->authenticationProviders = $authenticationProviders;
     }
 
-    public function add($authenticationProvider): void
+    /**
+     * @param string|callable|null $authenticationProvider
+     */
+    public function add($authenticationProvider = null): void
     {
-        $this->authenticationProviders[] = $authenticationProvider;
+        if ($authenticationProvider) {
+            $this->authenticationProviders[] = $authenticationProvider;
+        }
     }
 
     /**
@@ -36,7 +41,6 @@ final class AuthenticationProviders
      */
     public function __invoke(Container $container, FirewallContext $context): array
     {
-        // checkMe
         if ($this->resolved) {
             return $this->resolved;
         }
