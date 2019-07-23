@@ -54,7 +54,7 @@ final class SocialAuthentication extends Authentication implements Authenticatio
         return $this->handleLoginRequest($request);
     }
 
-    protected function handleRedirectRequest(Request $request): Response
+    protected function handleRedirectRequest(Request $request): ?Response
     {
         try {
             // first we create a token with a "need registration" role
