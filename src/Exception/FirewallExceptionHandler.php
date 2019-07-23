@@ -14,6 +14,7 @@ use MerchantOfComplexity\Authters\Support\Exception\AuthorizationException;
 use MerchantOfComplexity\Authters\Support\Exception\IdentityStatusException;
 use MerchantOfComplexity\Authters\Support\Exception\InsufficientAuthentication;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 final class FirewallExceptionHandler
 {
@@ -74,6 +75,8 @@ final class FirewallExceptionHandler
             return $this->onAuthenticationException($request, $exception);
         } elseif ($exception instanceof AuthorizationException) {
             return $this->onAuthorizationException($request, $exception);
+        } elseif ($exception instanceof HttpException) {
+            throw $exception; // fixMe
         }
 
         // todo logout
@@ -111,6 +114,7 @@ final class FirewallExceptionHandler
     protected function whenIdentityIsNotFullyAuthenticated(Request $request, AuthorizationException $exception): Response
     {
         $message = "Full authentication is required to access this resource";
+
         $authenticationException = new InsufficientAuthentication($message, 0, $exception);
 
         return $this->startAuthentication($request, $authenticationException);

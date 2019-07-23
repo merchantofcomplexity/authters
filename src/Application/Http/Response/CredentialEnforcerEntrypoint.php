@@ -8,7 +8,7 @@ use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Response\Ent
 use MerchantOfComplexity\Authters\Support\Exception\AuthenticationException;
 use Symfony\Component\HttpFoundation\Response;
 
-final class EnforcerCredentialEntrypoint implements Entrypoint
+final class CredentialEnforcerEntrypoint implements Entrypoint
 {
     /**
      * @var ResponseFactory

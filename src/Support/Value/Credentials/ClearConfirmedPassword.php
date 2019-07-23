@@ -7,7 +7,7 @@ use MerchantOfComplexity\Authters\Support\Exception\Assert;
 
 final class ClearConfirmedPassword extends ClearPassword
 {
-    public function __construct(string $password, string $passwordConfirmation)
+    public function __construct($password, $passwordConfirmation)
     {
         Assert::same($passwordConfirmation, $password);
 

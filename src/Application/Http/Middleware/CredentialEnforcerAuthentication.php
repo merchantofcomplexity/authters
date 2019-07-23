@@ -54,23 +54,15 @@ class CredentialEnforcerAuthentication extends Authentication
         }
 
         if (!$this->authenticator->isTokenEnforced($token)) {
-            if ($this->authenticator->isEnforcerForm($request)) {
+            if ($this->authenticator->isEnforcerFormRequest($request)) {
                 return null;
             }
 
-            if ($this->authenticator->isEnforcerPost($request)) {
+            if ($this->authenticator->isEnforcerPostRequest($request)) {
                 try {
                     $newToken = $this->createAuthenticatedLocalToken($request, $token);
 
-                    $authenticatedToken = $this->authenticator->enforceToken($newToken);
-
-                    $this->guard->storeAuthenticatedToken($authenticatedToken);
-
-                    $response = response()->redirectTo($this->getRouteIntended($request));
-
-                    $this->forgetRouteIntended($request);
-
-                    return $response;
+                    return $this->EnforceAuthenticatedToken($request, $newToken);
                 } catch (AuthenticationException $exception) {
                     return $this->authenticator->startAuthentication($request, $exception);
                 }
@@ -81,13 +73,26 @@ class CredentialEnforcerAuthentication extends Authentication
             return $this->authenticator->startAuthentication($request);
         }
 
+        $this->forgetRouteIntended($request);
+
         if ($this->authenticator->matchEnforcerRoutes($request)) {
             throw new AuthenticationException("Authentication denied");
         }
 
+        return null;
+    }
+
+    protected function EnforceAuthenticatedToken(Request $request, LocalToken $token): Response
+    {
+        $authenticatedToken = $this->authenticator->enforceToken($token);
+
+        $this->guard->storeAuthenticatedToken($authenticatedToken);
+
+        $response = response()->redirectTo($this->getRouteIntended($request));
+
         $this->forgetRouteIntended($request);
 
-        return null;
+        return $response;
     }
 
     protected function createAuthenticatedLocalToken(Request $request, LocalToken $token): LocalToken
@@ -102,8 +107,7 @@ class CredentialEnforcerAuthentication extends Authentication
         /** @var LocalToken $token */
         $token = $this->guard->storage()->getToken();
 
-        return $this->trustResolver->isFullyAuthenticated($token)
-            ? $token : null;
+        return $this->trustResolver->isFullyAuthenticated($token) ? $token : null;
     }
 
     protected function requireAuthentication(Request $request): bool

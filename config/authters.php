@@ -9,6 +9,7 @@ use MerchantOfComplexity\Authters\Firewall\Bootstraps\ExceptionRegistry;
 use MerchantOfComplexity\Authters\Firewall\Bootstraps\GuardRegistry;
 use MerchantOfComplexity\Authters\Firewall\Bootstraps\RecallerRegistry;
 use MerchantOfComplexity\Authters\Firewall\Bootstraps\SwitchIdentityRegistry;
+use MerchantOfComplexity\Authters\Firewall\Bootstraps\ThrottleLoginRegistry;
 use MerchantOfComplexity\Authters\Guard\Authorization\Hierarchy\SymfonyRoleHierarchy;
 use MerchantOfComplexity\Authters\Guard\Authorization\Strategy\UnanimousAuthorizationStrategy;
 use MerchantOfComplexity\Authters\Guard\Authorization\Voter\AuthenticatedTokenVoter;
@@ -42,7 +43,11 @@ return
                 AuthenticatableRegistry::class,
                 RecallerRegistry::class,
                 ContextRegistry::class,
+
+                ThrottleLoginRegistry::class,
+
                 AuthenticationServiceRegistry::class,
+
                 AnonymousRegistry::class,
                 SwitchIdentityRegistry::class,
                 ExceptionRegistry::class,

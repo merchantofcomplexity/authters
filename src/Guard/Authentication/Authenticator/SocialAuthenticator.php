@@ -3,7 +3,7 @@
 namespace MerchantOfComplexity\Authters\Guard\Authentication\Authenticator;
 
 use Illuminate\Http\Request;
-use MerchantOfComplexity\Authters\Application\Http\Request\SocialAuthenticationRequest;
+use MerchantOfComplexity\Authters\Application\Http\Request\SocialRequest;
 use MerchantOfComplexity\Authters\Domain\Role\RoleValue;
 use MerchantOfComplexity\Authters\Domain\User\Social\SocialProviderName;
 use MerchantOfComplexity\Authters\Guard\Authentication\Token\SocialToken;
@@ -21,11 +21,11 @@ final class SocialAuthenticator
     private $oAuthFactory;
 
     /**
-     * @var SocialAuthenticationRequest
+     * @var SocialRequest
      */
     private $authenticationRequest;
 
-    public function __construct(SocialOAuthFactory $oAuthFactory, SocialAuthenticationRequest $authenticationRequest)
+    public function __construct(SocialOAuthFactory $oAuthFactory, SocialRequest $authenticationRequest)
     {
         $this->oAuthFactory = $oAuthFactory;
         $this->authenticationRequest = $authenticationRequest;
@@ -72,7 +72,7 @@ final class SocialAuthenticator
         return $this->authenticationRequest->extractCredentials($request);
     }
 
-    public function socialRequest(): SocialAuthenticationRequest
+    public function socialRequest(): SocialRequest
     {
         return $this->authenticationRequest;
     }

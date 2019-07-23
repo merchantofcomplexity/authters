@@ -18,9 +18,9 @@ final class ContextRegistry implements FirewallRegistry
     public function compose(FirewallAware $firewall, Closure $make)
     {
         if (!$firewall->context()->isStateless()) {
-            $serializationContext = $this->createContext($firewall->getIdentityProviders());
+            $contextSerialization = $this->createContext($firewall->identityProviders());
 
-            $firewall->addPreService('serialization', $serializationContext);
+            $firewall->addPreService('serialization', $contextSerialization);
         }
 
         return $make($firewall);

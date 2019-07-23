@@ -15,11 +15,23 @@ interface FirewallContext
 
     public function isStateless(): bool;
 
+    public function canSwitchIdentity(): bool;
+
     public function identityProviderId(): ?string;
 
     public function entryPointId(): string;
 
     public function unauthorizedId(): string;
+
+    /**
+     * @return array|null with keys string request, int decay, int max_attempts
+     */
+    public function throttleLogin(): ?array;
+
+    /**
+     * @return array|null with keys int decay, int max_attempts
+     */
+    public function throttleRequest(): ?array;
 
     public function hasAttribute(string $key): bool;
 

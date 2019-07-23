@@ -17,19 +17,9 @@ use MerchantOfComplexity\Authters\Support\Firewall\FirewallAware;
 
 final class SwitchIdentityRegistry implements FirewallRegistry
 {
-    /**
-     * @var SwitchIdentityRequest
-     */
-    private $authenticationRequest;
-
-    public function __construct(SwitchIdentityRequest $authenticationRequest)
-    {
-        $this->authenticationRequest = $authenticationRequest;
-    }
-
     public function compose(FirewallAware $firewall, Closure $make)
     {
-        if (true === $firewall->context()->getAttribute('switch_identity')) {
+        if ($firewall->context()->canSwitchIdentity()) {
             $firewall->addPostService('switch_identity', $this->createService());
         }
 
@@ -39,19 +29,24 @@ final class SwitchIdentityRegistry implements FirewallRegistry
     protected function createService(): callable
     {
         return function (Application $app, FirewallContext $context, Request $request): ?Authentication {
-            if (!$this->authenticationRequest->match($request)) {
+            if (!$this->switchIdentityRequest()->match($request)) {
                 return null;
             }
 
             $authenticator = new SwitchIdentityAuthenticator(
                 $app->get(AuthorizationChecker::class),
                 $app->get($context->identityProviderId()),
-                $this->authenticationRequest,
+                $this->switchIdentityRequest(),
                 $app->get(Dispatcher::class),
                 $context->contextKey()
             );
 
             return new SwitchIdentityAuthentication($authenticator, $context->isStateless());
         };
+    }
+
+    protected function switchIdentityRequest(): SwitchIdentityRequest
+    {
+        return new SwitchIdentityRequest();
     }
 }

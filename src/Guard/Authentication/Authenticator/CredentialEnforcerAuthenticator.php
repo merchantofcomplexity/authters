@@ -3,7 +3,7 @@
 namespace MerchantOfComplexity\Authters\Guard\Authentication\Authenticator;
 
 use Illuminate\Http\Request;
-use MerchantOfComplexity\Authters\Application\Http\Response\EnforcerCredentialEntrypoint;
+use MerchantOfComplexity\Authters\Application\Http\Response\CredentialEnforcerEntrypoint;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\LocalToken;
 use MerchantOfComplexity\Authters\Support\Contract\Validator\CredentialsChecker;
 use MerchantOfComplexity\Authters\Support\Exception\AuthenticationException;
@@ -15,7 +15,7 @@ class CredentialEnforcerAuthenticator
     const TOKEN_ATTRIBUTE = 'credential_enforcer';
 
     /**
-     * @var EnforcerCredentialEntrypoint
+     * @var CredentialEnforcerEntrypoint
      */
     private $entrypoint;
 
@@ -29,7 +29,7 @@ class CredentialEnforcerAuthenticator
      */
     private $enforcerRoutePost;
 
-    public function __construct(EnforcerCredentialEntrypoint $entrypoint,
+    public function __construct(CredentialEnforcerEntrypoint $entrypoint,
                                 CredentialsChecker $credentialsChecker,
                                 string $enforcerRoutePost)
     {
@@ -62,21 +62,21 @@ class CredentialEnforcerAuthenticator
             $token->setAttribute(self::TOKEN_ATTRIBUTE, false);
         }
 
-        return true === $token->getAttribute(self::TOKEN_ATTRIBUTE, false);
+        return true === $token->getAttribute(self::TOKEN_ATTRIBUTE);
     }
 
-    public function isEnforcerForm(Request $request): bool
+    public function isEnforcerFormRequest(Request $request): bool
     {
         return $request->route()->getName() === $this->entrypoint->getRouteName();
     }
 
-    public function isEnforcerPost(Request $request): bool
+    public function isEnforcerPostRequest(Request $request): bool
     {
         return $request->route()->getName() === $this->enforcerRoutePost;
     }
 
     public function matchEnforcerRoutes(Request $request): bool
     {
-        return $this->isEnforcerForm($request) || $this->isEnforcerPost($request);
+        return $this->isEnforcerFormRequest($request) || $this->isEnforcerPostRequest($request);
     }
 }

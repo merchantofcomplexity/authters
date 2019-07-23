@@ -2,6 +2,7 @@
 
 namespace MerchantOfComplexity\Authters\Firewall\Context;
 
+use MerchantOfComplexity\Authters\Exception\InvalidArgumentException;
 use MerchantOfComplexity\Authters\Firewall\Key\FirewallContextKey;
 use function get_class;
 
@@ -27,6 +28,11 @@ trait HasMutableContext
         $this->setAttribute('is_stateless', $isStateless);
     }
 
+    public function enableSwitchIdentity(bool $enable): void
+    {
+        $this->setAttribute('switch_identity', $enable);
+    }
+
     public function setIdentityProviderId(string $identityProviderId): void
     {
         $this->setAttribute('identity_provider_id', $identityProviderId);
@@ -40,6 +46,20 @@ trait HasMutableContext
     public function setUnauthorizedId(string $unauthorizedId): void
     {
         $this->setAttribute('unauthorized_id', $unauthorizedId);
+    }
+
+    public function setThrottleLogin(array $throttleLogin): void
+    {
+        if (!isset($throttleLogin['request'])) {
+            throw new InvalidArgumentException("Missing key request for context throttle login");
+        }
+
+        $this->setAttribute('throttle_login', $throttleLogin);
+    }
+
+    public function setThrottleRequest(array $throttleLogin): void
+    {
+        $this->setAttribute('throttle_request', $throttleLogin);
     }
 
     public function toImmutable(): ImmutableFirewallContext

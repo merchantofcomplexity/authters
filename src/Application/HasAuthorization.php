@@ -24,7 +24,7 @@ trait HasAuthorization
      */
     protected function isGranted($attributes, object $subject = null): bool
     {
-        return $this->authorizationChecker()->isGranted((array)$attributes, $subject ?? request());
+        return $this->authorizationChecker()->isGranted((array)$attributes, $subject);
     }
 
     /**

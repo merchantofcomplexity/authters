@@ -9,9 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\Authentication as BaseAuthentication;
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Request\AuthenticationRequest;
+use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Request\IdentifierCredentialsRequest;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\Key\ContextKey;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TokenStorage;
-use MerchantOfComplexity\Authters\Support\Contract\Value\Value;
 use MerchantOfComplexity\Authters\Support\Events\IdentityLogin;
 use MerchantOfComplexity\Authters\Support\Events\IdentityLoginFailed;
 use MerchantOfComplexity\Authters\Support\Exception\AuthenticationException;
@@ -19,16 +19,6 @@ use MerchantOfComplexity\Authters\Support\Exception\AuthtersValueFailure;
 
 final class ThrottleLoginAuthentication implements BaseAuthentication
 {
-    /**
-     * @var int
-     */
-    private $decayMinutes = 1;
-
-    /**
-     * @var int
-     */
-    private $maxAttempts = 5;
-
     /**
      * @var IdentityLoginFailed|null
      */
@@ -64,17 +54,31 @@ final class ThrottleLoginAuthentication implements BaseAuthentication
      */
     private $rateLimiter;
 
+    /**
+     * @var int
+     */
+    private $decayMinutes;
+
+    /**
+     * @var int
+     */
+    private $maxAttempts;
+
     public function __construct(ContextKey $contextKey,
-                                AuthenticationRequest $loginRequest,
+                                IdentifierCredentialsRequest $loginRequest,
                                 TokenStorage $storage,
                                 Dispatcher $dispatcher,
-                                RateLimiter $rateLimiter)
+                                RateLimiter $rateLimiter,
+                                ?int $decayMinutes,
+                                ?int $maxAttempts)
     {
         $this->contextKey = $contextKey;
         $this->loginRequest = $loginRequest;
         $this->storage = $storage;
         $this->dispatcher = $dispatcher;
         $this->rateLimiter = $rateLimiter;
+        $this->decayMinutes = $decayMinutes ?? 1;
+        $this->maxAttempts = $maxAttempts ?? 5;
     }
 
     public function authenticate(Request $request, Closure $next)
@@ -153,10 +157,13 @@ final class ThrottleLoginAuthentication implements BaseAuthentication
     protected function throttleKey(Request $request): ?string
     {
         try {
-            /** @var Value $identifier */
-            [$identifier] = $this->loginRequest->extractCredentials($request);
+            $identifier = $this->loginRequest->extractIdentifier($request);
 
-            return Str::lower($identifier->getValue() . '|' . $request->ip());
+            return Str::lower(
+                $identifier->getValue() .
+                '|' . $request->ip() .
+                '|' . $this->contextKey->getValue()
+            );
 
         } catch (AuthtersValueFailure $exception) {
             return null;

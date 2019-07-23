@@ -3,12 +3,12 @@
 namespace MerchantOfComplexity\Authters\Application\Http\Request;
 
 use Illuminate\Http\Request;
-use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Request\SwitchIdentityAuthenticationRequest;
+use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Request\SwitchIdentityRequest as BaseSwitchIdentity;
 use MerchantOfComplexity\Authters\Support\Contract\Value\IdentifierValue;
 use MerchantOfComplexity\Authters\Support\Value\Identifier\EmailIdentity;
 use MerchantOfComplexity\Authters\Support\Value\Identifier\NullIdentifier;
 
-final class SwitchIdentityRequest implements SwitchIdentityAuthenticationRequest
+final class SwitchIdentityRequest implements BaseSwitchIdentity
 {
     public function match(Request $request): bool
     {

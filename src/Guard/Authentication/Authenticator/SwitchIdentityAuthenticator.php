@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use MerchantOfComplexity\Authters\Domain\Role\SwitchIdentityRole;
 use MerchantOfComplexity\Authters\Guard\Authentication\Token\SwitchIdentityToken;
 use MerchantOfComplexity\Authters\Guard\Authorization\AuthorizationChecker;
-use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Request\SwitchIdentityAuthenticationRequest;
+use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Request\SwitchIdentityRequest;
 use MerchantOfComplexity\Authters\Support\Contract\Domain\IdentityProvider;
 use MerchantOfComplexity\Authters\Support\Contract\Domain\LocalIdentity;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\Key\ContextKey;
@@ -32,7 +32,7 @@ final class SwitchIdentityAuthenticator
     private $identityProvider;
 
     /**
-     * @var SwitchIdentityAuthenticationRequest
+     * @var SwitchIdentityRequest
      */
     private $switchIdentityRequest;
 
@@ -48,7 +48,7 @@ final class SwitchIdentityAuthenticator
 
     public function __construct(AuthorizationChecker $authorizationChecker,
                                 IdentityProvider $identityProvider,
-                                SwitchIdentityAuthenticationRequest $switchIdentityRequest,
+                                SwitchIdentityRequest $switchIdentityRequest,
                                 Dispatcher $dispatcher,
                                 ContextKey $contextKey)
     {

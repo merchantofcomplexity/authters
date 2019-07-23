@@ -26,18 +26,22 @@ final class ThrottleRequestRegistry implements FirewallRegistry
 
     public function compose(FirewallAware $firewall, Closure $make)
     {
-        $firewall->addPreService('throttle-request', $this->createService());
+        if ($options = $firewall->context()->throttleRequest()) {
+            $firewall->addPreService('throttle-request', $this->createService($options));
+        }
 
         return $make($firewall);
     }
 
-    protected function createService(): callable
+    protected function createService(array $options): callable
     {
-        return function (Application $app, FirewallContext $context): Authentication {
+        return function (Application $app, FirewallContext $context) use ($options): Authentication {
             return new ThrottleRequestPreAuthentication(
                 $context->contextKey(),
                 $app->make(RateLimiter::class),
-                $app->make(TokenStorage::class)
+                $app->make(TokenStorage::class),
+                $options['decay'] ?? null,
+                $options['max_attempts'] ?? null
             );
         };
     }

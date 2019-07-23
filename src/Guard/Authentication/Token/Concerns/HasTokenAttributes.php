@@ -21,6 +21,7 @@ trait HasTokenAttributes
         if (!$this->hasAttribute($key)) {
             throw new RuntimeException("Attribute $key does not exists in " . get_called_class());
         }
+        
         return $this->attributes[$key];
     }
 

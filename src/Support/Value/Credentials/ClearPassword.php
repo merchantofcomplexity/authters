@@ -16,8 +16,10 @@ class ClearPassword implements ClearCredentials
      */
     private $password;
 
-    public function __construct(string $password)
+    public function __construct($password)
     {
+        Assert::notBlank($password);
+        Assert::string($password);
         Assert::betweenLength($password, self::MIN_LENGTH, self::MAX_LENGTH);
 
         $this->password = $password;

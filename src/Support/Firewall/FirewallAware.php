@@ -135,7 +135,7 @@ final class FirewallAware
         $this->firewallContext = $firewallContext;
     }
 
-    public function getIdentityProviders(): IdentityProviders
+    public function identityProviders(): IdentityProviders
     {
         return $this->identityProviders;
     }

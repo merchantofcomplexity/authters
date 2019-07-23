@@ -4,10 +4,10 @@ namespace MerchantOfComplexity\Authters\Application\Http\Middleware;
 
 use Closure;
 use Illuminate\Cache\RateLimiter;
-use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\Request;
 use Illuminate\Support\InteractsWithTime;
 use Illuminate\Support\Str;
+use MerchantOfComplexity\Authters\Exception\ThrottleRequestsException;
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\Authentication as BaseAuthentication;
 use MerchantOfComplexity\Authters\Support\Contract\Domain\Identity;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\Key\ContextKey;
@@ -34,26 +34,42 @@ final class ThrottleRequestPreAuthentication implements BaseAuthentication
      */
     private $storage;
 
-    public function __construct(ContextKey $contextKey, RateLimiter $rateLimiter, TokenStorage $storage)
+    /**
+     * @var int
+     */
+    private $decayMinutes;
+
+    /**
+     * @var int
+     */
+    private $maxAttempts;
+
+    public function __construct(ContextKey $contextKey,
+                                RateLimiter $rateLimiter,
+                                TokenStorage $storage,
+                                ?int $decayMinutes,
+                                ?int $maxAttempts)
     {
         $this->contextKey = $contextKey;
         $this->rateLimiter = $rateLimiter;
         $this->storage = $storage;
+        $this->decayMinutes = $decayMinutes ?? 1;
+        $this->maxAttempts = $maxAttempts ?? 60;
     }
 
-    public function authenticate(Request $request, Closure $next, int $maxAttempts = 60, int $decayMinutes = 1)
+    public function authenticate(Request $request, Closure $next)
     {
         $identifier = $this->getIdentifierFromToken();
 
         $key = $this->resolveRequestSignature($request, $identifier);
 
-        $maxAttempts = $this->resolveMaxAttempts($maxAttempts, $identifier);
+        $maxAttempts = $this->resolveMaxAttempts($this->maxAttempts, $identifier);
 
         if ($this->rateLimiter->tooManyAttempts($key, $maxAttempts)) {
             throw $this->buildException($key, $maxAttempts);
         }
 
-        $this->rateLimiter->hit($key, $decayMinutes * 60);
+        $this->rateLimiter->hit($key, $this->decayMinutes * 60);
 
         $response = $next($request);
 
@@ -70,7 +86,7 @@ final class ThrottleRequestPreAuthentication implements BaseAuthentication
             $retryAfter
         );
 
-        return new ThrottleRequestsException('Too Many Attempts.', null, $headers);
+        return new ThrottleRequestsException('Too Many Requests.', null, $headers);
     }
 
     protected function resolveRequestSignature(Request $request, ?IdentifierValue $identifier): string

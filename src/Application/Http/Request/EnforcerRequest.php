@@ -7,7 +7,7 @@ use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Request\Auth
 use MerchantOfComplexity\Authters\Support\Exception\AuthtersValueFailure;
 use MerchantOfComplexity\Authters\Support\Value\Credentials\ClearPassword;
 
-final class EnforcerAuthenticationRequest implements AuthenticationRequest
+final class EnforcerRequest implements AuthenticationRequest
 {
     /**
      * @var string

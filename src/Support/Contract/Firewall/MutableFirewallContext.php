@@ -12,11 +12,17 @@ interface MutableFirewallContext extends FirewallContext
 
     public function setStateless(bool $isStateless): void;
 
+    public function enableSwitchIdentity(bool $enable): void;
+
     public function setIdentityProviderId(string $identityProviderId): void;
 
     public function setEntryPointId(string $entrypointId): void;
 
     public function setUnauthorizedId(string $unauthorizedId): void;
+
+    public function setThrottleLogin(array $throttleLogin): void;
+
+    public function setThrottleRequest(array $throttleRequest): void;
 
     public function toImmutable(): ImmutableFirewallContext;
 

@@ -4,7 +4,7 @@ namespace MerchantOfComplexity\Authters\Support\Contract\Application\Http\Reques
 
 use Illuminate\Http\Request;
 
-interface SwitchIdentityAuthenticationRequest extends AuthenticationRequest
+interface SwitchIdentityRequest extends AuthenticationRequest
 {
     const IDENTIFIER_QUERY = '_switch_identity';
 

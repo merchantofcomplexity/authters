@@ -17,7 +17,6 @@
     "merchantofcomplexity/chronicle": "dev-master",
     "merchantofcomplexity/service-bus": "dev-master",
     "merchantofcomplexity/tracker": "dev-master",
-    "merchantofcomplexity/dev-shared": "dev-master",
     "laravel/framework": "5.8.*",
     "symfony/expression-language": "^4.1",
     "lcobucci/jwt": "4.0.0-alpha3",

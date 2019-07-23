@@ -33,6 +33,12 @@ trait HasFirewallContext
         return $this->getAttribute('is_stateless');
     }
 
+    public function canSwitchIdentity(): bool
+    {
+        return $this->getAttribute('switch_identity', false);
+    }
+
+
     public function identityProviderId(): ?string
     {
         return $this->getAttribute('identity_provider_id', null);
@@ -46,6 +52,16 @@ trait HasFirewallContext
     public function unauthorizedId(): string
     {
         return $this->getAttribute('unauthorized_id');
+    }
+
+    public function throttleLogin(): ?array
+    {
+        return $this->getAttribute('throttle_login', []);
+    }
+
+    public function throttleRequest(): ?array
+    {
+        return $this->getAttribute('throttle_request', []);
     }
 
     public function hasAttribute(string $key): bool

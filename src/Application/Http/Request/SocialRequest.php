@@ -8,7 +8,7 @@ use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Request\Auth
 use MerchantOfComplexity\Authters\Support\Exception\AuthtersValueFailure;
 use MerchantOfComplexity\Authters\Support\Exception\SocialAuthenticationException;
 
-class SocialAuthenticationRequest implements AuthenticationRequest
+class SocialRequest implements AuthenticationRequest
 {
     /**
      * @var string

@@ -7,13 +7,12 @@ use MerchantOfComplexity\Authters\Firewall\Guard\HasEventGuard;
 use MerchantOfComplexity\Authters\Guard\Authentication\Token\GenericLocalToken;
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\AuthenticationEventGuard;
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\StatefulAuthenticationGuard as BaseStatefulMiddleware;
-use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Request\AuthenticationRequest;
+use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Request\IdentifierCredentialsRequest;
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Response\AuthenticationResponse;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\Key\ContextKey;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\LocalToken;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Recaller\Recallable;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenable;
-use MerchantOfComplexity\Authters\Support\Exception\BadCredentials;
 use Symfony\Component\HttpFoundation\Response;
 
 final class LocalAuthentication extends Authentication implements BaseStatefulMiddleware, AuthenticationEventGuard
@@ -26,9 +25,9 @@ final class LocalAuthentication extends Authentication implements BaseStatefulMi
     private $recaller;
 
     /**
-     * @var AuthenticationRequest
+     * @var IdentifierCredentialsRequest
      */
-    private $authenticationRequest;
+    private $loginRequest;
 
     /**
      * @var AuthenticationResponse
@@ -40,11 +39,11 @@ final class LocalAuthentication extends Authentication implements BaseStatefulMi
      */
     private $contextKey;
 
-    public function __construct(AuthenticationRequest $authenticationRequest,
+    public function __construct(IdentifierCredentialsRequest $authenticationRequest,
                                 AuthenticationResponse $responder,
                                 ContextKey $contextKey)
     {
-        $this->authenticationRequest = $authenticationRequest;
+        $this->loginRequest = $authenticationRequest;
         $this->responder = $responder;
         $this->contextKey = $contextKey;
     }
@@ -75,20 +74,11 @@ final class LocalAuthentication extends Authentication implements BaseStatefulMi
 
     protected function createLocalToken(Request $request): LocalToken
     {
-        [$email, $password] = $this->extractCredentials($request);
-
-        return new GenericLocalToken($email, $password, $this->contextKey);
-    }
-
-    protected function extractCredentials(Request $request): array
-    {
-        [$identifier, $credentials] = $this->authenticationRequest->extractCredentials($request);
-
-        if (!$identifier || !$credentials) {
-            throw BadCredentials::invalid();
-        }
-
-        return [$identifier, $credentials];
+        return new GenericLocalToken(
+            $this->loginRequest->extractIdentifier($request),
+            $this->loginRequest->extractPassword($request),
+            $this->contextKey
+        );
     }
 
     protected function requireAuthentication(Request $request): bool
@@ -98,7 +88,7 @@ final class LocalAuthentication extends Authentication implements BaseStatefulMi
             return false;
         }
 
-        return $this->authenticationRequest->match($request);
+        return $this->loginRequest->match($request);
     }
 
     public function setRecaller(Recallable $recaller): void
