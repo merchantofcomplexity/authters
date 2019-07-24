@@ -10,6 +10,7 @@ use MerchantOfComplexity\Authters\Support\Contract\Firewall\Key\ContextKey;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\LocalToken;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TrustResolver;
 use MerchantOfComplexity\Authters\Support\Exception\AuthenticationException;
+use MerchantOfComplexity\Authters\Support\Exception\AuthtersValueFailure;
 use Symfony\Component\HttpFoundation\Response;
 
 class CredentialEnforcerAuthentication extends Authentication
@@ -97,9 +98,13 @@ class CredentialEnforcerAuthentication extends Authentication
 
     protected function createAuthenticatedLocalToken(Request $request, LocalToken $token): LocalToken
     {
-        $credentials = $this->enforcerRequest->extractCredentials($request);
+        try {
+            $credentials = $this->enforcerRequest->extractCredentials($request);
 
-        return new GenericLocalToken($token->getIdentity(), $credentials, $this->contextKey);
+            return new GenericLocalToken($token->getIdentity(), $credentials, $this->contextKey);
+        } catch (AuthtersValueFailure $invalidCredentials) {
+            throw new AuthenticationException("invalid credentials", 0, $invalidCredentials);
+        }
     }
 
     protected function extractFullyAuthenticatedToken(): ?LocalToken
