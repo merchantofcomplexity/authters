@@ -11,9 +11,8 @@ use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TrustRes
 use MerchantOfComplexity\Authters\Support\Events\ContextEvent;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\TerminableInterface;
 
-final class ContextEventAware implements TerminableInterface
+final class ContextEventAware
 {
     /**
      * @var TokenStorage
@@ -46,10 +45,14 @@ final class ContextEventAware implements TerminableInterface
     {
         $this->dispatcher->listen(ContextEvent::class, [$this, 'onContextEvent']);
 
-        return $next($request);
+        $response = $next($request);
+
+        $this->dumbTerminateResponse($request, $response);
+
+        return $response;
     }
 
-    public function terminate(SymfonyRequest $request, Response $response)
+    public function dumbTerminateResponse(SymfonyRequest $request,Response $response): void
     {
         if ($this->contextEvent && $request instanceof Request) {
             $token = $this->tokenStorage->getToken();
@@ -59,9 +62,6 @@ final class ContextEventAware implements TerminableInterface
             } else {
                 $request->session()->put($this->contextEvent->sessionName(), serialize($token));
             }
-
-            // fixMe only way to keep session on terminable middleware
-            $request->session()->save();
         }
     }
 
