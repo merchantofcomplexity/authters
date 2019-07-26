@@ -2,7 +2,11 @@
 
 namespace MerchantOfComplexity\Authters\Guard\Authentication\Token\Concerns;
 
+use Illuminate\Database\Eloquent\Model;
 use MerchantOfComplexity\Authters\Exception\RuntimeException;
+use MerchantOfComplexity\Authters\Guard\Authentication\Token\ModelIdentifier;
+use MerchantOfComplexity\Authters\Support\Contract\Domain\Identity;
+use function get_class;
 use function is_array;
 
 trait HasTokenSerializer
@@ -30,7 +34,7 @@ trait HasTokenSerializer
     public function toArray(): array
     {
         return [
-            'identity' => $this->identity,
+            'identity' => $this->serialiazableIdentity($this->identity),
             'is_authenticated' => $this->isAuthenticated,
             'role_names' => $this->roleNames,
             'attributes' => $this->attributes
@@ -56,5 +60,14 @@ trait HasTokenSerializer
     public function __toString(): string
     {
         return $this->toJson();
+    }
+
+    protected function serialiazableIdentity(Identity $identity): Identity
+    {
+        if ($identity instanceof Model) {
+            return new ModelIdentifier(get_class($identity), $identity->getIdentifier());
+        }
+
+        return $identity;
     }
 }

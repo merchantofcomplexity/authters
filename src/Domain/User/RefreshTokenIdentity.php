@@ -2,6 +2,7 @@
 
 namespace MerchantOfComplexity\Authters\Domain\User;
 
+use MerchantOfComplexity\Authters\Guard\Authentication\Token\ModelIdentifier;
 use MerchantOfComplexity\Authters\Support\Contract\Domain\Identity;
 use MerchantOfComplexity\Authters\Support\Contract\Domain\IdentityProvider;
 use MerchantOfComplexity\Authters\Support\Contract\Domain\RefreshTokenIdentityStrategy;
@@ -27,6 +28,12 @@ class RefreshTokenIdentity implements RefreshTokenIdentityStrategy
 
         if (!$identity instanceof Identity) {
             return null;
+        }
+
+        if ($identity instanceof ModelIdentifier) {
+            if (!$identity = $identity->newIdentityModelInstance()) {
+                return null;
+            }
         }
 
         try {
