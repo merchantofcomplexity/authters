@@ -59,8 +59,8 @@ class ModelIdentifier implements BaseModelIdentifier
     public function serialize(): string
     {
         return serialize([
-            $this->identityModel,
-            $this->identifier
+            'identity_model' => $this->identityModel,
+            'identifier' => $this->identifier
         ]);
     }
 
@@ -69,8 +69,8 @@ class ModelIdentifier implements BaseModelIdentifier
         $serialized = is_array($serialized) ? $serialized : unserialize($serialized);
 
         [
-            $this->identityModel,
-            $this->identifier
+            'identity_model' => $this->identityModel,
+            'identifier' => $this->identifier
         ] = $serialized;
     }
 }
