@@ -4,41 +4,31 @@ namespace MerchantOfComplexity\Authters\Guard\Authentication\Token;
 
 use Illuminate\Database\Eloquent\Model;
 use MerchantOfComplexity\Authters\Support\Contract\Domain\Identity;
+use MerchantOfComplexity\Authters\Support\Contract\Guard\ModelIdentifier as BaseModelIdentifier;
 use MerchantOfComplexity\Authters\Support\Contract\Value\IdentifierValue;
-use Serializable;
 
-class ModelIdentifier implements Identity, Serializable
+class ModelIdentifier implements BaseModelIdentifier
 {
     /**
      * @var string
      */
-    private $fqcnIdentityModel;
+    private $identityModel;
 
     /**
      * @var IdentifierValue
      */
     private $identifier;
 
-    public function __construct(string $fqcnIdentityModel, IdentifierValue $identifier)
+    public function __construct(string $IdentityModel, IdentifierValue $identifier)
     {
-        $this->fqcnIdentityModel = $fqcnIdentityModel;
+        $this->identityModel = $IdentityModel;
         $this->identifier = $identifier;
-    }
-
-    public function getIdentifier(): IdentifierValue
-    {
-        return $this->identifier;
-    }
-
-    public function getFqcnIdentityModel(): string
-    {
-        return $this->fqcnIdentityModel;
     }
 
     public function newIdentityModelInstance(): ?Identity
     {
         /** @var Model $model */
-        $model = new $this->fqcnIdentityModel;
+        $model = new $this->identityModel;
 
         $identifier = $this->identifier->getValue();
 
@@ -48,7 +38,17 @@ class ModelIdentifier implements Identity, Serializable
 
         $model->setRawAttributes($attributes);
 
-        return $model instanceof Identity ? null : $model;
+        return $model instanceof Identity ? $model : null;
+    }
+
+    public function getIdentifier(): IdentifierValue
+    {
+        return $this->identifier;
+    }
+
+    public function getIdentityModel(): string
+    {
+        return $this->identityModel;
     }
 
     public function getRoles(): array
@@ -56,19 +56,21 @@ class ModelIdentifier implements Identity, Serializable
         return [];
     }
 
-    public function serialize()
+    public function serialize(): string
     {
         return serialize([
-            'fqcnIdentityModel' => $this->fqcnIdentityModel,
-            'identifier' => $this->identifier
+            $this->identityModel,
+            $this->identifier
         ]);
     }
 
-    public function unserialize($serialized)
+    public function unserialize($serialized): void
     {
+        $serialized = is_array($serialized) ? $serialized : unserialize($serialized);
+
         [
-            'fqcnIdentityModel' => $this->fqcnIdentityModel,
-            'identifier' => $this->identifier
+            $this->identityModel,
+            $this->identifier
         ] = $serialized;
     }
 }

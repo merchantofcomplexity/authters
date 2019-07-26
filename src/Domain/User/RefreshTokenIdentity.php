@@ -2,11 +2,11 @@
 
 namespace MerchantOfComplexity\Authters\Domain\User;
 
-use MerchantOfComplexity\Authters\Guard\Authentication\Token\ModelIdentifier;
 use MerchantOfComplexity\Authters\Support\Contract\Domain\Identity;
 use MerchantOfComplexity\Authters\Support\Contract\Domain\IdentityProvider;
 use MerchantOfComplexity\Authters\Support\Contract\Domain\RefreshTokenIdentityStrategy;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenable;
+use MerchantOfComplexity\Authters\Support\Contract\Guard\ModelIdentifier;
 use MerchantOfComplexity\Authters\Support\Exception\AuthenticationServiceFailure;
 use MerchantOfComplexity\Authters\Support\Exception\IdentityNotFound;
 
