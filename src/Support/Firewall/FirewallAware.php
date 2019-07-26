@@ -47,6 +47,11 @@ final class FirewallAware
     public function __construct(string $name, string ...$services)
     {
         $this->name = $name;
+
+        if(!$services){
+            throw new InvalidArgumentException("Authentication services can not be empty");
+        }
+
         $this->services = array_fill_keys(array_values($services), false);
         $this->providers = new AuthenticationProviders();
     }
