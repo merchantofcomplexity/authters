@@ -9,7 +9,7 @@ use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Response\Ent
 use MerchantOfComplexity\Authters\Support\Exception\AuthenticationException;
 use Symfony\Component\HttpFoundation\Response;
 
-class SocialProviderEntrypoint implements Entrypoint
+final class SocialProviderEntrypoint implements Entrypoint
 {
     /**
      * @var SocialOAuthFactory
