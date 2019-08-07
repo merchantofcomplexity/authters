@@ -54,6 +54,11 @@ final class SocialAuthentication extends Authentication implements Authenticatio
         return $this->handleLoginRequest($request);
     }
 
+    /**
+     * @param Request $request
+     * @return Response|null
+     * @throws Throwable
+     */
     protected function handleRedirectRequest(Request $request): ?Response
     {
         try {

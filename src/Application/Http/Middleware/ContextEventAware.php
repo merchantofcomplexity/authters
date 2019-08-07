@@ -12,6 +12,7 @@ use MerchantOfComplexity\Authters\Support\Events\ContextEvent;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\HttpFoundation\Response;
 
+// todo contract or remove final
 final class ContextEventAware
 {
     /**
@@ -52,7 +53,7 @@ final class ContextEventAware
         return $response;
     }
 
-    public function dumbTerminateResponse(SymfonyRequest $request,Response $response): void
+    public function dumbTerminateResponse(SymfonyRequest $request, Response $response): void
     {
         if ($this->contextEvent && $request instanceof Request) {
             $token = $this->tokenStorage->getToken();

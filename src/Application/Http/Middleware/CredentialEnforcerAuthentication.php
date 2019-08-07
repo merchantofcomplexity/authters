@@ -89,6 +89,7 @@ class CredentialEnforcerAuthentication extends Authentication
 
         $this->guard->storeAuthenticatedToken($authenticatedToken);
 
+        // todo fetch the response factory
         $response = response()->redirectTo($this->getRouteIntended($request));
 
         $this->forgetRouteIntended($request);

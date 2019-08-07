@@ -71,9 +71,7 @@ final class FirewallCollection
         $firewall = $this->fromConfig("authentication.group", []);
 
         if (!$firewall) {
-            throw new InvalidArgumentException(
-                "You must provide at least one firewall"
-            );
+            throw new InvalidArgumentException("You must provide at least one firewall");
         }
 
         foreach ($firewall as $firewallName => $key) {
