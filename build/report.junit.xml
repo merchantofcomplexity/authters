@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Merchant Of Complexity Authters Test Suite" tests="1" assertions="1" errors="0" failures="0" skipped="0" time="0.077409">
+    <testsuite name="MerchantOfComplexityTest\Authters\Unit\Application\Http\Request\EmailPasswordRequestTest" file="/home/stephbug/www/package/moc/authters/tests/Unit/Application/Http/Request/EmailPasswordRequestTest.php" tests="1" assertions="1" errors="0" failures="0" skipped="0" time="0.077409">
+      <testcase name="it_match_route_parameter" class="MerchantOfComplexityTest\Authters\Unit\Application\Http\Request\EmailPasswordRequestTest" classname="MerchantOfComplexityTest.Authters.Unit.Application.Http.Request.EmailPasswordRequestTest" file="/home/stephbug/www/package/moc/authters/tests/Unit/Application/Http/Request/EmailPasswordRequestTest.php" line="12" assertions="1" time="0.077409"/>
+    </testsuite>
+  </testsuite>
+</testsuites>
