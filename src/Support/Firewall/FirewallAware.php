@@ -47,11 +47,6 @@ final class FirewallAware
     public function __construct(string $name, string ...$services)
     {
         $this->name = $name;
-
-        if(!$services){
-            throw new InvalidArgumentException("Authentication services can not be empty");
-        }
-
         $this->services = array_fill_keys(array_values($services), false);
         $this->providers = new AuthenticationProviders();
     }
@@ -112,7 +107,15 @@ final class FirewallAware
             }
         }
 
-        return array_merge($this->preServices, $this->getServices(), $this->postServices);
+        $services = array_merge($this->preServices, $this->getServices(), $this->postServices);
+
+        if (!$services) {
+            throw new InvalidArgumentException(
+                "Authentication services for firewall {$this->name} can not be empty"
+            );
+        }
+
+        return $services;
     }
 
     public function getProviders(): AuthenticationProviders

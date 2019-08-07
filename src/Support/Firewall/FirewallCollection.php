@@ -72,19 +72,12 @@ final class FirewallCollection
 
         if (!$firewall) {
             throw new InvalidArgumentException(
-                "You must provide at least one firewall and one authentication service"
+                "You must provide at least one firewall"
             );
         }
 
         foreach ($firewall as $firewallName => $key) {
             $auth = $key['auth'] ?? [];
-
-            if (empty($auth)) {
-                $message = "Configuration of each firewall must have an auth key ";
-                $message .= "with at least one authentication service";
-
-                throw new InvalidArgumentException($message);
-            }
 
             $this->collection->push(new FirewallAware($firewallName, ...$auth));
         }
