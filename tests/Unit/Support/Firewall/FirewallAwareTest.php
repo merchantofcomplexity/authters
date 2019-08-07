@@ -119,12 +119,13 @@ class FirewallAwareTest extends TestCase
     /**
      * @test
      */
-    public function it_inject_firewall_context(): void
+    public function it_set_firewall_context(): void
     {
+        $context = $this->prophesize(FirewallContext::class)->reveal();
+
         $firewall = $this->getFirewallAwareInstance();
 
-        $context = $this->prophesize(FirewallContext::class);
-        $firewall->setContext($context->reveal());
+        $firewall->setContext($context);
 
         $this->assertSame($context, $firewall->context());
     }
@@ -147,7 +148,7 @@ class FirewallAwareTest extends TestCase
      * @expectedException InvalidArgumentException
      * @expectedExceptionMessage Service id baz does not exists in config
      */
-    public function it_raise_exception_if_add_non_configured_service(): void
+    public function it_raise_exception_if_it_add_non_configured_service(): void
     {
         $firewall = $this->getFirewallAwareInstance();
 

@@ -27,6 +27,7 @@ class IdentityProvidersTest extends TestCase
     public function it_generate_identity_provider(): void
     {
         $container = new Container();
+
         $container->bind('foo', function () {
             return $this->prophesize(IdentityProvider::class);
         });
@@ -36,6 +37,7 @@ class IdentityProvidersTest extends TestCase
         $generator = $providers($container);
 
         $this->assertInstanceOf(Generator::class, $generator);
+
         foreach ($generator as $generated){
             $this->assertInstanceOf(IdentityProvider::class, $generated->reveal());
         }
