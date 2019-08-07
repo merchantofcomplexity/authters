@@ -110,8 +110,8 @@ class FirewallAwareTest extends TestCase
         $authProviders = $firewall->getProviders();
 
         $container = new Container();
-        $context = $this->prophesize(FirewallContext::class)->reveal();
-        $authProviders = $authProviders($container, $context);
+        $context = $this->prophesize(FirewallContext::class);
+        $authProviders = $authProviders($container, $context->reveal());
 
         $this->assertInstanceOf(AuthenticationProvider::class, array_shift($authProviders));
     }
@@ -123,8 +123,8 @@ class FirewallAwareTest extends TestCase
     {
         $firewall = $this->getFirewallAwareInstance();
 
-        $context = $this->prophesize(FirewallContext::class)->reveal();
-        $firewall->setContext($context);
+        $context = $this->prophesize(FirewallContext::class);
+        $firewall->setContext($context->reveal());
 
         $this->assertSame($context, $firewall->context());
     }
@@ -140,16 +140,6 @@ class FirewallAwareTest extends TestCase
         $firewall->setIdentityProviders($providers);
 
         $this->assertSame($providers, $firewall->identityProviders());
-    }
-
-    /**
-     * @test
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Authentication services can not be empty
-     */
-    public function it_raise_exception_if_constructed_services_empty(): void
-    {
-        new FirewallAware('baz');
     }
 
     /**
@@ -173,6 +163,18 @@ class FirewallAwareTest extends TestCase
     public function it_raise_exception_when_provision_service_has_not_been_resolved(): void
     {
         $firewall = new FirewallAware('baz', 'foo');
+
+        $firewall->allServices();
+    }
+
+    /**
+     * @test
+     * @expectedException \MerchantOfComplexity\Authters\Exception\InvalidArgumentException
+     * @expectedExceptionMessage Authentication services for firewall baz can not be empty
+     */
+    public function it_raise_exception_when_firewall_services_are_empty(): void
+    {
+        $firewall = new FirewallAware('baz');
 
         $firewall->allServices();
     }

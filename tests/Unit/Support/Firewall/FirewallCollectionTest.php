@@ -84,25 +84,11 @@ class FirewallCollectionTest extends TestCase
     /**
      * @test
      * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage You must provide at least one firewall and one authentication service
+     * @expectedExceptionMessage You must provide at least one firewall
      */
-    public function it_raise_exception_if_firewall_group_is_empty(): void
+    public function it_raise_exception_if_services_are_empty(): void
     {
         new FirewallCollection($this->app, ['authentication' => ['group' => []]]);
-    }
-
-    /**
-     * @test
-     * @expectedException InvalidArgumentException
-     */
-    public function it_raise_exception_if_auth_key_of_firewall_is_empty(): void
-    {
-        $message = 'Configuration of each firewall must have an auth key ';
-        $message .= 'with at least one authentication service';
-
-        $this->expectExceptionMessage($message);
-
-        new FirewallCollection($this->app, ['authentication' => ['group' => ['foo' => ['auth' => []]]]]);
     }
 
     /**
