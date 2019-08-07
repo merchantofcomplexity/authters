@@ -52,6 +52,14 @@ final class DefaultExpressionVoter implements Votable
         $variables = null;
 
         foreach ($attributes as $attribute) {
+
+            // checkMe
+            // this allow to use expression in routes but as the disadvantage
+            // that any expression without parenthesis could not be evaluated
+            // e.g "ROLE_USER in roles" and any logical expressions
+
+            // workarounds would be to prefix any expression ex: exp:
+
             if (!$this->supportAttribute($attribute)) {
                 continue;
             }
