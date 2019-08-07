@@ -3,6 +3,7 @@
 /public/storage
 /storage/*.key
 /vendor
+composer.lock
 .env
 .phpunit.result.cache
 .directory
@@ -12,4 +13,4 @@ npm-debug.log
 yarn-error.log
 .idea
 /build
-.todo.md
+todo.md
