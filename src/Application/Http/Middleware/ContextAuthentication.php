@@ -37,9 +37,9 @@ final class ContextAuthentication extends Authentication
             $this->handleSerializedToken($tokenString);
         } catch (AuthenticationException $exception) {
             $this->guard->clearStorage();
-        } finally {
-            return null;
         }
+
+        return null;
     }
 
     protected function handleSerializedToken(string $tokenString): void

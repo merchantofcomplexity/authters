@@ -1,6 +1,6 @@
 <?php
 
-namespace MerchantOfComplexity\Authters\Firewall\Guard;
+namespace MerchantOfComplexity\Authters\Guard;
 
 use Illuminate\Http\Request;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenable;
