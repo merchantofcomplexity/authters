@@ -68,7 +68,7 @@ final class Manager
         return $this->processor->process(
             $this->prepareFirewall($name),
             $request,
-            $this->determineBootstraps()
+            $this->determineBootstraps($name)
         );
     }
 
@@ -85,9 +85,12 @@ final class Manager
         return $firewall;
     }
 
-    protected function determineBootstraps(): array
+    protected function determineBootstraps(string $name): array
     {
-        if ($registries = $this->fromConfig('authentication.bootstraps', [])) {
+      $registries =  $this->fromConfig("authentication.group.$name.bootstraps", null)
+          ?? $this->fromConfig('authentication.bootstraps', null);
+
+        if ($registries ) {
             return $registries;
         }
 

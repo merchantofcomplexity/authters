@@ -75,8 +75,11 @@ return
             ],
 
             'role_hierarchy' => [
+
                 'concrete' => SymfonyRoleHierarchy::class,
+
                 'hierarchy' => [
+
                     'ROLE_ADMIN' => [
                         'ROLE_USER'
                     ],
