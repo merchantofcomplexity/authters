@@ -2,7 +2,6 @@
 
 namespace MerchantOfComplexity\Authters\Firewall;
 
-use Generator;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Pipeline\Pipeline;
 use Illuminate\Http\Request;
@@ -29,28 +28,32 @@ final class Processor
         $this->pipeline = new BasePipeline($app);
     }
 
-    public function process(FirewallAware $firewallAware, Request $request, array $bootstraps): Generator
+    public function process(FirewallAware $firewallAware, Request $request, array $bootstraps): iterable
     {
         $services = $this->buildFirewall($firewallAware, $bootstraps);
 
         return $this->generateService($services, $firewallAware->context(), $request);
     }
 
-    protected function generateService(iterable $services, FirewallContext $context, Request $request): Generator
+    protected function generateService(array $services, FirewallContext $context, Request $request): iterable
     {
-        foreach ($services as $service) {
-            if (is_string($service)) {
-                $service = $this->app->get($service);
-            }
+        return array_filter(
+            array_map(function ($service) use ($context, $request) {
+                if (is_string($service)) {
+                    $service = $this->app->get($service);
+                }
 
-            if ($service instanceof FirewallProvision) {
-                $service = $service->match($request) ? $service->callAuthentication() : null;
-            }
+                if ($service instanceof FirewallProvision) {
+                    $service = $service->match($request) ? $service->callAuthentication() : null;
+                }
 
-            if ($service) {
-                yield $service($this->app, $context, $request);
-            }
-        }
+                if (is_callable($service)) {
+                    return $service($this->app, $context, $request);
+                }
+
+                return null;
+            }, $services)
+        );
     }
 
     protected function buildFirewall(FirewallAware $firewallAware, array $bootstraps): array

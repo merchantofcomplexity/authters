@@ -38,19 +38,14 @@ final class Firewall
 
     protected function startAuthentication(iterable $services, Request $request, Closure $next)
     {
-        // fixMe temporary
-        $iterator = array_filter(iterator_to_array($services));
-
-        foreach ($iterator as $service) {
+        foreach ($services as $service) {
             $this->setGuardOnService($service);
         }
 
-        // rewrite pipeline to accept generator
-        // and default laravel middleware as we can add simple service from manager
         return (new Pipeline($this->app))
             ->via('authenticate')
             ->send($request)
-            ->through($iterator)
+            ->through($services)
             ->then(function () use ($request, $next) {
                 return $next($request);
             });
