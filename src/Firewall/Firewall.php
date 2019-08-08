@@ -45,6 +45,8 @@ final class Firewall
             $this->setGuardOnService($service);
         }
 
+        // rewrite pipeline to accept generator
+        // and default laravel middleware as we can add simple service from manager
         return (new Pipeline($this->app))
             ->via('authenticate')
             ->send($request)
