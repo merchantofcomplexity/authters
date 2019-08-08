@@ -57,8 +57,9 @@ final class Firewall
     protected function setGuardOnService($service): void
     {
         if ($service instanceof AuthenticationGuard) {
-            $guard = $this->app->get(Guardable::class);
-            $service->setGuard($guard);
+            $service->setGuard(
+                $this->app->get(Guardable::class)
+            );
         }
 
         if ($service instanceof StatefulAuthenticationGuard && $this->app->bound(Recallable::class)) {
