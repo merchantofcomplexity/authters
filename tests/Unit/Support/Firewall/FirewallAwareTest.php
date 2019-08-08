@@ -52,7 +52,7 @@ class FirewallAwareTest extends TestCase
     /**
      * @test
      * @expectedException InvalidArgumentException
-     * @@expectedExceptionMessage provision service bar_bar does not exists
+     * @@expectedExceptionMessage service bar_bar does not exists
      */
     public function it_raise_exception_when_resolving_provision_is_not_configured(): void
     {

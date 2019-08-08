@@ -22,9 +22,11 @@ class AnonymousAuthenticationTest extends TestCase
     public function it_check_if_authentication_is_required(): void
     {
         $this->guard->isStorageEmpty()->willReturn(false);
+
         $this->guard->storeAuthenticatedToken()->shouldNotBeCalled();
 
         $auth = new AnonymousAuthentication($this->key->reveal());
+
         $auth->setGuard($this->guard->reveal());
 
         $auth->authenticate($this->request->reveal(), $this->nextMiddleware(true));
@@ -36,9 +38,11 @@ class AnonymousAuthenticationTest extends TestCase
     public function it_process_authentication(): void
     {
         $this->guard->isStorageEmpty()->willReturn(true);
+
         $this->guard->storeAuthenticatedToken(Argument::type(AnonymousToken::class))->shouldbeCalled();
 
         $auth = new AnonymousAuthentication($this->key->reveal());
+
         $auth->setGuard($this->guard->reveal());
 
         $auth->authenticate($this->request->reveal(), $this->nextMiddleware(true));
@@ -50,11 +54,13 @@ class AnonymousAuthenticationTest extends TestCase
     public function it_keep_request_workflow_on_authentication_exception(): void
     {
         $this->guard->isStorageEmpty()->willReturn(true);
+
         $this->guard->storeAuthenticatedToken(Argument::type(AnonymousToken::class))->willThrow(
             new AuthenticationException('foo')
         );
 
         $auth = new AnonymousAuthentication($this->key->reveal());
+
         $auth->setGuard($this->guard->reveal());
 
         $auth->authenticate($this->request->reveal(), $this->nextMiddleware(true));
