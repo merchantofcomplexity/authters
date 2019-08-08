@@ -3,7 +3,7 @@
 namespace MerchantOfComplexity\Authters\Application\Http\Middleware;
 
 use Illuminate\Http\Request;
-use MerchantOfComplexity\Authters\Firewall\Guard\HasEventGuard;
+use MerchantOfComplexity\Authters\Guard\HasEventGuard;
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Middleware\AuthenticationEventGuard;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Recaller\Recallable;
 use MerchantOfComplexity\Authters\Support\Exception\AuthenticationException;
