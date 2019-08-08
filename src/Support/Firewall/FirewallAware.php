@@ -76,15 +76,22 @@ final class FirewallAware
         return $this;
     }
 
-    public function resolveProvisionService(string $provisionKey, FirewallProvision $provision): void
+    /**
+     * @param string $serviceKey
+     * @param FirewallProvision|callable $service
+     */
+    public function resolveProvisionService(string $serviceKey, $service): void
     {
-        if (!isset($this->services[$provisionKey])) {
-            throw new InvalidArgumentException("provision service $provisionKey does not exists");
+        if (!isset($this->services[$serviceKey])) {
+            throw new InvalidArgumentException("service $serviceKey does not exists");
         }
 
-        $this->services[$provision->serviceId()] = $provision;
+        unset($this->services[$serviceKey]);
 
-        unset($this->services[$provisionKey]);
+        $service instanceof FirewallProvision
+            ? $this->services[$service->serviceId()] = $service
+            : $this->services[$serviceKey] = $service;
+
     }
 
     public function addProvider($provider): FirewallAware

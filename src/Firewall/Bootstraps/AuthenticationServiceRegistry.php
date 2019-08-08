@@ -23,24 +23,43 @@ final class AuthenticationServiceRegistry implements FirewallRegistry
 
     public function compose(FirewallAware $firewall, Closure $make)
     {
-        $this->resolveServicesOfFirewall($firewall);
+        foreach ($firewall->getServices() as $serviceId => $loaded) {
+            $service = $this->resolveService($serviceId, $loaded);
+
+            $firewall->resolveProvisionService($serviceId, $service);
+        }
 
         return $make($firewall);
     }
 
-    protected function resolveServicesOfFirewall(FirewallAware $firewall): void
+
+    /**
+     * @param string $serviceId
+     * @param $loaded
+     * @return FirewallProvision|callable
+     */
+    protected function resolveService(string $serviceId, $loaded)
     {
-        foreach ($firewall->getServices() as $provisionId => $loaded) {
-            if (class_exists($provisionId) || $this->app->bound($provisionId)) {
-                $provision = $this->app->get($provisionId);
-
-                if (!$provision instanceof FirewallProvision) {
-                    throw new InvalidArgumentException(
-                        "Service $provisionId must be an instance of " . FirewallProvision::class);
-                }
-
-                $firewall->resolveProvisionService($provisionId, $provision);
-            }
+        if (false !== $loaded) {
+            return $loaded;
         }
+
+        return $this->resolveFirewallProvision($serviceId);
+    }
+
+    protected function resolveFirewallProvision(string $serviceId): FirewallProvision
+    {
+        if (class_exists($serviceId) || $this->app->bound($serviceId)) {
+            $service = $this->app->get($serviceId);
+
+            if (!$service instanceof FirewallProvision) {
+                throw new InvalidArgumentException(
+                    "Service $serviceId must implement contract " . FirewallProvision::class);
+            }
+
+            return $service;
+        }
+
+        throw new InvalidArgumentException("Unable to resolve service $serviceId");
     }
 }
