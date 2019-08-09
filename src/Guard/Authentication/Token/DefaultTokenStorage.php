@@ -12,7 +12,7 @@ final class DefaultTokenStorage implements TokenStorage
      */
     private $token;
 
-    public function setToken(?Tokenable $token)
+    public function setToken(?Tokenable $token): void
     {
         $this->token = $token;
     }

@@ -8,5 +8,12 @@ use Symfony\Component\HttpFoundation\Response;
 
 interface Logout
 {
+    /**
+     * Logout the request
+     *
+     * @param Request $request
+     * @param Tokenable $token
+     * @param Response $response
+     */
     public function logout(Request $request, Tokenable $token, Response $response): void;
 }
