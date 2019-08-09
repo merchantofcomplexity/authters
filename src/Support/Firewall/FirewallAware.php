@@ -7,7 +7,7 @@ use MerchantOfComplexity\Authters\Exception\RuntimeException;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\FirewallContext;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\FirewallProvision;
 
-final class FirewallAware
+class FirewallAware
 {
     /**
      * @var string
