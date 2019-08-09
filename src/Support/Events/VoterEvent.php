@@ -28,7 +28,6 @@ final class VoterEvent
 
     public function __construct(Votable $voter, array $attributes, object $subject, int $vote)
     {
-
         $this->voter = $voter;
         $this->attributes = $attributes;
         $this->subject = $subject;
