@@ -45,6 +45,11 @@ final class SocialAuthentication extends Authentication implements Authenticatio
         $this->contextKey = $contextKey;
     }
 
+    /**
+     * @param Request $request
+     * @return Response|null
+     * @throws Throwable
+     */
     protected function processAuthentication(Request $request): ?Response
     {
         if ($this->authenticator->socialRequest()->isRedirect($request)) {

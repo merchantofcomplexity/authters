@@ -2,7 +2,6 @@
 
 namespace MerchantOfComplexity\Authters\Guard\Service\Social;
 
-use Illuminate\Http\Request;
 use Laravel\Socialite\Contracts\Factory;
 use Laravel\Socialite\Contracts\Provider as SocialiteProvider;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
@@ -35,13 +34,13 @@ final class SocialOAuthFactory
         );
     }
 
-    protected function socialiteUser(SocialProviderName $providerName): SocialiteUser
-    {
-        return $this->socialiteInstance($providerName)->user();
-    }
-
     public function socialiteInstance(SocialProviderName $providerName): SocialiteProvider
     {
         return $this->socialite->driver($providerName->getValue());
+    }
+
+    protected function socialiteUser(SocialProviderName $providerName): SocialiteUser
+    {
+        return $this->socialiteInstance($providerName)->user();
     }
 }

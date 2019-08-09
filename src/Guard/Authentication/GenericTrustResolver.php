@@ -2,8 +2,7 @@
 
 namespace MerchantOfComplexity\Authters\Guard\Authentication;
 
-use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\AnonymousToken;
-use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\RecallerToken;
+use MerchantOfComplexity\Authters\Exception\InvalidArgumentException;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenable;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TrustResolver;
 
@@ -21,6 +20,12 @@ final class GenericTrustResolver implements TrustResolver
 
     public function __construct(string $anonymous, string $remembered)
     {
+        if(!interface_exists($anonymous) || !interface_exists($remembered)){
+            $message = 'Generic implementation of trust resolver accept token interface only';
+
+            throw new InvalidArgumentException($message);
+        }
+
         $this->anonymous = $anonymous;
         $this->remembered = $remembered;
     }

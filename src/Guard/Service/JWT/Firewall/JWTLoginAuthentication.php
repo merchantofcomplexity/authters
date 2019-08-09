@@ -4,8 +4,8 @@ namespace MerchantOfComplexity\Authters\Guard\Service\JWT\Firewall;
 
 use Illuminate\Http\Request;
 use MerchantOfComplexity\Authters\Application\Http\Middleware\Authentication;
-use MerchantOfComplexity\Authters\Firewall\Guard\HasEventGuard;
 use MerchantOfComplexity\Authters\Guard\Authentication\Token\GenericLocalToken;
+use MerchantOfComplexity\Authters\Guard\HasEventGuard;
 use MerchantOfComplexity\Authters\Guard\Service\JWT\Http\Response\JWTResponder;
 use MerchantOfComplexity\Authters\Support\Contract\Application\Http\Request\IdentifierCredentialsRequest;
 use MerchantOfComplexity\Authters\Support\Contract\Firewall\Key\ContextKey;

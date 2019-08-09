@@ -39,7 +39,9 @@ final class JWTAuthentication extends Authentication
     protected function processAuthentication(Request $request): ?Response
     {
         if (!$request->bearerToken()) {
-            return $this->responder->entryPoint($request, new AuthenticationException("Missing bearer token"));
+            $authenticationException = new AuthenticationException("Missing bearer token");
+
+            return $this->responder->entryPoint($request, $authenticationException);
         }
 
         try {
