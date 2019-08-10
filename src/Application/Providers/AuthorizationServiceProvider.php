@@ -3,6 +3,7 @@
 namespace MerchantOfComplexity\Authters\Application\Providers;
 
 use Illuminate\Contracts\Config\Repository;
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
@@ -11,6 +12,7 @@ use MerchantOfComplexity\Authters\Firewall\Manager;
 use MerchantOfComplexity\Authters\Guard\Authorization\AuthorizationChecker;
 use MerchantOfComplexity\Authters\Guard\Authorization\Expression\ExpressionLanguage;
 use MerchantOfComplexity\Authters\Guard\Authorization\Voter\DefaultExpressionVoter;
+use MerchantOfComplexity\Authters\Guard\Authorization\Voter\TraceableVoter;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Authenticatable;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TokenStorage;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authorization\AuthorizationChecker as BaseAuthorization;
@@ -87,6 +89,7 @@ class AuthorizationServiceProvider extends ServiceProvider
 
     protected function collectVoters(array $voters): Voters
     {
+
         if (!$voters) {
             throw new RuntimeException("You must add at least on voter in configuration");
         }
@@ -95,6 +98,12 @@ class AuthorizationServiceProvider extends ServiceProvider
             $this->app->bind(ExpressionLanguage::class);
 
             $this->app->bind(DefaultExpressionVoter::ALIAS, DefaultExpressionVoter::class);
+        }
+
+        if(true === $this->app->get('config')->get('authters.debug')){
+            foreach ($voters as &$voter){
+                $voter = new TraceableVoter($voter, $this->app->get(Dispatcher::class));
+            }
         }
 
         return new Voters($this->app, ...$voters);

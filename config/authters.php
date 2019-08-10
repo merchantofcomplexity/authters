@@ -18,6 +18,8 @@ use MerchantOfComplexity\Authters\Guard\Authorization\Voter\RoleHierarchyVoter;
 
 return
     [
+        'debug' => true,
+
         'identity_providers' => [
 
         ],
