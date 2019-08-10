@@ -12,12 +12,12 @@ use MerchantOfComplexity\Authters\Firewall\Manager;
 use MerchantOfComplexity\Authters\Guard\Authorization\AuthorizationChecker;
 use MerchantOfComplexity\Authters\Guard\Authorization\Expression\ExpressionLanguage;
 use MerchantOfComplexity\Authters\Guard\Authorization\Voter\DefaultExpressionVoter;
-use MerchantOfComplexity\Authters\Guard\Authorization\Voter\TraceableVoter;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Authenticatable;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\TokenStorage;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authorization\AuthorizationChecker as BaseAuthorization;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authorization\AuthorizationStrategy;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authorization\RoleHierarchy;
+use MerchantOfComplexity\Authters\Support\Guard\Authorization\TraceableVoters;
 use MerchantOfComplexity\Authters\Support\Guard\Authorization\Voters;
 
 class AuthorizationServiceProvider extends ServiceProvider
@@ -72,7 +72,7 @@ class AuthorizationServiceProvider extends ServiceProvider
 
         $this->app->afterResolving(BaseAuthorization::class,
             function (BaseAuthorization $auth, Application $app): void {
-                if(method_exists($auth, 'setRequest')){
+                if (method_exists($auth, 'setRequest')) {
                     $auth->setRequest($app['request']);
                 }
             });
@@ -100,13 +100,13 @@ class AuthorizationServiceProvider extends ServiceProvider
             $this->app->bind(DefaultExpressionVoter::ALIAS, DefaultExpressionVoter::class);
         }
 
-        if(true === $this->app->get('config')->get('authters.debug')){
-            foreach ($voters as &$voter){
-                $voter = new TraceableVoter($voter, $this->app->get(Dispatcher::class));
-            }
+        $instance = new Voters($this->app, ...$voters);
+
+        if (true === $this->app->get('config')->get('authters.debug')) {
+            $instance = new TraceableVoters($instance, $this->app->get(Dispatcher::class));
         }
 
-        return new Voters($this->app, ...$voters);
+        return $instance;
     }
 
     public function provides(): array

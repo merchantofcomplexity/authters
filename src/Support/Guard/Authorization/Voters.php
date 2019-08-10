@@ -2,11 +2,11 @@
 
 namespace MerchantOfComplexity\Authters\Support\Guard\Authorization;
 
-use Countable;
 use Generator;
 use Illuminate\Contracts\Foundation\Application;
+use MerchantOfComplexity\Authters\Support\Contract\Guard\Authorization\VoterCollection;
 
-final class Voters implements Countable
+class Voters implements VoterCollection
 {
     /**
      * @var Application
@@ -24,7 +24,7 @@ final class Voters implements Countable
         $this->voters = $voters;
     }
 
-    public function add(string $voter): Voters
+    public function add(string $voter): VoterCollection
     {
         $this->voters[] = $voter;
 

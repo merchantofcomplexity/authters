@@ -5,8 +5,8 @@ namespace MerchantOfComplexity\Authters\Guard\Authorization\Strategy;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authentication\Tokenable;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authorization\AuthorizationStrategy;
 use MerchantOfComplexity\Authters\Support\Contract\Guard\Authorization\Votable;
+use MerchantOfComplexity\Authters\Support\Contract\Guard\Authorization\VoterCollection;
 use MerchantOfComplexity\Authters\Support\Exception\AuthenticationServiceFailure;
-use MerchantOfComplexity\Authters\Support\Guard\Authorization\Voters;
 
 final class ConsensusAuthorizationStrategy implements AuthorizationStrategy
 {
@@ -21,11 +21,11 @@ final class ConsensusAuthorizationStrategy implements AuthorizationStrategy
     private $allowIfEqual;
 
     /**
-     * @var Voters
+     * @var VoterCollection
      */
     private $voters;
 
-    public function __construct(Voters $voters, bool $allowIfAllAbstain, bool $allowIfEqual)
+    public function __construct(VoterCollection $voters, bool $allowIfAllAbstain, bool $allowIfEqual)
     {
         if ($voters->isEmpty()) {
             throw AuthenticationServiceFailure::noAuthorizationVoters();
